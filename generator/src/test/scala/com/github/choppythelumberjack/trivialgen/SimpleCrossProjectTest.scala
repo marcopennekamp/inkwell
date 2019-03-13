@@ -11,13 +11,13 @@ class SimpleCrossProjectTest extends SchemaUsingSpec {
   "trivial codegen" - {
     "snakecase" in {
       val gen = new TrivialGen(snakecaseConfig, pack(0)) {
-        override def namingStrategy = TrivialSnakeCaseNames
+        override def nameParser = SnakeCaseNames
       }
       gen.writeFiles(path(0))
     }
     "literal" in {
       val gen = new TrivialGen(literalConfig, pack(1)) {
-        override def namingStrategy = TrivialLiteralNames // Should be default
+        override def nameParser = LiteralNames // Should be default
       }
       gen.writeFiles(path(1))
     }

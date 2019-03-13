@@ -10,7 +10,7 @@ trait HasStandardGen {
   def standardGen(
     schemaFile:String,
     tableFilter:TableSchema=>Boolean = _ => true,
-    entityNamingStrategy: EntityNamingStrategy = LiteralNames,
+    entityNamingStrategy: CustomNameParser = LiteralNames,
     entityNamespacer: Namespacer = ts => ts.tableSchem,
     entityMemberNamer: MemberNamer = ts => ts.tableName.snakeToLowerCamel
   ) =
@@ -18,7 +18,7 @@ trait HasStandardGen {
       "sa", "sa", s"jdbc:h2:mem:sample;INIT=RUNSCRIPT FROM '${schemaFile}'"
     )) {
       override def filter(tc: TableSchema): Boolean = super.filter(tc) && tableFilter(tc)
-      override def namingStrategy: EntityNamingStrategy = entityNamingStrategy
+      override def nameParser: CustomNameParser = entityNamingStrategy
       override val namespacer: Namespacer = entityNamespacer
       override def memberNamer: MemberNamer = entityMemberNamer
       override def packagingStrategy: PackagingStrategy = super.packagingStrategy

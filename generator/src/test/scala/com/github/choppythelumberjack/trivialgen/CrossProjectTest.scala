@@ -10,14 +10,14 @@ class CrossProjectTest extends SchemaUsingSpec {
 
     "generate Composeable Schema in test project - trivial" in {
       val gen = new ComposeableTraitsGen(snakecaseConfig, pack(0), false) {
-        override def namingStrategy: EntityNamingStrategy = TrivialSnakeCaseNames
+        override def nameParser: CustomNameParser = SnakeCaseNames
       }
       gen.writeFiles(path(0))
     }
 
     "generate Composeable Schema in test project - simple" in {
       val gen = new ComposeableTraitsGen(snakecaseConfig, pack(1)) {
-        override def namingStrategy: EntityNamingStrategy =
+        override def nameParser: CustomNameParser =
           CustomStrategy(
             col => col.columnName.toLowerCase.replace("_name", "")
           )
@@ -30,7 +30,7 @@ class CrossProjectTest extends SchemaUsingSpec {
         twoSchemaConfig, pack(2),
         nestedTrait = true)
       {
-        override def namingStrategy: EntityNamingStrategy = CustomStrategy()
+        override def nameParser: CustomNameParser = CustomStrategy()
         override def memberNamer: MemberNamer = ts => (ts.tableSchem.toLowerCase + ts.tableName.snakeToUpperCamel)
         override val namespacer: Namespacer = ts =>
           if (ts.tableSchem.toLowerCase == "alpha" || ts.tableSchem.toLowerCase == "bravo") "public"
@@ -43,7 +43,7 @@ class CrossProjectTest extends SchemaUsingSpec {
     "generate Composeable Schema in test project - stereotyped multiple schemas" in {
       val gen = new ComposeableTraitsGen(twoSchemaConfig, pack(3), false)
       {
-        override def namingStrategy: EntityNamingStrategy = CustomStrategy()
+        override def nameParser: CustomNameParser = CustomStrategy()
         override def memberNamer: MemberNamer = ts => (ts.tableSchem.toLowerCase + ts.tableName.snakeToUpperCamel)
         override val namespacer: Namespacer =
           ts => if (ts.tableSchem.toLowerCase == "alpha" || ts.tableSchem.toLowerCase == "bravo") "common" else ts.tableSchem.toLowerCase
@@ -54,7 +54,7 @@ class CrossProjectTest extends SchemaUsingSpec {
 
     "generate Composeable Schema in test project - non-stereotyped" in {
       val gen = new ComposeableTraitsGen(twoSchemaConfig, pack(4), nestedTrait = true) {
-        override def namingStrategy: EntityNamingStrategy = CustomStrategy()
+        override def nameParser: CustomNameParser = CustomStrategy()
       }
 
       gen.writeFiles(path(4))
@@ -64,7 +64,7 @@ class CrossProjectTest extends SchemaUsingSpec {
   "composeable auto discovering tests" - {
     "using mirror context - simple" in {
       val gen = new AutoDiscoveringGen(snakecaseConfig, MirrorContext, pack(5), false) {
-        override def namingStrategy: EntityNamingStrategy = CustomStrategy()
+        override def nameParser: CustomNameParser = CustomStrategy()
       }
 
       gen.writeFiles(path(5))
@@ -74,7 +74,7 @@ class CrossProjectTest extends SchemaUsingSpec {
       val gen = new AutoDiscoveringGen(twoSchemaConfig, MirrorContext, pack(6), false)
       {
         override def memberNamer: MemberNamer = ts => (ts.tableSchem.toLowerCase + ts.tableName.snakeToUpperCamel)
-        override def namingStrategy: EntityNamingStrategy = CustomStrategy()
+        override def nameParser: CustomNameParser = CustomStrategy()
         override val namespacer: Namespacer =
           ts => if (ts.tableSchem.toLowerCase == "alpha" || ts.tableSchem.toLowerCase == "bravo") "common" else ts.tableSchem.toLowerCase
       }
@@ -84,7 +84,7 @@ class CrossProjectTest extends SchemaUsingSpec {
 
     "generate Composeable Schema in test project - non-stereotyped" in {
       val gen = new AutoDiscoveringGen(twoSchemaConfig, MirrorContext, pack(7), nestedTrait = true) {
-        override def namingStrategy: EntityNamingStrategy = CustomStrategy()
+        override def nameParser: CustomNameParser = CustomStrategy()
       }
 
       gen.writeFiles(path(7))

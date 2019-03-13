@@ -53,13 +53,13 @@ You can invoke the Trivial Generator like so:
 
 ````scala
 val gen = new TrivialGen(snakecaseConfig, "com.github.choppythelumberjack.trivialgen.generated.simp0") {
-    override def namingStrategy = TrivialSnakeCaseNames
+    override def namingStrategy = SnakeCaseNames
 }
 gen.writeFiles("integration-tests/src/test/scala/com/github/choppythelumberjack/trivialgen/generated/simp0")
 ````
 
-Note that there are two options for the Trivial Generator's Naming strategy, the `TrivialSnakeCaseNames` strategy
-and the `TrivialLiteralNames` strategy. In the former case, schemas will
+Note that there are two options for the Trivial Generator's Naming strategy, the `SnakeCaseNames` strategy
+and the `LiteralNames` strategy. In the former case, schemas will
 be converted to lower case before translation. Use the appropriate Quill Naming Strategy
 if your database is case sensitive. (Neither one of them allow custom naming of table or columns. Use the
 ComposeableTraitsGen to get that functionality)

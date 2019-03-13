@@ -8,7 +8,7 @@ import com.github.choppythelumberjack.trivialgen._
 import com.github.choppythelumberjack.trivialgen.util.StringUtil._
 
 class DefaultExpresser(
-  entityNamingStrategy: EntityNamingStrategy,
+  entityNamingStrategy: CustomNameParser,
   namespacer:Namespacer,
   typer:JdbcTyper
 ) extends Expresser {

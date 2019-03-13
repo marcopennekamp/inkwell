@@ -1,6 +1,6 @@
 package com.github.choppythelumberjack.trivialgen.ext
 
-import com.github.choppythelumberjack.trivialgen.{TrivialLiteralNames, TrivialNamingStrategy}
+import com.github.choppythelumberjack.trivialgen.{LiteralNames, NameParser}
 import com.github.choppythelumberjack.trivialgen.gen.{CodeGeneratorConfig, StandardGenerator}
 
 /**
@@ -16,5 +16,5 @@ class TrivialGen(
 
   def this(config: CodeGeneratorConfig, packagePrefix: String) = this(Seq(config), packagePrefix)
 
-  override def namingStrategy: TrivialNamingStrategy = TrivialLiteralNames
+  override def nameParser: NameParser = LiteralNames
 }

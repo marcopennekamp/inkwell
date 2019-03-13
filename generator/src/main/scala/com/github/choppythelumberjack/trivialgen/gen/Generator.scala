@@ -121,7 +121,7 @@ trait Generator extends  WithFileNaming {
     })
   }
 
-  val renderMembers = namingStrategy match {
+  val renderMembers = nameParser match {
     case CustomStrategy(_, _) => true
     case _ => false
   }
@@ -141,7 +141,7 @@ trait Generator extends  WithFileNaming {
 
     val config: CodeGeneratorConfig = emitterSettings.config
     val caseClassTables:Seq[TableStereotype] = emitterSettings.caseClassTables
-    val querySchemaTables:Seq[TableStereotype] = if (namingStrategy.generateQuerySchemas) emitterSettings.querySchemaTables else Seq()
+    val querySchemaTables:Seq[TableStereotype] = if (nameParser.generateQuerySchemas) emitterSettings.querySchemaTables else Seq()
     override def codeWrapper:CodeWrapper = emitterSettings.codeWrapper
 
     /**

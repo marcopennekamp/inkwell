@@ -25,10 +25,10 @@ trait DefaultStereotypingService extends StereotypingService {
 
   def namespacer: Namespacer
 
-  def namingStrategy: EntityNamingStrategy
+  def nameParser: CustomNameParser
   def stereotype(schemas:Seq[TableSchema]): Seq[TableStereotype] = new DefaultStereotyper().apply(schemas)
   def collider: Collider = new DefaultCollider
-  def expresser: Expresser = new DefaultExpresser(namingStrategy, namespacer, new DefaultJdbcTyper(AssumeString))
+  def expresser: Expresser = new DefaultExpresser(nameParser, namespacer, new DefaultJdbcTyper(AssumeString))
 
   type Stereotyper = (Seq[TableSchema]) => Seq[TableStereotype]
   class DefaultStereotyper extends Stereotyper {
