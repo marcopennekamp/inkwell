@@ -3,19 +3,39 @@ package com.github.choppythelumberjack.trivialgen
 import com.github.choppythelumberjack.trivialgen.model.{ColumnMeta, TableMeta}
 import com.github.choppythelumberjack.trivialgen.util.StringUtil._
 
-sealed trait CustomNameParser { def generateQuerySchemas:Boolean = true }
+sealed trait CustomNameParser {
+  def generateQuerySchemas:Boolean = true
+  def parseColumn(cm:ColumnMeta):String
+  def parseTable(tm:TableMeta):String
+}
 sealed trait NameParser extends CustomNameParser { override def generateQuerySchemas:Boolean = false }
 
-case object LiteralNames extends NameParser
-case object SnakeCaseNames extends NameParser
+trait LiteralNames extends NameParser {
+  def parseColumn(cm:ColumnMeta):String = cm.columnName
+  def parseTable(tm:TableMeta):String = tm.tableName.capitalize
+}
+trait SnakeCaseNames extends NameParser {
+  def parseColumn(cm:ColumnMeta):String = cm.columnName.snakeToLowerCamel
+  def parseTable(tm:TableMeta):String = tm.tableName.snakeToUpperCamel
+}
+
+object LiteralNames extends LiteralNames
+object SnakeCaseNames extends SnakeCaseNames
 
 case class SnakeCaseCustomTable(
   tableParser: TableMeta => String
-) extends CustomNameParser
+) extends CustomNameParser {
+  def parseColumn(cm:ColumnMeta):String = cm.columnName.snakeToLowerCamel
+  def parseTable(tm:TableMeta):String = tableParser(tm)
+}
+
 case class CustomStrategy(
   columnParser: ColumnMeta => String = cm=>cm.columnName.snakeToLowerCamel,
   tableParser: TableMeta => String = tm=>tm.tableName.snakeToUpperCamel
-) extends CustomNameParser
+) extends CustomNameParser {
+  def parseColumn(cm:ColumnMeta):String = columnParser(cm)
+  def parseTable(tm:TableMeta):String = tableParser(tm)
+}
 
 object CustomNameParser {
   implicit class EntityNamingStrategyExtensions(strategy: CustomNameParser) {
@@ -23,20 +43,9 @@ object CustomNameParser {
     def nameColumn(columnSchema: ColumnMeta) = CustomNameParser.nameColumn(strategy, columnSchema)
   }
 
-  def nameTable(strategy: CustomNameParser, tableSchema: TableMeta) = {
-    strategy match {
-      case LiteralNames => tableSchema.tableName.capitalize
-      case SnakeCaseNames => tableSchema.tableName.snakeToUpperCamel
-      case SnakeCaseCustomTable(tableParser) => tableParser(tableSchema)
-      case CustomStrategy(_, tableParser) => tableParser(tableSchema)
-    }
-  }
-  def nameColumn(strategy: CustomNameParser, columnSchema: ColumnMeta) = {
-    strategy match {
-      case LiteralNames => columnSchema.columnName
-      case SnakeCaseNames => columnSchema.columnName.snakeToLowerCamel
-      case SnakeCaseCustomTable(_) => columnSchema.columnName.snakeToLowerCamel
-      case c:CustomStrategy => c.columnParser(columnSchema)
-    }
-  }
+  def nameTable(strategy: CustomNameParser, tableSchema: TableMeta) =
+    strategy.parseTable(tableSchema)
+
+  def nameColumn(strategy: CustomNameParser, columnSchema: ColumnMeta) =
+    strategy.parseColumn(columnSchema)
 }

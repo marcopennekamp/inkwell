@@ -14,11 +14,15 @@ class StructuralTests extends CodegenSpec with HasStandardGen {
       val personData = fdgConv("id" -> "Int", "firstName" -> "Option[String]", "lastName" -> "Option[String]", "age" -> "Int")(_.lowerCamelToSnake.toUpperCase)
       val addressData = fdgConv("personFk" -> "Int", "street" -> "Option[String]", "zip" -> "Option[Int]")(_.lowerCamelToSnake.toUpperCase)
 
+      object SnakeCaseNamesWithSchema extends SnakeCaseNames {
+        override def generateQuerySchemas: Boolean = true
+      }
+
       "single table" in {
         val gens = standardGen(
           "src/test/resources/schema_snakecase.sql",
           _.table.tableName.toLowerCase == "person",
-          SnakeCaseNames
+          SnakeCaseNamesWithSchema
         ).makeGenerators.toList
 
         LOG.info(gens(0).tableSchemasCode)
@@ -30,10 +34,9 @@ class StructuralTests extends CodegenSpec with HasStandardGen {
       }
 
       "multi table" in {
-
         val gens = standardGen(
           "src/test/resources/schema_snakecase.sql",
-          entityNamingStrategy = SnakeCaseNames
+          entityNamingStrategy = SnakeCaseNamesWithSchema
         ).makeGenerators.toList.sortBy(_.caseClassesCode)
 
         assertCaseClass(gens(0).caseClassesCode, "Address", addressData.ccList)

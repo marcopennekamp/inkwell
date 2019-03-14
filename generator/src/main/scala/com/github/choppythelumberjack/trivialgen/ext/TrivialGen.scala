@@ -15,6 +15,5 @@ class TrivialGen(
 ) extends StandardGenerator(configs, packagePrefix) {
 
   def this(config: CodeGeneratorConfig, packagePrefix: String) = this(Seq(config), packagePrefix)
-
   override def nameParser: NameParser = LiteralNames
 }

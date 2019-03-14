@@ -41,29 +41,28 @@ lazy val `integration-tests` =
     .settings(
       publishArtifact := false,
       fork in Test := true,
-      unmanagedSourceDirectories in Compile += (baseDirectory.value / "target" / "generated"),
       (sourceGenerators in Compile) += (codeGen in Compile),
       (codeGen in Compile) := {
         import scala.concurrent.JavaConversions._
-        def recrusiveFiler(file:JFile, filter: JFile => Boolean): List[JFile] = {
+        def recrusiveList(file:JFile): List[JFile] = {
           if (file.isDirectory)
-            Option(file.listFiles()).map(_.flatMap(child=> recrusiveFiler(child, filter)).toList).toList.flatten
+            Option(file.listFiles()).map(_.flatMap(child=> recrusiveList(child)).toList).toList.flatten
           else
-            List(file).filter(filter)
+            List(file)
         }
 
         val r = (runner in Compile).value
         val s = streams.value.log
         val sourcePath = sourceManaged.value
-        val sources = recrusiveFiler( (scalaSource in Compile in `generator`).value, f => f.isDirectory || f.name.endsWith("Main.scala"))
-        val classPath = (dependencyClasspath in Runtime in `generator`).value.map(_.data)
+        val classPath = (fullClasspath in Test in `generator`).value.map(_.data)
 
-        //sources.map(source => runMyCodeGenerator(source, classPath))
-        r.run("com.github.choppythelumberjack.trivialgen.Main", classPath, Seq(sourcePath.getAbsolutePath), s)
+        val fileDir = sourcePath.getAbsoluteFile
+        r.run(
+          "com.github.choppythelumberjack.trivialgen.integration.CodeGeneratorRunner",
+          classPath, Seq(fileDir.getAbsolutePath), s
+        )
 
-        val outFile = new java.io.File(sourcePath.getAbsolutePath + "/foo/bar/baz/", "Foo.scala")
-        println(s"******* Path Written ${outFile.getAbsolutePath} *******")
-        List(outFile)
+        recrusiveList(fileDir)
       }
     )
     .dependsOn(generator % "compile->test")
