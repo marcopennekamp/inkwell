@@ -68,12 +68,7 @@ class AutoDiscoveringGen(
 
   import DatabaseTypes._
 
-  def quillIdiom:Class[_ <: io.getquill.NamingStrategy] = nameParser match {
-    case LiteralNames => classOf[io.getquill.Literal]
-    case SnakeCaseNames => classOf[io.getquill.SnakeCase]
-    case SnakeCaseCustomTable(_) => classOf[io.getquill.SnakeCase]
-    case CustomStrategy(_, _) => classOf[io.getquill.Literal]
-  }
+  def quillIdiom:Class[_ <: io.getquill.NamingStrategy] = nameParser.idiom
   def quillIdiomStr = quillIdiom.getName
 
   def quillContext = {

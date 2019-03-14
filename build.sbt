@@ -43,7 +43,7 @@ lazy val `integration-tests` =
       fork in Test := true,
       (sourceGenerators in Compile) += (codeGen in Compile),
       (codeGen in Compile) := {
-        import scala.concurrent.JavaConversions._
+        //  import scala.concurrent.JavaConversions._
         def recrusiveList(file:JFile): List[JFile] = {
           if (file.isDirectory)
             Option(file.listFiles()).map(_.flatMap(child=> recrusiveList(child)).toList).toList.flatten

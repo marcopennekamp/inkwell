@@ -122,7 +122,7 @@ trait Generator extends  WithFileNaming {
   }
 
   val renderMembers = nameParser match {
-    case CustomStrategy(_, _) => true
+    case CustomNames(_, _) => true
     case _ => false
   }
 

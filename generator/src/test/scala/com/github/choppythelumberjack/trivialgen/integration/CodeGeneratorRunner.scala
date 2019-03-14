@@ -38,7 +38,7 @@ object CodeGeneratorRunner extends TestConfigs {
     // generate Composeable Schema in test project - trivial
     {
       val gen = new ComposeableTraitsGen(snakecaseConfig, pack(0), false) {
-        override def nameParser: CustomNameParser = SnakeCaseNames
+        override def nameParser: NameParser = SnakeCaseNames
       }
       gen.writeFiles(path(0))
     }
@@ -46,8 +46,8 @@ object CodeGeneratorRunner extends TestConfigs {
     // generate Composeable Schema in test project - simple
     {
       val gen = new ComposeableTraitsGen(snakecaseConfig, pack(1)) {
-        override def nameParser: CustomNameParser =
-          CustomStrategy(
+        override def nameParser: NameParser =
+          CustomNames(
             col => col.columnName.toLowerCase.replace("_name", "")
           )
       }
@@ -60,7 +60,7 @@ object CodeGeneratorRunner extends TestConfigs {
         twoSchemaConfig, pack(2),
         nestedTrait = true)
       {
-        override def nameParser: CustomNameParser = CustomStrategy()
+        override def nameParser: NameParser = CustomNames()
         override def memberNamer: MemberNamer = ts => (ts.tableSchem.toLowerCase + ts.tableName.snakeToUpperCamel)
         override val namespacer: Namespacer = ts =>
           if (ts.tableSchem.toLowerCase == "alpha" || ts.tableSchem.toLowerCase == "bravo") "public"
@@ -74,7 +74,7 @@ object CodeGeneratorRunner extends TestConfigs {
     {
       val gen = new ComposeableTraitsGen(twoSchemaConfig, pack(3), false)
       {
-        override def nameParser: CustomNameParser = CustomStrategy()
+        override def nameParser: NameParser = CustomNames()
         override def memberNamer: MemberNamer = ts => (ts.tableSchem.toLowerCase + ts.tableName.snakeToUpperCamel)
         override val namespacer: Namespacer =
           ts => if (ts.tableSchem.toLowerCase == "alpha" || ts.tableSchem.toLowerCase == "bravo") "common" else ts.tableSchem.toLowerCase
@@ -86,7 +86,7 @@ object CodeGeneratorRunner extends TestConfigs {
     // generate Composeable Schema in test project - non-stereotyped
     {
       val gen = new ComposeableTraitsGen(twoSchemaConfig, pack(4), nestedTrait = true) {
-        override def nameParser: CustomNameParser = CustomStrategy()
+        override def nameParser: NameParser = CustomNames()
       }
 
       gen.writeFiles(path(4))
@@ -101,7 +101,7 @@ object CodeGeneratorRunner extends TestConfigs {
     // using mirror context - simple
     {
       val gen = new AutoDiscoveringGen(snakecaseConfig, MirrorContext, pack(5), false) {
-        override def nameParser: CustomNameParser = CustomStrategy()
+        override def nameParser: NameParser = CustomNames()
       }
 
       gen.writeFiles(path(5))
@@ -112,7 +112,7 @@ object CodeGeneratorRunner extends TestConfigs {
       val gen = new AutoDiscoveringGen(twoSchemaConfig, MirrorContext, pack(6), false)
       {
         override def memberNamer: MemberNamer = ts => (ts.tableSchem.toLowerCase + ts.tableName.snakeToUpperCamel)
-        override def nameParser: CustomNameParser = CustomStrategy()
+        override def nameParser: NameParser = CustomNames()
         override val namespacer: Namespacer =
           ts => if (ts.tableSchem.toLowerCase == "alpha" || ts.tableSchem.toLowerCase == "bravo") "common" else ts.tableSchem.toLowerCase
       }
@@ -123,7 +123,7 @@ object CodeGeneratorRunner extends TestConfigs {
     // generate Composeable Schema in test project - non-stereotyped
     {
       val gen = new AutoDiscoveringGen(twoSchemaConfig, MirrorContext, pack(7), nestedTrait = true) {
-        override def nameParser: CustomNameParser = CustomStrategy()
+        override def nameParser: NameParser = CustomNames()
       }
 
       gen.writeFiles(path(7))

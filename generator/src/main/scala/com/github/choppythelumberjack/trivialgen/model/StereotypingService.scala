@@ -25,7 +25,7 @@ trait DefaultStereotypingService extends StereotypingService {
 
   def namespacer: Namespacer
 
-  def nameParser: CustomNameParser
+  def nameParser: NameParser
   def stereotype(schemas:Seq[TableSchema]): Seq[TableStereotype] = new DefaultStereotyper().apply(schemas)
   def collider: Collider = new DefaultCollider
   def expresser: Expresser = new DefaultExpresser(nameParser, namespacer, new DefaultJdbcTyper(AssumeString))

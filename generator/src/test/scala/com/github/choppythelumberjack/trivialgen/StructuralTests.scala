@@ -61,7 +61,7 @@ class StructuralTests extends CodegenSpec with HasStandardGen {
         val gens = standardGen(
           "src/test/resources/schema.sql",
           _.table.tableName.toLowerCase == "person",
-          CustomStrategy(c => c.columnName.toLowerCase, s => s.tableName.toLowerCase)
+          CustomNames(c => c.columnName.toLowerCase, s => s.tableName.toLowerCase)
         ).makeGenerators.toList
 
         assertCaseClass(gens(0).caseClassesCode, "person", personData.ccList)
@@ -74,7 +74,7 @@ class StructuralTests extends CodegenSpec with HasStandardGen {
 
         val gens = standardGen(
           "src/test/resources/schema.sql",
-          entityNamingStrategy = CustomStrategy(c => c.columnName.toLowerCase, s => s.tableName.toLowerCase)
+          entityNamingStrategy = CustomNames(c => c.columnName.toLowerCase, s => s.tableName.toLowerCase)
         ).makeGenerators.toList.sortBy(_.caseClassesCode)
 
         assertCaseClass(gens(0).caseClassesCode, "address", addressData.ccList)
@@ -100,7 +100,7 @@ class StructuralTests extends CodegenSpec with HasStandardGen {
       "prefix collision" in {
         val gens = standardGen(
           "src/test/resources/schema_twotable.sql",
-          entityNamingStrategy = CustomStrategy(
+          entityNamingStrategy = CustomNames(
             c => c.columnName.toLowerCase,
             s => {
               s.tableName.toLowerCase.replaceFirst("(alpha_)|(bravo_)", "")

@@ -8,14 +8,14 @@ import com.github.choppythelumberjack.trivialgen._
 import com.github.choppythelumberjack.trivialgen.util.StringUtil._
 
 class DefaultExpresser(
-  entityNamingStrategy: CustomNameParser,
+  nameParser: NameParser,
   namespacer:Namespacer,
   typer:JdbcTyper
 ) extends Expresser {
   override def apply(schema: TableSchema): TableStereotype = {
     val tableModel = TableMash(
       namespacer(schema.table),
-      entityNamingStrategy.nameTable(schema.table),
+      nameParser.parseTable(schema.table),
       Seq(schema.table)
     )
     val columnModels =
@@ -24,7 +24,7 @@ class DefaultExpresser(
         .filter { case (desc, tpe) => tpe.isDefined }
         .map { case (desc, tpe) =>
           ColumnMash(
-            entityNamingStrategy.nameColumn(desc),
+            nameParser.parseColumn(desc),
             tpe.get, // is safe to do this at this point since we filtered out nones
             desc.nullable != DatabaseMetaData.columnNoNulls,
             Seq(desc)

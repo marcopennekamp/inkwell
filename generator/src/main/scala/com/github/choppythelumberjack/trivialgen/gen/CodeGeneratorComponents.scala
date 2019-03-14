@@ -11,7 +11,7 @@ import com.github.choppythelumberjack.trivialgen.{ConnectionMaker, JdbcTyper, Me
 trait StandardCodeGeneratorComponents extends CodeGeneratorComponents {
   def packagePrefix:String
 
-  def nameParser: CustomNameParser = LiteralNames
+  def nameParser: NameParser = LiteralNames
 
   /**
     * When the code generator uses the Jdbc Typer to figure out which Scala/Java objects to use for
@@ -78,7 +78,7 @@ trait CodeGeneratorComponents {
 
   def defaultExcludedSchemas = Set("INFORMATION_SCHEMA")
   def querySchemaImports = ""
-  def nameParser: CustomNameParser
+  def nameParser: NameParser
   def unrecognizedTypeStrategy:UnrecognizedTypeStrategy
   def typer:JdbcTyper
   def schemaReader: SchemaReader
