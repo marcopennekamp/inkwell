@@ -51,16 +51,16 @@ lazy val `integration-tests` =
             List(file)
         }
 
-        val r = (runner in Compile).value
-        val s = streams.value.log
-        val sourcePath = sourceManaged.value
-        val classPath = (fullClasspath in Test in `generator`).value.map(_.data)
+    val r = (runner in Compile).value
+    val s = streams.value.log
+    val sourcePath = sourceManaged.value
+    val classPath = (fullClasspath in Test in `generator`).value.map(_.data)
 
-        val fileDir = sourcePath.getAbsoluteFile
-        r.run(
-          "com.github.choppythelumberjack.trivialgen.integration.CodeGeneratorRunner",
-          classPath, Seq(fileDir.getAbsolutePath), s
-        )
+    val fileDir = new File(sourcePath, "main").getAbsoluteFile
+    r.run(
+      "com.github.choppythelumberjack.trivialgen.integration.CodeGeneratorRunner",
+      classPath, Seq(fileDir.getAbsolutePath), s
+    )
 
         recrusiveList(fileDir)
       }
