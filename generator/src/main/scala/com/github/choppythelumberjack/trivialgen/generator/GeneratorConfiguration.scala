@@ -97,6 +97,8 @@ case class DefaultGeneratorConfiguration(
   override val typeResolver: TypeResolver = new DefaultTypeResolver(customTypes)
   override val schemaReader: SchemaReader = new DefaultSchemaReader(this)
 
+  override def selectModelEmitter(table: Table): ModelEmitter = new DefaultModelEmitter(this, table)
+  override def selectCompanionEmitter(table: Table): CompanionEmitter = new DefaultCompanionEmitter(this, table)
   override def selectPropertyEmitter(column: Column): PropertyEmitter = new DefaultPropertyEmitter(this, column)
 
   def packagePrefix: String
