@@ -55,8 +55,6 @@ trait GeneratorConfiguration {
   def schemaReader: SchemaReader
 
   def querySchemaImports: String = ""
-  def unrecognizedTypeStrategy: UnrecognizedTypeStrategy
-
 
   def packagingStrategy: PackagingStrategy
   def memberNamer: MemberNamer
@@ -80,15 +78,6 @@ case class DefaultGeneratorConfiguration(
   override val schemaReader: SchemaReader = new DefaultSchemaReader(this)
 
   def packagePrefix: String
-
-
-  /**
-    * When the code generator uses the Jdbc Typer to figure out which Scala/Java objects to use for
-    * which JDBC type (e.g. use String for Varchar(...), Long for bigint etc...),
-    * what do we do when we discover a JDBC type which we cannot translate (e.g. blob which is
-    * currently not supported by quill). The simplest thing to do is to skip the column.
-    */
-  def unrecognizedTypeStrategy:UnrecognizedTypeStrategy = SkipColumn
 
   def packagingStrategy: PackagingStrategy = PackagingStrategy.ByPackageHeader.TablePerFile(packagePrefix)
 
