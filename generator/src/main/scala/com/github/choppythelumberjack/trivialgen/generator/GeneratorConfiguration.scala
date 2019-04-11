@@ -92,6 +92,8 @@ case class DefaultGeneratorConfiguration(
   override val typeResolver: TypeResolver = new DefaultTypeResolver(customTypes)
   override val schemaReader: SchemaReader = new DefaultSchemaReader(this)
 
+  override def selectPropertyEmitter(column: Column): PropertyEmitter = new DefaultPropertyEmitter(this, column)
+
   def packagePrefix: String
 
   def packagingStrategy: PackagingStrategy = PackagingStrategy.ByPackageHeader.TablePerFile(packagePrefix)
