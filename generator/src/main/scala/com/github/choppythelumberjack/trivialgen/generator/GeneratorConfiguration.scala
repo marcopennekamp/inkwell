@@ -1,6 +1,6 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
-import com.github.choppythelumberjack.trivialgen.schema.{DefaultSchemaReader, DefaultTypeResolver, SchemaReader, TypeResolver}
+import com.github.choppythelumberjack.trivialgen.schema.{Column, DefaultSchemaReader, DefaultTypeResolver, SchemaReader, Table, TypeResolver}
 import com.github.choppythelumberjack.trivialgen._
 
 import scala.reflect.ClassTag
@@ -53,6 +53,21 @@ trait GeneratorConfiguration {
     * need to override this, but the option is there just in case.
     */
   def schemaReader: SchemaReader
+
+  /**
+    * The generator's schema emitter, which is used to
+    */
+  def schemaEmitter: SchemaEmitter
+
+  /**
+    * Selects the model emitter based on the given table (and possibly the schema).
+    */
+  def selectModelEmitter(table: Table): ModelEmitter
+
+  /**
+    * Selects the property emitter based on the given column (and possibly table and even schema).
+    */
+  def selectPropertyEmitter(column: Column): PropertyEmitter
 
   def querySchemaImports: String = ""
 
