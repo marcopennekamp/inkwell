@@ -65,6 +65,11 @@ trait GeneratorConfiguration {
   def selectModelEmitter(table: Table): ModelEmitter
 
   /**
+    * Selects the companion emitter based on the given table (and possibly the schema).
+    */
+  def selectCompanionEmitter(table: Table): CompanionEmitter
+
+  /**
     * Selects the property emitter based on the given column (and possibly table and even schema).
     */
   def selectPropertyEmitter(column: Column): PropertyEmitter
