@@ -4,15 +4,21 @@ import java.sql.Types._
 
 import scala.reflect.{ClassTag, classTag}
 
-trait JdbcTypeResolver {
+trait TypeResolver {
   /**
-    * Resolves a JDBC type to a Scala type if possible. Override [[DefaultJdbcTypeResolver]] to support your own custom
+    * Resolves a JDBC type to a Scala type if possible. Override [[DefaultTypeResolver]] to support your own custom
     * types (such as enum types).
     */
   def apply(columnMeta: JdbcColumnMeta): Option[ClassTag[_]]
 }
 
-class DefaultJdbcTypeResolver extends JdbcTypeResolver {
+/**
+  * Resolves common native JDBC types as well as user-defined types given in the [[jdbcToScala]] map.
+  *
+  * @param jdbcToScala A map of user-defined (or exotic) JDBC type names pointing to their corresponding
+  *                    Scala ClassTag's.
+  */
+class DefaultTypeResolver(jdbcToScala: Map[String, ClassTag[_]]) extends TypeResolver {
 
   override def apply(columnMeta: JdbcColumnMeta): Option[ClassTag[_]] = {
     implicit def toSome[T](tag: ClassTag[_]): Some[ClassTag[_]] = Some(tag)
@@ -31,7 +37,7 @@ class DefaultJdbcTypeResolver extends JdbcTypeResolver {
       case DATE => classTag[java.time.LocalDate]
       case TIME => classTag[java.time.LocalDateTime]
       case TIMESTAMP => classTag[java.time.LocalDateTime]
-      case _ => None
+      case _ => jdbcToScala.get(columnMeta.typeName)
     }
   }
 

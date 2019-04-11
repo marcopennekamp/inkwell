@@ -1,7 +1,9 @@
 package com.github.choppythelumberjack.trivialgen.gen
 
-import com.github.choppythelumberjack.trivialgen.schema.{DefaultJdbcTypeResolver, DefaultSchemaReader, JdbcTypeResolver, SchemaReader}
+import com.github.choppythelumberjack.trivialgen.schema.{DefaultSchemaReader, DefaultTypeResolver, SchemaReader, TypeResolver}
 import com.github.choppythelumberjack.trivialgen._
+
+import scala.reflect.ClassTag
 
 case class DatabaseConfiguration(
   url: String,
@@ -36,9 +38,9 @@ trait GeneratorConfiguration {
   def ignoredTables: Set[String]
 
   /**
-    * The type resolver translates JDBC types to Scala types. Define your own to support custom types.
+    * The type resolver translates JDBC types to Scala types.
     */
-  def typeResolver: JdbcTypeResolver
+  def typeResolver: TypeResolver
 
   /**
     * The schema reader fetches the schema from the database and transforms it into a schema model. You generally don't
@@ -61,11 +63,17 @@ case class DefaultGeneratorConfiguration(
   override val targetFolder: String,
 ) extends GeneratorConfiguration {
 
+  /**
+    * A map of custom JDBC to Scala type mappings, used by the default type resolver. Note that this
+    * map is not used if you override [[typeResolver]].
+    */
+  def customTypes: Map[String, ClassTag[_]] = Map.empty
+
   override val ignoredTables = Set.empty
-  override val typeResolver = new DefaultJdbcTypeResolver()
+  override val typeResolver = new DefaultTypeResolver(customTypes)
   override val schemaReader = new DefaultSchemaReader(this)
 
-  def packagePrefix:String
+  def packagePrefix: String
 
   def nameParser: NameParser = LiteralNames
 
