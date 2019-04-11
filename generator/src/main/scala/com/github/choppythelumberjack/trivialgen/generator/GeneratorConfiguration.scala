@@ -2,6 +2,7 @@ package com.github.choppythelumberjack.trivialgen.generator
 
 import com.github.choppythelumberjack.trivialgen.schema.{Column, DefaultSchemaReader, DefaultTypeResolver, SchemaReader, Table, TypeResolver}
 import com.github.choppythelumberjack.trivialgen._
+import com.github.choppythelumberjack.trivialgen.generator.DefaultModelEmitter.InheritanceMap
 
 import scala.reflect.ClassTag
 
@@ -87,17 +88,25 @@ case class DefaultGeneratorConfiguration(
 ) extends GeneratorConfiguration {
 
   /**
-    * A map of custom JDBC to Scala type mappings, used by the default type resolver. Note that this
+    * A map of custom JDBC to Scala type mappings, used by the [[DefaultTypeResolver]]. Note that this
     * map is not used if you override [[typeResolver]].
     */
   def customTypes: Map[String, ClassTag[_]] = Map.empty
+
+  /**
+    * The inheritance map is used by the [[DefaultModelEmitter]] to provide support for model supertypes.
+    * You can override this value to provide your own inheritance rules. Please note that the left-hand
+    * values of the map are <b>SQL names</b> not Scala names (since the latter is not stable due to a
+    * possible variance in naming strategies).
+    */
+  def inheritanceMap: InheritanceMap = Map.empty
 
   override val ignoredTables: Set[String] = Set.empty
   override val namingStrategy: NamingStrategy = CamelCase
   override val typeResolver: TypeResolver = new DefaultTypeResolver(customTypes)
   override val schemaReader: SchemaReader = new DefaultSchemaReader(this)
 
-  override def selectModelEmitter(table: Table): ModelEmitter = new DefaultModelEmitter(this, table)
+  override def selectModelEmitter(table: Table): ModelEmitter = new DefaultModelEmitter(this, inheritanceMap, table)
   override def selectCompanionEmitter(table: Table): CompanionEmitter = new DefaultCompanionEmitter(this, table)
   override def selectPropertyEmitter(column: Column): PropertyEmitter = new DefaultPropertyEmitter(this, column)
 
