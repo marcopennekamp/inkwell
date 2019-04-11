@@ -11,7 +11,7 @@ trait HasStandardGen {
     schemaFile:String,
     tableFilter:TableSchema=>Boolean = _ => true,
     entityNamingStrategy: NameParser = LiteralNames,
-    entityNamespacer: Namespacer = ts => ts.tableSchem,
+    entityNamespacer: Namespacer = ts => ts.tableSchema,
     entityMemberNamer: MemberNamer = ts => ts.tableName.snakeToLowerCamel
   ) =
     new StandardGenerator(CodeGeneratorConfig(

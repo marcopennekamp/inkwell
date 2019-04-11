@@ -223,7 +223,7 @@ querySchema[${actualCaseClassName}](
 """.stripMargin.trimFront
 
         override def tableName: String = schema.tableName
-        override def schemaName: String = schema.tableSchem
+        override def schemaName: String = schema.tableSchema
 
         def QuerySchemaMapping = new QuerySchemaMappingGen(_)
         class QuerySchemaMappingGen(val column:ColumnMash) extends AbstractQuerySchemaMappingGen(column) with FieldNaming {

@@ -216,8 +216,8 @@ class StructuralTests extends CodegenSpec with HasStandardGen {
           val gens = standardGen(
             "src/test/resources/schema_snakecase_twoschema_differentcolumns_differenttypes.sql",
             entityNamingStrategy = SnakeCaseCustomTable(_.tableName.toLowerCase.replaceFirst("(alpha_)|(bravo_)", "").capitalize),
-            entityNamespacer = _.tableSchem.toLowerCase.replaceAll("(alpha)|(bravo)", "public"),
-            entityMemberNamer = ts => s"${ts.tableSchem}_${ts.tableName}".toLowerCase.snakeToLowerCamel
+            entityNamespacer = _.tableSchema.toLowerCase.replaceAll("(alpha)|(bravo)", "public"),
+            entityMemberNamer = ts => s"${ts.tableSchema}_${ts.tableName}".toLowerCase.snakeToLowerCamel
           ).makeGenerators.toList.sortBy(_.caseClassesCode)
 
           gens.foreach(gen => LOG.info(gen.code))

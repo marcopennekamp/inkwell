@@ -20,7 +20,7 @@ object PackagingStrategy {
       PackagingStrategy(
         GroupByPackage,
         packageByNamespace(packagePrefix),
-        PackageObjectByNamespace(packagePrefix, _.table.meta.head.tableSchem),
+        PackageObjectByNamespace(packagePrefix, _.table.meta.head.tableSchema),
         ByPackageObjectStandardName)
   }
 
@@ -57,7 +57,7 @@ object PackagingStrategy {
       PackagingStrategy(
         GroupByPackage,
         packageByNamespace(packagePrefix),
-        PackageObjectByNamespace(packagePrefix, _.table.meta.head.tableSchem),
+        PackageObjectByNamespace(packagePrefix, _.table.meta.head.tableSchema),
         ByTable)
   }
 

@@ -24,8 +24,8 @@ package object trivialgen {
 
   class DefaultSchemaGetter(databaseType: DatabaseType) extends SchemaGetter {
     override def apply(meta: TableMeta): String = databaseType match {
-      case MySql => meta.tableCat
-      case _ => meta.tableSchem
+      case MySql => meta.tableCatalog
+      case _ => meta.tableSchema
     }
   }
 }

@@ -61,10 +61,10 @@ object CodeGeneratorRunner extends TestConfigs {
         nestedTrait = true)
       {
         override def nameParser: NameParser = CustomNames()
-        override def memberNamer: MemberNamer = ts => (ts.tableSchem.toLowerCase + ts.tableName.snakeToUpperCamel)
+        override def memberNamer: MemberNamer = ts => (ts.tableSchema.toLowerCase + ts.tableName.snakeToUpperCamel)
         override val namespacer: Namespacer = ts =>
-          if (ts.tableSchem.toLowerCase == "alpha" || ts.tableSchem.toLowerCase == "bravo") "public"
-          else ts.tableSchem.toLowerCase
+          if (ts.tableSchema.toLowerCase == "alpha" || ts.tableSchema.toLowerCase == "bravo") "public"
+          else ts.tableSchema.toLowerCase
       }
 
       gen.writeFiles(path(2))
@@ -75,9 +75,9 @@ object CodeGeneratorRunner extends TestConfigs {
       val gen = new ComposeableTraitsGen(twoSchemaConfig, pack(3), false)
       {
         override def nameParser: NameParser = CustomNames()
-        override def memberNamer: MemberNamer = ts => (ts.tableSchem.toLowerCase + ts.tableName.snakeToUpperCamel)
+        override def memberNamer: MemberNamer = ts => (ts.tableSchema.toLowerCase + ts.tableName.snakeToUpperCamel)
         override val namespacer: Namespacer =
-          ts => if (ts.tableSchem.toLowerCase == "alpha" || ts.tableSchem.toLowerCase == "bravo") "common" else ts.tableSchem.toLowerCase
+          ts => if (ts.tableSchema.toLowerCase == "alpha" || ts.tableSchema.toLowerCase == "bravo") "common" else ts.tableSchema.toLowerCase
       }
 
       gen.writeFiles(path(3))
@@ -111,10 +111,10 @@ object CodeGeneratorRunner extends TestConfigs {
     {
       val gen = new AutoDiscoveringGen(twoSchemaConfig, MirrorContext, pack(6), false)
       {
-        override def memberNamer: MemberNamer = ts => (ts.tableSchem.toLowerCase + ts.tableName.snakeToUpperCamel)
+        override def memberNamer: MemberNamer = ts => (ts.tableSchema.toLowerCase + ts.tableName.snakeToUpperCamel)
         override def nameParser: NameParser = CustomNames()
         override val namespacer: Namespacer =
-          ts => if (ts.tableSchem.toLowerCase == "alpha" || ts.tableSchem.toLowerCase == "bravo") "common" else ts.tableSchem.toLowerCase
+          ts => if (ts.tableSchema.toLowerCase == "alpha" || ts.tableSchema.toLowerCase == "bravo") "common" else ts.tableSchema.toLowerCase
       }
 
       gen.writeFiles(path(6))

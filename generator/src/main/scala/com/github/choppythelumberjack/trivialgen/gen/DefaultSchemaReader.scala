@@ -49,13 +49,13 @@ class DefaultSchemaReader extends SchemaReader {
   override def apply(connectionMaker: ConnectionMaker): Seq[TableSchema] = {
     val tableMap =
       extractTables(connectionMaker)
-      .map(t => ((t.tableCat, t.tableSchem, t.tableName), t))
+      .map(t => ((t.tableCatalog, t.tableSchema, t.tableName), t))
       .toMap
 
     val columns = extractColumns(connectionMaker)
     val tableColumns =
       columns
-        .groupBy(c => (c.tableCat, c.tableSchem, c.tableName))
+        .groupBy(c => (c.tableCatalog, c.tableSchema, c.tableName))
         .map({case (tup, cols) => tableMap.get(tup).map(TableSchema(_, cols))})
         .collect({case Some(tbl) => tbl})
 

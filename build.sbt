@@ -72,7 +72,7 @@ lazy val quillVersion = "2.3.1"
 lazy val commonSettings = Seq(
   licenses := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt")),
   organization := "com.github.choppythelumberjack",
-  scalaVersion := "2.11.12",
+  scalaVersion := "2.12.4",
   crossScalaVersions := Seq("2.11.12","2.12.4"),
   libraryDependencies ++= Seq(
     "com.github.choppythelumberjack" %% "tryclose" % "1.0.0",
@@ -92,7 +92,7 @@ lazy val releaseSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
   licenses := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt")),
   releaseCrossBuild := true,
   organization := "com.github.choppythelumberjack",
-  scalaVersion := "2.11.12",
+  scalaVersion := "2.12.4",
   crossScalaVersions := Seq("2.11.12","2.12.4"),
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   publishMavenStyle := true,
