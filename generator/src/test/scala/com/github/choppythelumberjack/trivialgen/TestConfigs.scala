@@ -1,6 +1,6 @@
 package com.github.choppythelumberjack.trivialgen
 
-import com.github.choppythelumberjack.trivialgen.gen.CodeGeneratorConfig
+import com.github.choppythelumberjack.trivialgen.generator.CodeGeneratorConfig
 
 trait TestConfigs {
   def makeConfig(script: String) = CodeGeneratorConfig(

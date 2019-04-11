@@ -1,12 +1,13 @@
-package com.github.choppythelumberjack.trivialgen.gen
+package com.github.choppythelumberjack.trivialgen.generator
 
 import java.sql.DriverManager
 
 import com.github.choppythelumberjack.trivialgen._
 import com.github.choppythelumberjack.trivialgen.DefaultJdbcTyper
-import com.github.choppythelumberjack.trivialgen.model.{TableSchema, TableStereotype}
+import com.github.choppythelumberjack.trivialgen.model.TableStereotype
+import com.github.choppythelumberjack.trivialgen.schema.{DefaultSchemaReader, SchemaNameResolver, SchemaReader, TableSchema}
 import com.github.choppythelumberjack.trivialgen.util.StringUtil._
-import com.github.choppythelumberjack.trivialgen.{ConnectionMaker, JdbcTyper, MemberNamer, SchemaReader}
+import com.github.choppythelumberjack.trivialgen.{ConnectionMaker, JdbcTyper, MemberNamer}
 
 trait StandardCodeGeneratorComponents extends CodeGeneratorComponents {
   def packagePrefix:String
@@ -56,13 +57,6 @@ trait StandardCodeGeneratorComponents extends CodeGeneratorComponents {
   * }</pre>
   */
   def memberNamer: MemberNamer = (ts) => "query" //ts.tableName.snakeToLowerCamel
-
-  /**
-    * Method that creates the Connection object in some way. Since this can be done in multiple ways,
-    * all I need is a method that does that in some way.
-    */
-  def connectionMaker(cs: CodeGeneratorConfig):ConnectionMaker =
-    () => {DriverManager.getConnection(cs.url, cs.username, cs.password)}
 }
 
 trait CodeGeneratorComponents {
@@ -84,9 +78,4 @@ trait CodeGeneratorComponents {
   def schemaReader: SchemaReader
   def packagingStrategy: PackagingStrategy
   def memberNamer:MemberNamer
-  def connectionMaker(connectionSettings: CodeGeneratorConfig):ConnectionMaker
-  def schemaGetter: SchemaGetter
-  def filter(tc:TableSchema):Boolean =
-    !defaultExcludedSchemas.map(_.toLowerCase).contains(schemaGetter(tc.table).toLowerCase)
 }
-

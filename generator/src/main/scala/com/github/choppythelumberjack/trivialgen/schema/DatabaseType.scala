@@ -23,31 +23,31 @@ object DatabaseType {
 
   case object H2 extends DatabaseType {
     override val databaseName = "H2"
-    override val context = classOf[H2JdbcContext[_]]
-    override val dialect = classOf[H2Dialect]
+    override val context: Class[H2JdbcContext[_]] = classOf[H2JdbcContext[_]]
+    override val dialect: Class[H2Dialect] = classOf[H2Dialect]
   }
 
   case object MySql extends DatabaseType {
     override val databaseName = "MySQL"
-    override val context = classOf[MysqlJdbcContext[_]]
-    override val dialect = classOf[MySQLDialect]
+    override val context: Class[MysqlJdbcContext[_]] = classOf[MysqlJdbcContext[_]]
+    override val dialect: Class[MySQLDialect] = classOf[MySQLDialect]
   }
 
   case object SqlServer extends DatabaseType {
     override val databaseName = "Microsoft SQL Server"
-    override val context = classOf[SqlServerJdbcContext[_]]
-    override val dialect = classOf[SQLServerDialect]
+    override val context: Class[SqlServerJdbcContext[_]] = classOf[SqlServerJdbcContext[_]]
+    override val dialect: Class[SQLServerDialect] = classOf[SQLServerDialect]
   }
 
   case object Postgres extends DatabaseType {
     override val databaseName = "PostgreSQL"
-    override val context = classOf[PostgresJdbcContext[_]]
-    override val dialect = classOf[PostgresDialect]
+    override val context: Class[PostgresJdbcContext[_]] = classOf[PostgresJdbcContext[_]]
+    override val dialect: Class[PostgresDialect] = classOf[PostgresDialect]
   }
 
   case object Sqlite extends DatabaseType {
     override val databaseName = "SQLite"
-    override val context = classOf[SqliteJdbcContext[_]]
-    override val dialect = classOf[SqliteDialect]
+    override val context: Class[SqliteJdbcContext[_]] = classOf[SqliteJdbcContext[_]]
+    override val dialect: Class[SqliteDialect] = classOf[SqliteDialect]
   }
 }

@@ -1,8 +1,9 @@
-package com.github.choppythelumberjack.trivialgen.gen
+package com.github.choppythelumberjack.trivialgen.generator
 
 import com.github.choppythelumberjack.trivialgen.GeneratorHelpers.indent
 import com.github.choppythelumberjack.trivialgen._
-import com.github.choppythelumberjack.trivialgen.model.{ColumnMash, TableStereotype, TableMeta}
+import com.github.choppythelumberjack.trivialgen.model.{ColumnMash, TableStereotype}
+import com.github.choppythelumberjack.trivialgen.schema.JdbcTableMeta
 import com.github.choppythelumberjack.trivialgen.util.StringUtil._
 
 case class EmitterSettings(
@@ -14,7 +15,7 @@ case class EmitterSettings(
 
 abstract class AbstractCodeEmitter(emitterSettings: EmitterSettings) {
   def apply = code
-  def code:String
+  def code: String
 
   abstract class AbstractCaseClassGen(table:TableStereotype) {
     def code:String
@@ -34,7 +35,7 @@ abstract class AbstractCodeEmitter(emitterSettings: EmitterSettings) {
     def code:String
     def imports:String
 
-    abstract class AbstractQuerySchemaGen(table: TableStereotype, tableSchema: TableMeta) {
+    abstract class AbstractQuerySchemaGen(table: TableStereotype, tableSchema: JdbcTableMeta) {
       def code: String
       def tableName: String
       def schemaName: String

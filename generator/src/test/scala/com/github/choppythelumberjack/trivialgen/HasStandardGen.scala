@@ -1,6 +1,6 @@
 package com.github.choppythelumberjack.trivialgen
 
-import com.github.choppythelumberjack.trivialgen.gen.{CodeGeneratorConfig, StandardGenerator}
+import com.github.choppythelumberjack.trivialgen.generator.{CodeGeneratorConfig, StandardGenerator}
 import com.github.choppythelumberjack.trivialgen.model.StereotypingService.Namespacer
 import com.github.choppythelumberjack.trivialgen.model.TableSchema
 import com.github.choppythelumberjack.trivialgen.util.StringUtil._

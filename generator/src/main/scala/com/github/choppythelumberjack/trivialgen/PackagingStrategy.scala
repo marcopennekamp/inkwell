@@ -1,6 +1,6 @@
 package com.github.choppythelumberjack.trivialgen
 
-import com.github.choppythelumberjack.trivialgen.gen.AbstractCodeEmitter
+import com.github.choppythelumberjack.trivialgen.generator.AbstractCodeEmitter
 import com.github.choppythelumberjack.trivialgen.model.TableStereotype
 
 

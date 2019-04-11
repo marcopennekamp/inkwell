@@ -2,33 +2,34 @@ package com.github.choppythelumberjack.trivialgen
 
 import java.nio.charset.StandardCharsets
 import java.nio.file._
+import java.sql.{Connection, DriverManager}
 
 import com.github.choppythelumberjack.trivialgen.GeneratorHelpers.indent
 import com.github.choppythelumberjack.trivialgen.ScalaLangUtil.escape
 import com.github.choppythelumberjack.trivialgen.ext.DatabaseTypes.DatabaseType
-import com.github.choppythelumberjack.trivialgen.gen.{StereotypePackager, _}
+import com.github.choppythelumberjack.trivialgen.generator.{StereotypePackager, _}
 import com.github.choppythelumberjack.trivialgen.model.StereotypingService.Namespacer
 import com.github.choppythelumberjack.trivialgen.model._
-import com.github.choppythelumberjack.trivialgen.util.DatabaseDiscoveryUtil
+import com.github.choppythelumberjack.trivialgen.schema.{DatabaseType, DefaultSchemaNameResolver, DefaultSchemaReader, JdbcTableMeta, SchemaNameResolver, SchemaReader}
 import com.github.choppythelumberjack.trivialgen.util.StringUtil._
 import com.github.choppythelumberjack.trivialgen.util.StringSeqUtil._
 
+case class GenerationException(message: String, cause: Throwable) extends RuntimeException(message, cause)
 
 trait SingleGeneratorFactory[+G] extends ((EmitterSettings) => G)
 
-trait Generator extends  WithFileNaming {
-  this: CodeGeneratorComponents with StereotypingService =>
+trait Generator extends WithFileNaming { self: CodeGeneratorComponents =>
 
   // Primarily to be used in child implementations in order to be able to reference SingleUnitCodegen
   // or some subclass of it that the child implementation will have. See how the ComposeableTraitsGen
   // uses this in the packaging strategy.
   override type Gen <: CodeEmitter
 
-  def packagePrefix:String
-  def configs: Seq[CodeGeneratorConfig]
+  def config: CodeGeneratorConfig
+  def db: Connection
 
-  val databaseType: DatabaseType = DatabaseDiscoveryUtil.discoverDatabaseType(configs, connectionMaker(_))
-  val schemaGetter: SchemaGetter = new DefaultSchemaGetter(databaseType)
+  def packagePrefix: String
+
   val namespacer: Namespacer = new DefaultNamespacer(schemaGetter)
 
   def generatorMaker = new SingleGeneratorFactory[CodeEmitter] {
@@ -37,14 +38,13 @@ trait Generator extends  WithFileNaming {
   }
 
   class MultiGeneratorFactory[G](someGenMaker:SingleGeneratorFactory[G]) {
-    def apply:Seq[G] = {
-      val dataSources =
-        configs.map(c => (c, connectionMaker(CodeGeneratorConfig(c.username, c.password, c.url))))
-
-      val schemas =
-        dataSources.map({ case (conf, ds) =>
-          (conf, schemaReader(ds).filter(tbl => filter(tbl)))
-        })
+    def apply: Seq[G] = {
+      schemaReader.read().fold(
+        ex => throw GenerationException("Couldn't read the schema due to an underlying exception.", ex),
+        schema => {
+          ()
+        }
+      )
 
       // combine the generated elements as dictated by the packaging strategy and write the generator
       val configsAndGenerators =
@@ -58,7 +58,7 @@ trait Generator extends  WithFileNaming {
   }
   def makeGenerators = new MultiGeneratorFactory[CodeEmitter](generatorMaker).apply
 
-  def writeFiles(location: String) = {
+  def generate(): Unit = {
     // can't put Seq[Gen] into here because doing Seq[Gen] <: SingleUnitCodegen makes it covariant
     // and args here needs to be contravariant
     def makeGenWithCorrespondingFile(gens:Seq[CodeEmitter]) = {
@@ -105,9 +105,9 @@ trait Generator extends  WithFileNaming {
           }
 
         val fileWithExtension = fileName.resolveSibling(fileName.getFileName + ".scala")
-        val loc = Paths.get(location)
+        val loc = Paths.get(config.targetFolder)
 
-        (gen, Paths.get(location, fileWithExtension.toString))
+        (gen, Paths.get(config.targetFolder, fileWithExtension.toString))
       })
     }
 
@@ -200,7 +200,7 @@ trait Generator extends  WithFileNaming {
       }
 
       def QuerySchema = new QuerySchemaGen(_, _)
-      class QuerySchemaGen(val tableColumns:TableStereotype, schema:TableMeta) extends AbstractQuerySchemaGen(tableColumns, schema) with CaseClassNaming {
+      class QuerySchemaGen(val tableColumns:TableStereotype, schema:JdbcTableMeta) extends AbstractQuerySchemaGen(tableColumns, schema) with CaseClassNaming {
 
         def members =
           ifMembers(

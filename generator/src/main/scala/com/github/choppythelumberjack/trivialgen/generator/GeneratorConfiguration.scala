@@ -1,4 +1,4 @@
-package com.github.choppythelumberjack.trivialgen.gen
+package com.github.choppythelumberjack.trivialgen.generator
 
 import com.github.choppythelumberjack.trivialgen.schema.{DefaultSchemaReader, DefaultTypeResolver, SchemaReader, TypeResolver}
 import com.github.choppythelumberjack.trivialgen._
@@ -38,6 +38,12 @@ trait GeneratorConfiguration {
   def ignoredTables: Set[String]
 
   /**
+    * The naming strategy turns SQL names into Scala names for tables and columns (classes and attributes).
+    * You can use one of the provided naming strategies or implement your own.
+    */
+  def namingStrategy: NamingStrategy
+
+  /**
     * The type resolver translates JDBC types to Scala types.
     */
   def typeResolver: TypeResolver
@@ -49,7 +55,6 @@ trait GeneratorConfiguration {
   def schemaReader: SchemaReader
 
   def querySchemaImports: String = ""
-  def nameParser: NameParser
   def unrecognizedTypeStrategy: UnrecognizedTypeStrategy
 
 
@@ -69,13 +74,13 @@ case class DefaultGeneratorConfiguration(
     */
   def customTypes: Map[String, ClassTag[_]] = Map.empty
 
-  override val ignoredTables = Set.empty
-  override val typeResolver = new DefaultTypeResolver(customTypes)
-  override val schemaReader = new DefaultSchemaReader(this)
+  override val ignoredTables: Set[String] = Set.empty
+  override val namingStrategy: NamingStrategy = CamelCase
+  override val typeResolver: TypeResolver = new DefaultTypeResolver(customTypes)
+  override val schemaReader: SchemaReader = new DefaultSchemaReader(this)
 
   def packagePrefix: String
 
-  def nameParser: NameParser = LiteralNames
 
   /**
     * When the code generator uses the Jdbc Typer to figure out which Scala/Java objects to use for
