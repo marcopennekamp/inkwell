@@ -1,8 +1,21 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
 trait NamingStrategy {
-  def table(sqlName: String): String = name(sqlName)
-  def column(sqlName: String): String = name(sqlName)
+  /**
+    * The naming strategy for turning table names into model (case class) names.
+    * See [[ModelEmitter]].
+    */
+  def model(sqlName: String): String = name(sqlName)
+
+  /**
+    * The naming strategy for turning column names into property names.
+    * See [[PropertyEmitter]].
+    */
+  def property(sqlName: String): String = name(sqlName)
+
+  /**
+    * The common naming strategy.
+    */
   def name(sqlName: String): String
 }
 
@@ -34,8 +47,9 @@ trait LowerCase extends NamingStrategy {
 object LowerCase extends LowerCase
 
 /**
-  * This strategy will turn your <b>Scala names</b> into snake case! In 95% of cases, you probably want
-  * to use [[CamelCase]] instead. (That is, NamingStrategies are "reversed" in terms of intended usage.)
+  * This strategy will make your <b>Scala names</b> to adhere to snake_case! In 95% of cases, you probably want
+  * to use [[CamelCase]] instead. (That is, NamingStrategies are "reversed" in terms of intended usage compared
+  * to Quill.)
   *
   * Example (sql name => scala name): someIdent => some_ident
   */
@@ -48,12 +62,12 @@ object SnakeCase extends SnakeCase
 /**
   * Turns table names to UpperCamelCase and column names to lowerCamelCase.
   *
-  * Table example (sql name => scala name): some_ident => SomeIdent
-  * Column example (sql name => scala name): some_ident => someIdent
+  * Model example (sql name => scala name): some_ident => SomeIdent
+  * Property example (sql name => scala name): some_ident => someIdent
   */
 trait CamelCase extends NamingStrategy {
   override def name(sqlName: String): String = io.getquill.CamelCase.default(sqlName)
-  override def table(sqlName: String): String = name(sqlName).capitalize
+  override def model(sqlName: String): String = name(sqlName).capitalize
 }
 
 object CamelCase extends CamelCase
