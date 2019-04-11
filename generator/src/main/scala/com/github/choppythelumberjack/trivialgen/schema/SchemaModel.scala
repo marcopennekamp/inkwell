@@ -1,7 +1,5 @@
 package com.github.choppythelumberjack.trivialgen.schema
 
-import com.github.choppythelumberjack.trivialgen.ext.DatabaseTypes.DatabaseType
-
 import scala.reflect.ClassTag
 
 case class Schema(

@@ -1,6 +1,7 @@
 package com.github.choppythelumberjack.trivialgen.schema
 
-import com.github.choppythelumberjack.trivialgen.ext.DatabaseTypes.{DatabaseType, MySql}
+import com.github.choppythelumberjack.trivialgen.schema.DatabaseType.MySql
+
 
 trait SchemaNameResolver {
   /**
