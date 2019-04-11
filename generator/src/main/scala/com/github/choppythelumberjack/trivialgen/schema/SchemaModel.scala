@@ -4,8 +4,6 @@ import com.github.choppythelumberjack.trivialgen.ext.DatabaseTypes.DatabaseType
 
 import scala.reflect.ClassTag
 
-case class TableSchema(table: JdbcTableMeta, columns: Seq[JdbcColumnMeta])
-
 case class Schema(
   databaseType: DatabaseType,
   tables: Seq[Table],
