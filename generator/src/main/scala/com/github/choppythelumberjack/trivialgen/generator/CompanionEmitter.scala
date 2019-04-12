@@ -15,11 +15,10 @@ trait CompanionEmitter {
     * The generated code for the companion object.
     */
   def code: String =
-    s"""
-       |object $name {
+    s"""object $name {
        |  $innerCode
        |}
-    """.stripMargin
+     """.stripMargin
 
   /**
     * The name of the companion object.

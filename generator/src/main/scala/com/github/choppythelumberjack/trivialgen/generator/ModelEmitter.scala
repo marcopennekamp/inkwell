@@ -17,10 +17,7 @@ trait ModelEmitter {
   /**
     * The generated code for the case class.
     */
-  def code: String =
-    s"""
-       |case class $name(${properties.mkString(", ")}) $extendsClause
-    """.stripMargin
+  def code: String = s"case class $name(${properties.mkString(", ")}) $extendsClause"
 
   /**
     * The emitted extends clause of the case class declaration.
