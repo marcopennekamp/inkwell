@@ -2,10 +2,8 @@ package com.github.choppythelumberjack.trivialgen.generator
 
 import java.io.File
 
-import com.github.choppythelumberjack.trivialgen.schema.{Column, DefaultSchemaReader, DefaultTypeResolver, SchemaReader, Table, TypeResolver}
-import com.github.choppythelumberjack.trivialgen._
-import com.github.choppythelumberjack.trivialgen.generator.DefaultGeneratorConfiguration.Import
 import com.github.choppythelumberjack.trivialgen.generator.DefaultModelEmitter.InheritanceMap
+import com.github.choppythelumberjack.trivialgen.schema._
 
 import scala.reflect.ClassTag
 
@@ -75,9 +73,9 @@ trait GeneratorConfiguration {
   def rawTypeBuilder: RawTypeBuilder
 
   /**
-    * The generator's schema emitter, which is used to
+    * Selects the schema emitter based on the given schema.
     */
-  def schemaEmitter: SchemaEmitter
+  def selectSchemaEmitter(schema: Schema): SchemaEmitter
 
   /**
     * Selects the model emitter based on the given table (and possibly the schema).
@@ -93,17 +91,13 @@ trait GeneratorConfiguration {
     * Selects the property emitter based on the given column (and possibly table and even schema).
     */
   def selectPropertyEmitter(column: Column): PropertyEmitter
-
-  def querySchemaImports: String = ""
-
-  def packagingStrategy: PackagingStrategy
-  def memberNamer: MemberNamer
 }
 
 case class DefaultGeneratorConfiguration(
   override val db: DatabaseConfiguration,
   override val sourceSchema: String,
-  override val target: String,
+  override val target: File,
+  override val basePackage: String,
 ) extends GeneratorConfiguration {
 
   /**
@@ -124,46 +118,11 @@ case class DefaultGeneratorConfiguration(
   override val schemaReader: SchemaReader = new DefaultSchemaReader(this)
   override val typeResolver: TypeResolver = new DefaultTypeResolver(customTypes)
   override val namingStrategy: NamingStrategy = CamelCase
-  override def imports: Set[Import] = Set.empty
+  override val imports: Set[Import] = Set.empty
   override val rawTypeBuilder: RawTypeBuilder = new ImportSimplifyingRawTypeBuilder(imports)
 
+  override def selectSchemaEmitter(schema: Schema): SchemaEmitter = new SingleFileSchemaEmitter(this, schema)
   override def selectModelEmitter(table: Table): ModelEmitter = new DefaultModelEmitter(this, inheritanceMap, table)
   override def selectCompanionEmitter(table: Table): CompanionEmitter = new DefaultCompanionEmitter(this, table)
   override def selectPropertyEmitter(column: Column): PropertyEmitter = new DefaultPropertyEmitter(this, column)
-
-  def packagePrefix: String
-
-  def packagingStrategy: PackagingStrategy = PackagingStrategy.ByPackageHeader.TablePerFile(packagePrefix)
-
-  /**
-    * When defining your query schema object, this will name the method which produces the query schema.
-    * It will be named <code>query</code> by default so if you are doing Table Stereotyping, be sure
-    * it's something reasonable like <code>(ts) => ts.tableName.snakeToLowerCamel</code>
-    *
-    * <pre>{@code
-    * case class Person(firstName:String, lastName:String, age:Int)
-  *
-  * object Person {
-  *   // The method will be 'query' by default which is good if you are not stereotyping.
-  *   def query = querySchema[Person](...)
-  * }
-    * }</pre>
-    *
-    * Now let's take an example where you have a database that has two schemas <code>ALPHA</code> and <code>BRAVO</code>,
-    * each with a table called Person and you want to stereotype the two schemas into one table case class.
-    * In this case you have to be sure that memberNamer is something like <code>(ts) => ts.tableName.snakeToLowerCamel</code>
-    * so you'll get a different method for every querySchema.
-    *
-    * <pre>{@code
-    * case class Person(firstName:String, lastName:String, age:Int)
-  *
-  * object Person {
-  *   // Taking ts.tableName.snakeToLowerCamel will ensure each one has a different name. Otherise
-  *   // all of them will be 'query' which will result in a compile error.
-  *   def alphaPerson = querySchema[Person]("ALPHA.PERSON", ...)
-  *   def bravoPerson = querySchema[Person]("BRAVO.PERSON", ...)
-  * }
-    * }</pre>
-    */
-  def memberNamer: MemberNamer = (ts) => "query" //ts.tableName.snakeToLowerCamel
 }
