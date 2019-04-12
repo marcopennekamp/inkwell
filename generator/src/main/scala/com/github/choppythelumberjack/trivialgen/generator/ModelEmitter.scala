@@ -62,7 +62,7 @@ class DefaultModelEmitter(
 
   override def name: String = config.namingStrategy.model(table.name)
   override def properties: Seq[String] = table.columns.map(c => config.selectPropertyEmitter(c).code)
-  override def supertypes: Seq[String] = inheritanceMap.getOrElse(table.name, Seq.empty).map(_.toString)
+  override def supertypes: Seq[String] = inheritanceMap.getOrElse(table.name, Seq.empty).map(config.rawTypeBuilder(_))
 }
 
 object DefaultModelEmitter {

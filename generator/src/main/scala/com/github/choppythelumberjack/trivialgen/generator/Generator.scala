@@ -168,7 +168,7 @@ trait Generator extends WithFileNaming { self: CodeGeneratorComponents =>
 
       def Member = new MemberGen(_)
       class MemberGen(val column:ColumnMash) extends super.AbstractMemberGen(column) with FieldNaming {
-        override def rawType: String = column.dataType.toString()
+        override def rawType: String = rawTypeBuilder(column.dataType)
         override def actualType: String = {
           val tpe = escape(rawType).replaceFirst("java\\.lang\\.", "")
           if (column.nullable) s"Option[${tpe}]" else tpe

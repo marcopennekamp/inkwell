@@ -37,5 +37,5 @@ trait PropertyEmitter {
 class DefaultPropertyEmitter(config: GeneratorConfiguration, override val column: Column) extends PropertyEmitter {
   override def code: String = s"$name: $rawType"
   override def name: String = config.namingStrategy.property(column.name)
-  override def rawType: String = column.dataType.toString
+  override def rawType: String = config.rawTypeBuilder(column.dataType)
 }
