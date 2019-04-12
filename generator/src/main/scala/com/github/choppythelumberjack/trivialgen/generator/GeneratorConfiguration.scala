@@ -1,5 +1,7 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
+import java.io.File
+
 import com.github.choppythelumberjack.trivialgen.schema.{Column, DefaultSchemaReader, DefaultTypeResolver, SchemaReader, Table, TypeResolver}
 import com.github.choppythelumberjack.trivialgen._
 import com.github.choppythelumberjack.trivialgen.generator.DefaultGeneratorConfiguration.Import
@@ -30,9 +32,14 @@ trait GeneratorConfiguration {
   def sourceSchema: String
 
   /**
-    * The target folder to which Scala files are generated.
+    * The target folder or file (depending on your [[SchemaEmitter]]).
     */
-  def targetFolder: String
+  def target: File
+
+  /**
+    * The base package of the target.
+    */
+  def basePackage: String
 
   /**
     * Names of all tables that should be ignored during code generation.
@@ -55,6 +62,11 @@ trait GeneratorConfiguration {
     * You can use one of the provided naming strategies or implement your own.
     */
   def namingStrategy: NamingStrategy
+
+  /**
+    * A set of imported classes and packages which will be accessible by simple name in the generated code.
+    */
+  def imports: Set[Import]
 
   /**
     * The raw type builder can be overridden to change how type names are turned to strings globally, instead
@@ -91,7 +103,7 @@ trait GeneratorConfiguration {
 case class DefaultGeneratorConfiguration(
   override val db: DatabaseConfiguration,
   override val sourceSchema: String,
-  override val targetFolder: String,
+  override val target: String,
 ) extends GeneratorConfiguration {
 
   /**
@@ -108,17 +120,11 @@ case class DefaultGeneratorConfiguration(
     */
   def inheritanceMap: InheritanceMap = Map.empty
 
-  /**
-    * A set of imported classes which will be accessible (i.e. types built by the raw type builder) and
-    * generally available (by "plain text" generated code, such as companion objects' innerCode) by simple
-    * name in the generated code.
-    */
-  def imports: Set[Import] = Set.empty
-
   override val ignoredTables: Set[String] = Set.empty
   override val schemaReader: SchemaReader = new DefaultSchemaReader(this)
   override val typeResolver: TypeResolver = new DefaultTypeResolver(customTypes)
   override val namingStrategy: NamingStrategy = CamelCase
+  override def imports: Set[Import] = Set.empty
   override val rawTypeBuilder: RawTypeBuilder = new ImportSimplifyingRawTypeBuilder(imports)
 
   override def selectModelEmitter(table: Table): ModelEmitter = new DefaultModelEmitter(this, inheritanceMap, table)
