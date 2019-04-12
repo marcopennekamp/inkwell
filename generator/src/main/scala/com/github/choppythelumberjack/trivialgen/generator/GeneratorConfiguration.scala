@@ -2,6 +2,7 @@ package com.github.choppythelumberjack.trivialgen.generator
 
 import com.github.choppythelumberjack.trivialgen.schema.{Column, DefaultSchemaReader, DefaultTypeResolver, SchemaReader, Table, TypeResolver}
 import com.github.choppythelumberjack.trivialgen._
+import com.github.choppythelumberjack.trivialgen.generator.DefaultGeneratorConfiguration.Import
 import com.github.choppythelumberjack.trivialgen.generator.DefaultModelEmitter.InheritanceMap
 
 import scala.reflect.ClassTag
@@ -39,10 +40,10 @@ trait GeneratorConfiguration {
   def ignoredTables: Set[String]
 
   /**
-    * The naming strategy turns SQL names into Scala names for tables and columns (classes and attributes).
-    * You can use one of the provided naming strategies or implement your own.
+    * The schema reader fetches the schema from the database and transforms it into a schema model. You generally don't
+    * need to override this, but the option is there just in case.
     */
-  def namingStrategy: NamingStrategy
+  def schemaReader: SchemaReader
 
   /**
     * The type resolver translates JDBC types to Scala types.
@@ -50,10 +51,16 @@ trait GeneratorConfiguration {
   def typeResolver: TypeResolver
 
   /**
-    * The schema reader fetches the schema from the database and transforms it into a schema model. You generally don't
-    * need to override this, but the option is there just in case.
+    * The naming strategy turns SQL names into Scala names for tables and columns (classes and attributes).
+    * You can use one of the provided naming strategies or implement your own.
     */
-  def schemaReader: SchemaReader
+  def namingStrategy: NamingStrategy
+
+  /**
+    * The raw type builder can be overridden to change how type names are turned to strings globally, instead
+    * of overriding a specific emitter's rawType definition.
+    */
+  def rawTypeBuilder: RawTypeBuilder
 
   /**
     * The generator's schema emitter, which is used to
@@ -101,10 +108,18 @@ case class DefaultGeneratorConfiguration(
     */
   def inheritanceMap: InheritanceMap = Map.empty
 
+  /**
+    * A set of imported classes which will be accessible (i.e. types built by the raw type builder) and
+    * generally available (by "plain text" generated code, such as companion objects' innerCode) by simple
+    * name in the generated code.
+    */
+  def imports: Set[Import] = Set.empty
+
   override val ignoredTables: Set[String] = Set.empty
-  override val namingStrategy: NamingStrategy = CamelCase
-  override val typeResolver: TypeResolver = new DefaultTypeResolver(customTypes)
   override val schemaReader: SchemaReader = new DefaultSchemaReader(this)
+  override val typeResolver: TypeResolver = new DefaultTypeResolver(customTypes)
+  override val namingStrategy: NamingStrategy = CamelCase
+  override val rawTypeBuilder: RawTypeBuilder = new ImportSimplifyingRawTypeBuilder(imports)
 
   override def selectModelEmitter(table: Table): ModelEmitter = new DefaultModelEmitter(this, inheritanceMap, table)
   override def selectCompanionEmitter(table: Table): CompanionEmitter = new DefaultCompanionEmitter(this, table)
