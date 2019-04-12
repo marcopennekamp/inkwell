@@ -17,7 +17,7 @@ trait PropertyEmitter {
     * The generated code. If all else fails (i.e. overriding name and rawType doesn't do it), override this
     * definition.
     */
-  def code: String = s"$name: $rawType"
+  def code: String = s"$name: $typeWithNullable"
 
   /**
     * The name of the column (possibly transformed by some kind of [[NamingStrategy]]).
@@ -25,8 +25,13 @@ trait PropertyEmitter {
   def name: String
 
   /**
-    * The raw type of the column. This can be used to implement "tricky" types (such as parametrized custom
-    * types for foreign keys) for which [[TypeResolver]] is insufficient.
+    * The emitted raw type but wrapped in an Option <b>if</b> the column is nullable.
+    */
+  def typeWithNullable: String = if (column.isNullable) s"Option[$rawType]" else rawType
+
+  /**
+    * The emmited raw type of the column. This can be used to implement "tricky" types (such as parametrized
+    * custom types for foreign keys) for which [[TypeResolver]] is insufficient.
     */
   def rawType: String
 }
