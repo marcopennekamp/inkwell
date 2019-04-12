@@ -53,8 +53,7 @@ trait ModelEmitter {
   * Generates a simple case class based on the configured naming strategy, selected property emitter
   * and inheritance configurations.
   *
-  * Note that the inheritance map points from SQL names and <b>not</b> from the Scala name (after
-  * applying the naming strategy).
+  * Note that the inheritance map uses SQL names as keys and <b>not</b> Scala names.
   */
 class DefaultModelEmitter(
   config: GeneratorConfiguration,
