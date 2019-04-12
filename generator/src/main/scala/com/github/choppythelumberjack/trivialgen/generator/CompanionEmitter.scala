@@ -14,7 +14,12 @@ trait CompanionEmitter {
   /**
     * The generated code for the companion object.
     */
-  def code: String
+  def code: String =
+    s"""
+       |object $name {
+       |  $innerCode
+       |}
+    """.stripMargin
 
   /**
     * The name of the companion object.
@@ -28,13 +33,6 @@ trait CompanionEmitter {
 }
 
 class DefaultCompanionEmitter(config: GeneratorConfiguration, override val table: Table) extends CompanionEmitter {
-  override def code: String =
-    s"""
-       |object $name {
-       |  $innerCode
-       |}
-    """.stripMargin
-
   override def name: String = config.namingStrategy.model(table.name)
   override def innerCode: String = ""
 }

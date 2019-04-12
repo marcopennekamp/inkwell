@@ -17,7 +17,21 @@ trait ModelEmitter {
   /**
     * The generated code for the case class.
     */
-  def code: String
+  def code: String =
+    s"""
+       |case class $name(${properties.mkString(", ")}) $extendsClause
+    """.stripMargin
+
+  /**
+    * The emitted extends clause of the case class declaration.
+    */
+  def extendsClause: String = {
+    if (supertypes.nonEmpty) {
+      (s"extends ${supertypes.head}" :: supertypes.tail.toList).mkString(" with ")
+    } else {
+      ""
+    }
+  }
 
   /**
     * The name of the model.
@@ -47,19 +61,6 @@ class DefaultModelEmitter(
   inheritanceMap: InheritanceMap,
   override val table: Table
 ) extends ModelEmitter {
-  override def code: String =
-    s"""
-       |case class $name(${properties.mkString(", ")}) $extendsClause
-    """.stripMargin
-
-  def extendsClause: String = {
-    if (supertypes.nonEmpty) {
-      (s"extends ${supertypes.head}" :: supertypes.tail.toList).mkString(" with ")
-    } else {
-      ""
-    }
-  }
-
   override def name: String = config.namingStrategy.model(table.name)
   override def properties: Seq[String] = table.columns.map(c => config.selectPropertyEmitter(c).code)
   override def supertypes: Seq[String] = inheritanceMap.getOrElse(table.name, Seq.empty).map(config.rawTypeBuilder(_))

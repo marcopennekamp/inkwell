@@ -17,7 +17,7 @@ trait PropertyEmitter {
     * The generated code. If all else fails (i.e. overriding name and rawType doesn't do it), override this
     * definition.
     */
-  def code: String
+  def code: String = s"$name: $rawType"
 
   /**
     * The name of the column (possibly transformed by some kind of [[NamingStrategy]]).
@@ -32,10 +32,9 @@ trait PropertyEmitter {
 }
 
 /**
-  * Emits a property based on the globally configured naming strategy and without modifying the raw type.
+  * Emits a property based on the globally configured naming strategy and without locally modifying the raw type.
   */
 class DefaultPropertyEmitter(config: GeneratorConfiguration, override val column: Column) extends PropertyEmitter {
-  override def code: String = s"$name: $rawType"
   override def name: String = config.namingStrategy.property(column.name)
   override def rawType: String = config.rawTypeBuilder(column.dataType)
 }
