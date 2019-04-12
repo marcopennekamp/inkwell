@@ -1,5 +1,8 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
+import java.io.File
+import java.nio.file.{Path, Paths}
+
 import com.github.choppythelumberjack.trivialgen.generator.SchemaEmitter.CompilationUnit
 import com.github.choppythelumberjack.trivialgen.schema._
 
@@ -17,6 +20,11 @@ trait SchemaEmitter {
     * The generated compilation units which will be written to different files.
     */
   def compilationUnits: Seq[CompilationUnit]
+
+  /**
+    * @return An extensionless path to the file the unit should be written to.
+    */
+  def unitPath(unitName: String): Path = Paths.get(packageName(unitName).replace(".", File.pathSeparator), unitName)
 
   /**
     * The emitted header generated from the package declaration, import code and possibly additional code.
@@ -48,7 +56,11 @@ trait SchemaEmitter {
 }
 
 object SchemaEmitter {
-  case class CompilationUnit(path: String, code: String)
+  /**
+    * @param path An extensionless path to the file the unit should be written to.
+    * @param code The unit's complete generated code.
+    */
+  case class CompilationUnit(path: Path, code: String)
 }
 
 /**
@@ -60,15 +72,15 @@ class SingleFileSchemaEmitter(config: GeneratorConfiguration, override val schem
       throw new RuntimeException("The SingleFileSchemaEmitter can only be used with a target file.")
     }
 
-    val unitName = config.target.getName
     val tableCodes = schema.tables.map { table =>
       s"""${config.selectModelEmitter(table).code}
          |${config.selectCompanionEmitter(table).code}
          |
        """.stripMargin
     }
+    val unitName = config.target.getName
     val code = (header(unitName) + tableCodes).mkString("\n")
-    Seq(CompilationUnit(unitName, code))
+    Seq(CompilationUnit(unitPath(unitName), code))
   }
 
   override def packageName(unitName: String): String = config.basePackage
