@@ -1,7 +1,7 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
 import java.io.File
-import java.nio.file.{Path, Paths}
+import java.nio.file.{Files, Path, Paths}
 
 import com.github.choppythelumberjack.trivialgen.generator.SchemaEmitter.CompilationUnit
 import com.github.choppythelumberjack.trivialgen.schema._
@@ -22,6 +22,8 @@ trait SchemaEmitter {
   def compilationUnits: Seq[CompilationUnit]
 
   /**
+    * This default implementation builds a file path from the package and name of the unit.
+    *
     * @return An extensionless path to the file the unit should be written to.
     */
   def unitPath(unitName: String): Path = Paths.get(packageName(unitName).replace(".", File.pathSeparator), unitName)
@@ -68,19 +70,15 @@ object SchemaEmitter {
   */
 class SingleFileSchemaEmitter(config: GeneratorConfiguration, override val schema: Schema) extends SchemaEmitter {
   override def compilationUnits: Seq[CompilationUnit] = {
-    if (!config.target.isFile) {
-      throw new RuntimeException("The SingleFileSchemaEmitter can only be used with a target file.")
-    }
-
     val tableCodes = schema.tables.map { table =>
       s"""${config.selectModelEmitter(table).code}
          |${config.selectCompanionEmitter(table).code}
          |
        """.stripMargin
     }
-    val unitName = config.target.getName
+    val unitName = config.target.getFileName.toString
     val code = (header(unitName) + tableCodes).mkString("\n")
-    Seq(CompilationUnit(unitPath(unitName), code))
+    Seq(CompilationUnit(config.target, code))
   }
 
   override def packageName(unitName: String): String = config.basePackage

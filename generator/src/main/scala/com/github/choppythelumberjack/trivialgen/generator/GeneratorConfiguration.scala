@@ -1,6 +1,6 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
-import java.io.File
+import java.nio.file.Path
 
 import com.github.choppythelumberjack.trivialgen.generator.DefaultModelEmitter.InheritanceMap
 import com.github.choppythelumberjack.trivialgen.schema._
@@ -30,9 +30,11 @@ trait GeneratorConfiguration {
   def sourceSchema: String
 
   /**
-    * The target folder or file (depending on your [[SchemaEmitter]]).
+    * The target folder or <b>extensionless</b> target file (depending on your [[SchemaEmitter]]).
+    *
+    * For example, [[SingleFileSchemaEmitter]] assumes the target to be a file.
     */
-  def target: File
+  def target: Path
 
   /**
     * The base package of the target.
@@ -96,7 +98,7 @@ trait GeneratorConfiguration {
 case class DefaultGeneratorConfiguration(
   override val db: DatabaseConfiguration,
   override val sourceSchema: String,
-  override val target: File,
+  override val target: Path,
   override val basePackage: String,
 ) extends GeneratorConfiguration {
 
