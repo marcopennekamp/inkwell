@@ -16,13 +16,13 @@ class ImportSimplifyingRawTypeBuilder(imports: Set[Import]) extends RawTypeBuild
   val classes: Set[String] =
     imports.filter(_.isInstanceOf[Import.Entity]).map { case e: Import.Entity => e.classTag.toString }
   val packages: Set[String] =
-    imports.filter(_.isInstanceOf[Import.Package]).map { case p: Import.Package => p.name } + "java.lang"
+    imports.filter(_.isInstanceOf[Import.Package]).map { case p: Import.Package => p.name } + "java.lang" + "scala"
 
   override def apply(t: Type): String = {
-    val fullName = t.typeSymbol.name.toString
+    val fullName = t.typeSymbol.fullName
     println(s"Resolving full type name: $fullName")
     val nameParts = fullName.split('.')
-    val packageName = Some(nameParts).filter(_.nonEmpty).map(_.init.mkString("")).getOrElse("")
+    val packageName = Some(nameParts).filter(_.nonEmpty).map(_.init.mkString(".")).getOrElse("")
     val simpleName = nameParts.last
 
     if (packages.contains(packageName) || classes.contains(fullName)) {
