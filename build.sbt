@@ -58,7 +58,7 @@ lazy val `integration-tests` =
 
     val fileDir = new File(sourcePath, "main").getAbsoluteFile
     r.run(
-      "com.github.choppythelumberjack.trivialgen.integration.CodeGeneratorRunner",
+      "com.github.choppythelumberjack.trivialgen.GeneratorRunner",
       classPath, Seq(fileDir.getAbsolutePath), s
     )
 
