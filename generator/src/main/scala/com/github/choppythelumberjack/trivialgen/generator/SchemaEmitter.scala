@@ -58,7 +58,7 @@ trait SchemaEmitter {
 
 object SchemaEmitter {
   /**
-    * @param path An extensionless path to the file the unit should be written to.
+    * @param path An extensionless, absolute path to the file the unit should be written to.
     * @param code The unit's complete generated code.
     */
   case class CompilationUnit(path: Path, code: String)

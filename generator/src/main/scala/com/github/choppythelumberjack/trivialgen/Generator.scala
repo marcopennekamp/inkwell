@@ -17,7 +17,7 @@ trait Generator {
       schema => {
         config.selectSchemaEmitter(schema).compilationUnits.foreach { unit =>
           // TODO: Use scalafmt to format the generated code.
-          val path = Paths.get(config.target.toString, unit.path.toString + ".scala")
+          val path = Paths.get(unit.path.toString + ".scala")
           Files.createDirectories(path.getParent)
           Files.write(path, unit.code.getBytes(StandardCharsets.UTF_8))
         }
