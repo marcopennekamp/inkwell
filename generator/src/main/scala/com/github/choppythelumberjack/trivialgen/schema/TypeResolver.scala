@@ -26,7 +26,7 @@ class DefaultTypeResolver(jdbcToScala: Map[String, ClassTag[_]]) extends TypeRes
     // see TABLE B-1 of JSR-000221 JBDCTM API Specification 4.1 Maintenance Release Mapping
     // to corresponding Scala types where applicable.
     columnMeta.dataType match {
-      case CHAR | VARCHAR | LONGVARCHAR | NCHAR | NVARCHAR | LONGNVARCHAR => classTag[String]
+      case CHAR | VARCHAR | LONGVARCHAR | NCHAR | NVARCHAR | LONGNVARCHAR | CLOB => classTag[String]
       case NUMERIC | DECIMAL => classTag[BigDecimal]
       case BIT | BOOLEAN => classTag[Boolean]
       case TINYINT => classTag[Byte]
