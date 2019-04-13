@@ -15,7 +15,7 @@ trait CompanionEmitter {
   /**
     * The generated code for the companion object.
     */
-  def code: String =
+  def code: String = if (innerCode.isEmpty) "" else
     s"""object $name {
        |  $innerCode
        |}""".stripMargin
