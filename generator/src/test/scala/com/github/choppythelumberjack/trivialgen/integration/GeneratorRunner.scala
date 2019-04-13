@@ -1,6 +1,8 @@
-package com.github.choppythelumberjack.trivialgen
+package com.github.choppythelumberjack.trivialgen.integration
 
 import java.nio.file.Paths
+
+import com.github.choppythelumberjack.trivialgen.DefaultGenerator
 
 /**
   * Generates source files for the integration-tests project.

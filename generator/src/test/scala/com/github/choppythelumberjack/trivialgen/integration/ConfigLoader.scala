@@ -1,8 +1,8 @@
-package com.github.choppythelumberjack.trivialgen
+package com.github.choppythelumberjack.trivialgen.integration
 
 import java.nio.file.Path
 
-import com.github.choppythelumberjack.trivialgen.DefaultGeneratorConfiguration
+import com.github.choppythelumberjack.trivialgen.{DatabaseConfiguration, DefaultGeneratorConfiguration}
 
 object ConfigLoader {
   def singleFileConfig(sqlScriptName: String, target: Path, pkg: String) = DefaultGeneratorConfiguration(
