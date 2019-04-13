@@ -15,8 +15,9 @@ trait SchemaReader {
 }
 
 object SchemaReader {
-  case class UnknownJdbcTypeException(columnMeta: JdbcColumnMeta)
-    extends RuntimeException(s"Could not resolve Scala type for JDBC type ${columnMeta.dataType}/${columnMeta.typeName}")
+  case class UnknownJdbcTypeException(columnMeta: JdbcColumnMeta, tableName: String)
+    extends RuntimeException(s"Could not resolve Scala type for JDBC type ${columnMeta.dataType}/${columnMeta.typeName}" +
+      s" of column ${columnMeta.columnName} in table $tableName")
 }
 
 class DefaultSchemaReader(config: GeneratorConfiguration) extends SchemaReader {
@@ -61,7 +62,7 @@ class DefaultSchemaReader(config: GeneratorConfiguration) extends SchemaReader {
     val metas = rs.toIterator.map(rs => JdbcColumnMeta.fromResultSet(rs))
 
     metas.map { meta =>
-      val dataType = config.typeResolver(meta).getOrElse(throw UnknownJdbcTypeException(meta))
+      val dataType = config.typeResolver(meta).getOrElse(throw UnknownJdbcTypeException(meta, tableName))
       val isNullable = meta.nullable == DatabaseMetaData.columnNullable
       Column(meta.columnName, dataType, isNullable, meta)
     }.toVector
