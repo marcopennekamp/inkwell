@@ -1,13 +1,11 @@
-package com.github.choppythelumberjack.trivialgen.generator
+package com.github.choppythelumberjack.trivialgen
 
 import java.nio.charset.StandardCharsets
 import java.nio.file._
 
-import com.github.choppythelumberjack.trivialgen.WithFileNaming
-
 case class GenerationException(message: String, cause: Throwable) extends RuntimeException(message, cause)
 
-trait Generator extends WithFileNaming {
+trait Generator {
   def config: GeneratorConfiguration
 
   /**

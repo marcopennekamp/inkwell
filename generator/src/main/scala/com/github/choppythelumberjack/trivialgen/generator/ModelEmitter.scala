@@ -1,5 +1,6 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
+import com.github.choppythelumberjack.trivialgen.GeneratorConfiguration
 import com.github.choppythelumberjack.trivialgen.generator.DefaultModelEmitter.InheritanceMap
 import com.github.choppythelumberjack.trivialgen.schema.Table
 

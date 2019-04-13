@@ -1,5 +1,6 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
+import com.github.choppythelumberjack.trivialgen.GeneratorConfiguration
 import com.github.choppythelumberjack.trivialgen.schema.{Column, TypeResolver}
 
 /**
@@ -43,3 +44,5 @@ class DefaultPropertyEmitter(config: GeneratorConfiguration, override val column
   override def name: String = config.namingStrategy.property(column.name)
   override def rawType: String = config.rawTypeBuilder(column.dataType)
 }
+
+// TODO: Add an Id property emitter that uses foreign keys and primary keys.

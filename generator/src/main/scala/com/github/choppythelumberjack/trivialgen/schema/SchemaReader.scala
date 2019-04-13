@@ -2,7 +2,7 @@ package com.github.choppythelumberjack.trivialgen.schema
 
 import java.sql.{Connection, DatabaseMetaData, DriverManager}
 
-import com.github.choppythelumberjack.trivialgen.generator.GeneratorConfiguration
+import com.github.choppythelumberjack.trivialgen.GeneratorConfiguration
 import com.github.choppythelumberjack.trivialgen.schema.SchemaReader.UnknownJdbcTypeException
 
 import scala.util.Try

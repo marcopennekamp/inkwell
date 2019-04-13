@@ -3,6 +3,7 @@ package com.github.choppythelumberjack.trivialgen.generator
 import java.io.File
 import java.nio.file.{Files, Path, Paths}
 
+import com.github.choppythelumberjack.trivialgen.GeneratorConfiguration
 import com.github.choppythelumberjack.trivialgen.generator.SchemaEmitter.CompilationUnit
 import com.github.choppythelumberjack.trivialgen.schema._
 

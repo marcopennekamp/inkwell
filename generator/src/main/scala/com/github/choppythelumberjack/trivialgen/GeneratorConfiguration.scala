@@ -1,8 +1,9 @@
-package com.github.choppythelumberjack.trivialgen.generator
+package com.github.choppythelumberjack.trivialgen
 
 import java.nio.file.Path
 
 import com.github.choppythelumberjack.trivialgen.generator.DefaultModelEmitter.InheritanceMap
+import com.github.choppythelumberjack.trivialgen.generator._
 import com.github.choppythelumberjack.trivialgen.schema._
 
 import scala.reflect.ClassTag
