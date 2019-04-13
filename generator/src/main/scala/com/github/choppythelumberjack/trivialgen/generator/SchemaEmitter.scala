@@ -35,9 +35,7 @@ trait SchemaEmitter {
   def header(unitName: String): String =
     s"""package ${packageName(unitName)}
        |
-       |$importCode
-       |
-     """.stripMargin
+       |$importCode""".stripMargin
 
   /**
     * The package name referenced in the unit's package declaration.
@@ -73,9 +71,7 @@ class SingleFileSchemaEmitter(config: GeneratorConfiguration, override val schem
   override def compilationUnits: Seq[CompilationUnit] = {
     val tableCodes = schema.tables.map { table =>
       s"""${config.selectModelEmitter(table).code}
-         |${config.selectCompanionEmitter(table).code}
-         |
-       """.stripMargin
+         |${config.selectCompanionEmitter(table).code}""".stripMargin
     }
     val unitName = config.target.getFileName.toString
     val code = header(unitName) + "\n" + tableCodes
