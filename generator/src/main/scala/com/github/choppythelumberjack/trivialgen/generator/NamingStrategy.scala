@@ -47,17 +47,17 @@ trait LowerCase extends NamingStrategy {
 object LowerCase extends LowerCase
 
 /**
-  * This strategy will make your <b>Scala names</b> to adhere to snake_case! In 95% of cases, you probably want
-  * to use [[CamelCase]] instead. (That is, NamingStrategies are "reversed" in terms of intended usage compared
-  * to Quill.)
+  * This strategy will make your <b>Scala names</b> adhere to snake_case! In 95% of cases, you probably want
+  * to use [[SnakeCaseToCamelCase]] instead. (That is, NamingStrategies are "reversed" in terms of intended
+  * usage compared to Quill.)
   *
   * Example (sql name => scala name): someIdent => some_ident
   */
-trait SnakeCase extends NamingStrategy {
+trait CamelCaseToSnakeCase extends NamingStrategy {
   override def name(sqlName: String): String = io.getquill.SnakeCase.default(sqlName)
 }
 
-object SnakeCase extends SnakeCase
+object CamelCaseToSnakeCase extends CamelCaseToSnakeCase
 
 /**
   * Turns table names to UpperCamelCase and column names to lowerCamelCase.
@@ -65,9 +65,11 @@ object SnakeCase extends SnakeCase
   * Model example (sql name => scala name): some_ident => SomeIdent
   * Property example (sql name => scala name): some_ident => someIdent
   */
-trait CamelCase extends NamingStrategy {
-  override def name(sqlName: String): String = io.getquill.CamelCase.default(sqlName)
+trait SnakeCaseToCamelCase extends NamingStrategy {
+  // The sqlName is lowercased because some databases seem to return case-insensitive names in upper case
+  // and snake_case names are supposed to be lower case only.
+  override def name(sqlName: String): String = io.getquill.CamelCase.default(sqlName.toLowerCase)
   override def model(sqlName: String): String = name(sqlName).capitalize
 }
 
-object CamelCase extends CamelCase
+object SnakeCaseToCamelCase extends SnakeCaseToCamelCase

@@ -120,7 +120,7 @@ case class DefaultGeneratorConfiguration(
   override val ignoredTables: Set[String] = Set.empty
   override val schemaReader: SchemaReader = new DefaultSchemaReader(this)
   override val typeResolver: TypeResolver = new DefaultTypeResolver(customTypes)
-  override val namingStrategy: NamingStrategy = CamelCase
+  override val namingStrategy: NamingStrategy = SnakeCaseToCamelCase
   override val imports: Set[Import] = Set.empty
   override val rawTypeBuilder: RawTypeBuilder = new ImportSimplifyingRawTypeBuilder(imports)
 
