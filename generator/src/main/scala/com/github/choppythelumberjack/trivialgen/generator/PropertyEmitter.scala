@@ -42,7 +42,7 @@ trait PropertyEmitter {
   */
 class DefaultPropertyEmitter(config: GeneratorConfiguration, override val column: Column) extends PropertyEmitter {
   override def name: String = config.namingStrategy.property(column.name)
-  override def rawType: String = config.rawTypeBuilder(column.dataType)
+  override def rawType: String = config.rawTypeBuilder(column.scalaType)
 }
 
 // TODO: Add an Id property emitter that uses foreign keys and primary keys.

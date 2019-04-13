@@ -4,7 +4,7 @@ import com.github.choppythelumberjack.trivialgen.GeneratorConfiguration
 import com.github.choppythelumberjack.trivialgen.generator.DefaultModelEmitter.InheritanceMap
 import com.github.choppythelumberjack.trivialgen.schema.Table
 
-import scala.reflect.ClassTag
+import scala.reflect.runtime.universe.Type
 
 /**
   * Handles the transformation of one table to a (case) class.
@@ -64,5 +64,5 @@ class DefaultModelEmitter(
 }
 
 object DefaultModelEmitter {
-  type InheritanceMap = Map[Table.Name, Seq[ClassTag[_]]]
+  type InheritanceMap = Map[Table.Name, Seq[Type]]
 }

@@ -2,6 +2,8 @@ package com.github.choppythelumberjack.trivialgen
 
 import java.nio.file.Path
 
+import scala.reflect.runtime.universe.Type
+
 import com.github.choppythelumberjack.trivialgen.generator.DefaultModelEmitter.InheritanceMap
 import com.github.choppythelumberjack.trivialgen.generator._
 import com.github.choppythelumberjack.trivialgen.schema._
@@ -107,7 +109,7 @@ case class DefaultGeneratorConfiguration(
     * A map of custom JDBC to Scala type mappings, used by the [[DefaultTypeResolver]]. Note that this
     * map is not used if you override [[typeResolver]].
     */
-  def customTypes: Map[String, ClassTag[_]] = Map.empty
+  def customTypes: Map[String, Type] = Map.empty
 
   /**
     * The inheritance map is used by the [[DefaultModelEmitter]] to provide support for model supertypes.

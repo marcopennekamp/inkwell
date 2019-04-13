@@ -8,6 +8,8 @@ import java.nio.file.Paths
 object GeneratorRunner {
 
   // TODO: Add imports test.
+  // TODO: Add inheritance test.
+  // TODO: Add companion object code generation test.
   // TODO: Add enum types test.
   // TODO: Add custom raw type test combined with foreign key and primary key test (such as an Id[T] type).
   //       This one could also function as an example for how to implement ID types.

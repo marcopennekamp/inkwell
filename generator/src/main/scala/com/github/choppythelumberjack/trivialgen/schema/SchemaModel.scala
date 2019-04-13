@@ -1,6 +1,6 @@
 package com.github.choppythelumberjack.trivialgen.schema
 
-import scala.reflect.ClassTag
+import scala.reflect.runtime.universe.Type
 
 // TODO: Add the ability to navigate "up" the model to columns and tables.
 
@@ -21,7 +21,7 @@ object Table {
 
 case class Column(
   name: Column.Name,
-  dataType: ClassTag[_],
+  scalaType: Type,
   isNullable: Boolean,
   meta: JdbcColumnMeta,
 )
