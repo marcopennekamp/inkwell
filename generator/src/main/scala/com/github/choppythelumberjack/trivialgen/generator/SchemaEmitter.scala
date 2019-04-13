@@ -1,7 +1,7 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
 import java.io.File
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.{Path, Paths}
 
 import com.github.choppythelumberjack.trivialgen.GeneratorConfiguration
 import com.github.choppythelumberjack.trivialgen.generator.SchemaEmitter.CompilationUnit
@@ -74,7 +74,7 @@ class SingleFileSchemaEmitter(config: GeneratorConfiguration, override val schem
          |${config.selectCompanionEmitter(table).code}""".stripMargin
     }
     val unitName = config.target.getFileName.toString
-    val code = header(unitName) + "\n" + tableCodes
+    val code = (header(unitName) +: tableCodes).mkString("\n")
     Seq(CompilationUnit(config.target, code))
   }
 
