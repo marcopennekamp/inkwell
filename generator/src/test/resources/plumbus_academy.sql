@@ -4,7 +4,7 @@ create table person (
   id int primary key auto_increment,
   first_name varchar(255),
   last_name varchar(255),
-  age int not null
+  birthday datetime not null
 );
 
 create table skill (
@@ -18,8 +18,9 @@ create table person_skill (
   level int
 );
 
-insert into person values (default, 'Rick', 'Sanchez', 70);
-insert into person values (default, 'Morty', 'Smith', 14);
+insert into person values (default, 'Rick', 'Sanchez', parsedatetime('1958/07/03', 'yyyy/MM/dd'));
+// I don't actually know Morty's birthday, so don't go screaming at me.
+insert into person values (default, 'Morty', 'Smith', parsedatetime('2003/02/19', 'yyyy/MM/dd'));
 insert into skill values (default, 'Science');
 insert into skill values (default, 'Martial Arts');
 insert into skill values (default, 'Compassion');
