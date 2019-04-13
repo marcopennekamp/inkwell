@@ -42,6 +42,9 @@ class DefaultSchemaReader(config: GeneratorConfiguration) extends SchemaReader {
 
   import com.github.choppythelumberjack.trivialgen.util.ResultSetExtensions
 
+  // Note that in the following code, toVector unravels the iterator, so that we don't access the DB (through maps)
+  // after closing it. The more general toSeq does NOT transform the iterator to a list but instead keeps the iterator.
+
   protected def getTables(db: Connection): Seq[Table] = {
     val rs = db.getMetaData.getTables(null, config.sourceSchema, "%", Array("TABLE")) // The pattern % matches any name.
     val metas = rs.toIterator.map(rs => JdbcTableMeta.fromResultSet(rs))
@@ -50,7 +53,7 @@ class DefaultSchemaReader(config: GeneratorConfiguration) extends SchemaReader {
     metas.map { meta =>
       val columns = getColumns(db, meta.tableName)
       Table(meta.tableName, columns, meta)
-    }.toSeq
+    }.toVector
   }
 
   protected def getColumns(db: Connection, tableName: Table.Name): Seq[Column] = {
@@ -61,7 +64,7 @@ class DefaultSchemaReader(config: GeneratorConfiguration) extends SchemaReader {
       val dataType = config.typeResolver(meta).getOrElse(throw UnknownJdbcTypeException(meta))
       val isNullable = meta.nullable == DatabaseMetaData.columnNullable
       Column(meta.columnName, dataType, isNullable, meta)
-    }.toSeq
+    }.toVector
   }
 
 }
