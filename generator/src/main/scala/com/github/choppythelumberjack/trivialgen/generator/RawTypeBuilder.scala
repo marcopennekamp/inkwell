@@ -52,13 +52,15 @@ class DefaultRawTypeBuilder extends RawTypeBuilder {
 /**
   * Simplifies names of all imported types and packages.
   *
-  * Considers "java.lang._" and "scala._" by default, since these packages are always imported in any Scala file.
+  * Considers "java.lang._", "scala._" and "scala.Predef._" by default, since Scala imports these
+  * namespaces by default.
   */
 class ImportSimplifyingRawTypeBuilder(imports: Set[Import]) extends DefaultRawTypeBuilder {
   val classes: Set[String] =
     imports.filter(_.isInstanceOf[Import.Entity]).map { case e: Import.Entity => e.tpe.symbolPreserveAliases.fullName }
   val packages: Set[String] =
-    imports.filter(_.isInstanceOf[Import.Package]).map { case p: Import.Package => p.name } + "java.lang" + "scala"
+    imports.filter(_.isInstanceOf[Import.Package]).map { case p: Import.Package => p.name } +
+      "java.lang" + "scala" + "scala.Predef"
 
   // TODO: Instead of matching packages one-to-one, simplify a name as much as possible.
 
