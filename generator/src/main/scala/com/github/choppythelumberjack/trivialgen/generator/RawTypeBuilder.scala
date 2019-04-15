@@ -69,6 +69,8 @@ class ImportSimplifyingRawTypeBuilder(imports: Set[Import]) extends DefaultRawTy
   val packages: Set[String] =
     imports.filter(_.isInstanceOf[Import.Package]).map { case p: Import.Package => p.name } + "java.lang" + "scala"
 
+  // TODO: Instead of matching packages one-to-one, simplify a name as much as possible.
+
   override def fullName(ownerName: Option[String], typeName: String): String = {
     val fullName = super.fullName(ownerName, typeName)
     println(s"Resolving non-imported type name: $fullName")
