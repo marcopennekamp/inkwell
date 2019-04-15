@@ -30,7 +30,12 @@ class DefaultRawTypeBuilder extends RawTypeBuilder {
   def rawTypeArgs(typeArgs: Seq[Type]): Seq[String] = typeArgs.map(this.apply)
 
   override def apply(t: Type): String = {
-    val symbol = t.typeSymbol
+    // t.typeSymbol automatically dereferences aliases:
+    //   https://stackoverflow.com/questions/12718436/how-to-determine-a-type-alias-with-scala-reflection
+    // We want to preserve aliases, however, since it is probably the user's intention when specifying an
+    // alias as the data type for a column. Thus, as suggested in the StackOverflow answer, we cast the type
+    // to the internal representation and use typeSymbolDirect (which does not dealias).
+    val symbol = t.asInstanceOf[scala.reflect.internal.Types#Type].typeSymbolDirect.asInstanceOf[Symbol]
 
     // We have to get the simple name from name.toString as opposed to fullName, because the latter
     // somehow dealiases types, which is not desirable for our use case. As in, for example, a type
