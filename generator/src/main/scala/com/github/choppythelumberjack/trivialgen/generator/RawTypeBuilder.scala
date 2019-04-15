@@ -2,6 +2,8 @@ package com.github.choppythelumberjack.trivialgen.generator
 
 import scala.reflect.runtime.universe._
 
+import TypeUtil.TypeExtensions
+
 /**
   * Turns a Scala [[Type]] into a string. Override this if you want to change how types are stringified
   * globally instead of just in specific instances.
@@ -30,22 +32,11 @@ class DefaultRawTypeBuilder extends RawTypeBuilder {
   def rawTypeArgs(typeArgs: Seq[Type]): Seq[String] = typeArgs.map(this.apply)
 
   override def apply(t: Type): String = {
-    // t.typeSymbol automatically dereferences aliases:
-    //   https://stackoverflow.com/questions/12718436/how-to-determine-a-type-alias-with-scala-reflection
-    // We want to preserve aliases, however, since it is probably the user's intention when specifying an
-    // alias as the data type for a column. Thus, as suggested in the StackOverflow answer, we cast the type
-    // to the internal representation and use typeSymbolDirect (which does not dealias).
-    val symbol = t.asInstanceOf[scala.reflect.internal.Types#Type].typeSymbolDirect.asInstanceOf[Symbol]
-
-    // We have to get the simple name from name.toString as opposed to fullName, because the latter
-    // somehow dealiases types, which is not desirable for our use case. As in, for example, a type
-    //   type Score = Int
-    // would be dealiased to Int by fullName, which takes away from the expressiveness of the alias
-    // name. This is an edge case, of course, but nonetheless one we have to account for.
+    val symbol = t.symbolPreserveAliases
     val ownerName = TypeUtil.names.ownerName(symbol)
     val typeName = symbol.name.toString
 
-    // Now we also have to treat type arguments:
+    // Now we have to treat type arguments:
     //   1. Type arguments aren't provided by fullName (obviously), but we still need them in the
     //      raw string representation of the type. So for example, we need to turn a scala.Array
     //      into a scala.Array[java.lang.String] for a type Array[String].
