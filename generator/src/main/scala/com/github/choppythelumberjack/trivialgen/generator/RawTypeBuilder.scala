@@ -66,7 +66,6 @@ class ImportSimplifyingRawTypeBuilder(imports: Set[Import]) extends DefaultRawTy
 
   override def fullName(ownerName: Option[String], typeName: String): String = {
     val fullName = super.fullName(ownerName, typeName)
-    println(s"Resolving non-imported type name: $fullName")
     if (packages.contains(ownerName.getOrElse("")) || classes.contains(fullName)) {
       typeName
     } else {
