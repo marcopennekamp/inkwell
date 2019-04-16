@@ -18,10 +18,10 @@ object GeneratorRunner {
 
   def main(args: Array[String]): Unit = {
     val path = args(0)
-    defaultGenerator(path)
+    plumbusAcademy(path)
   }
 
-  def defaultGenerator(basePath: String): Unit = {
+  def plumbusAcademy(basePath: String): Unit = {
     val plumbusAcademy = new DefaultGenerator(ConfigLoader.singleFileConfig(
       "plumbus_academy.sql", Paths.get(basePath, "plumbus", "academy", "Schema"), "plumbus.academy"
     ))
