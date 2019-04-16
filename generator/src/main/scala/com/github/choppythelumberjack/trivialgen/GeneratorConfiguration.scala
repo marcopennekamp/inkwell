@@ -47,17 +47,6 @@ trait GeneratorConfiguration {
   def ignoredTables: Set[String]
 
   /**
-    * The schema reader fetches the schema from the database and transforms it into a schema model. You generally don't
-    * need to override this, but the option is there just in case.
-    */
-  def schemaReader: SchemaReader
-
-  /**
-    * The type resolver translates JDBC types to Scala types.
-    */
-  def typeResolver: TypeResolver
-
-  /**
     * The naming strategy turns SQL names into Scala names for tables and columns (classes and attributes).
     * You can use one of the provided naming strategies or implement your own.
     */
@@ -67,6 +56,17 @@ trait GeneratorConfiguration {
     * A set of imported classes and packages which will be accessible by simple name in the generated code.
     */
   def imports: Set[Import]
+
+  /**
+    * The schema reader fetches the schema from the database and transforms it into a schema model. You generally don't
+    * need to override this, but the option is there just in case.
+    */
+  def schemaReader: SchemaReader
+
+  /**
+    * The type resolver translates JDBC types to Scala types.
+    */
+  def typeResolver: TypeResolver
 
   /**
     * The raw type builder can be overridden to change how type names are turned to strings globally, instead
@@ -114,12 +114,13 @@ case class DefaultGeneratorConfiguration(
     */
   def inheritances: SchemaInheritances = SchemaInheritances.empty
 
-  override val ignoredTables: Set[String] = Set.empty
-  override val schemaReader: SchemaReader = new DefaultSchemaReader(this)
-  override val typeResolver: TypeResolver = new DefaultTypeResolver(customTypes)
-  override val namingStrategy: NamingStrategy = SnakeCaseToCamelCase
-  override val imports: Set[Import] = Set.empty
-  override val rawTypeBuilder: RawTypeBuilder = new ImportSimplifyingRawTypeBuilder(imports)
+  override def ignoredTables: Set[String] = Set.empty
+  override def namingStrategy: NamingStrategy = SnakeCaseToCamelCase
+  override def imports: Set[Import] = Set.empty
+
+  override lazy val schemaReader: SchemaReader = new DefaultSchemaReader(this)
+  override lazy val typeResolver: TypeResolver = new DefaultTypeResolver(customTypes)
+  override lazy val rawTypeBuilder: RawTypeBuilder = new ImportSimplifyingRawTypeBuilder(imports)
 
   override def selectSchemaEmitter(schema: Schema): SchemaEmitter = new SingleFileSchemaEmitter(this, schema)
   override def selectModelEmitter(table: Table): ModelEmitter = new DefaultModelEmitter(this, inheritances, table)
