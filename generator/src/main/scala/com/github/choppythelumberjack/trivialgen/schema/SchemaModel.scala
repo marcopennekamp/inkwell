@@ -5,7 +5,6 @@ import scala.reflect.runtime.universe.Type
 // TODO: Add the ability to navigate "up" the model to columns and tables.
 
 case class Schema(
-  databaseType: DatabaseType,
   tables: Seq[Table],
 )
 

@@ -32,19 +32,15 @@ class DefaultSchemaReader(config: GeneratorConfiguration) extends SchemaReader {
     computation
   }
 
-  // TODO: Handle foreign keys.
-  // TODO: Handle primary keys (for IDs).
-
-  protected def getSchema(db: Connection): Schema = {
-    val tables = getTables(db)
-    val databaseType = DatabaseType.fromProductName(db.getMetaData.getDatabaseProductName)
-    Schema(databaseType, tables)
-  }
+  protected def getSchema(db: Connection): Schema = Schema(getTables(db))
 
   import com.github.choppythelumberjack.trivialgen.util.ResultSetExtensions
 
   // Note that in the following code, toVector unravels the iterator, so that we don't access the DB (through maps)
   // after closing it. The more general toSeq does NOT transform the iterator to a list but instead keeps the iterator.
+
+  // TODO: Handle primary keys (for IDs).
+  // TODO: Handle foreign keys.
 
   protected def getTables(db: Connection): Seq[Table] = {
     val rs = db.getMetaData.getTables(null, config.sourceSchema, "%", Array("TABLE")) // The pattern % matches any name.
