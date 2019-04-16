@@ -46,7 +46,7 @@ trait SchemaEmitter {
     * The emitted import section below each unit's package declaration.
     */
   def importCode: String = imports.map {
-    case e: Import.Entity => e.classTag.toString
+    case e: Import.Entity => e.fullName
     case p: Import.Package => s"${p.name}._"
   }.map(s => s"import $s").mkString("\n")
 

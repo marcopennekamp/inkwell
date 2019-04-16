@@ -59,7 +59,7 @@ class DefaultRawTypeBuilder extends RawTypeBuilder {
   */
 class ImportSimplifyingRawTypeBuilder(imports: Set[Import]) extends DefaultRawTypeBuilder {
   val classes: Set[String] =
-    imports.filter(_.isInstanceOf[Import.Entity]).map { case e: Import.Entity => e.tpe.symbolPreserveAliases.fullName }
+    imports.filter(_.isInstanceOf[Import.Entity]).map { case e: Import.Entity => e.fullName }
   val packages: Set[String] =
     imports.filter(_.isInstanceOf[Import.Package]).map { case p: Import.Package => p.name } +
       "java.lang" + "scala" + "scala.Predef"
