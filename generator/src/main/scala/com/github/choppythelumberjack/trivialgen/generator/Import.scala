@@ -1,8 +1,8 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
-import scala.reflect.runtime.universe.Type
+import com.github.choppythelumberjack.trivialgen.generator.TypeUtil.TypeExtensions
 
-import TypeUtil.TypeExtensions
+import scala.reflect.runtime.universe.Type
 
 sealed trait Import
 

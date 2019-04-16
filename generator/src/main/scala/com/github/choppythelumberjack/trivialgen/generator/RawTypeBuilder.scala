@@ -1,9 +1,10 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
-import scala.reflect.runtime.universe._
-import TypeUtil.TypeExtensions
+import com.github.choppythelumberjack.trivialgen.generator.TypeUtil.TypeExtensions
 import com.github.choppythelumberjack.trivialgen.generator.TypeUtil.names.OwnerName
 import com.github.choppythelumberjack.trivialgen.util._
+
+import scala.reflect.runtime.universe._
 
 /**
   * Turns a Scala [[Type]] into a String. Override this if you want to change how types are stringified

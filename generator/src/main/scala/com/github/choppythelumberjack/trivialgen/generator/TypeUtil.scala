@@ -1,8 +1,8 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
-import scala.reflect.runtime.universe._
-
 import com.github.choppythelumberjack.trivialgen.util._
+
+import scala.reflect.runtime.universe._
 
 object TypeUtil {
 

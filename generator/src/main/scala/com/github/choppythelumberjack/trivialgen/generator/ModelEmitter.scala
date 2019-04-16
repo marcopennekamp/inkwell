@@ -3,8 +3,6 @@ package com.github.choppythelumberjack.trivialgen.generator
 import com.github.choppythelumberjack.trivialgen.GeneratorConfiguration
 import com.github.choppythelumberjack.trivialgen.schema.Table
 
-import scala.reflect.runtime.universe.Type
-
 /**
   * Handles the transformation of one table to a (case) class.
   */

@@ -1,9 +1,9 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
-import scala.reflect.runtime.universe.Type
-
 import com.github.choppythelumberjack.trivialgen.GeneratorConfiguration
 import com.github.choppythelumberjack.trivialgen.schema.{Column, TypeResolver}
+
+import scala.reflect.runtime.universe.Type
 
 /**
   * Handles the transformation of one column to a class property.

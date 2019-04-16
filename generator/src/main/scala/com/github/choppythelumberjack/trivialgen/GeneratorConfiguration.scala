@@ -2,10 +2,10 @@ package com.github.choppythelumberjack.trivialgen
 
 import java.nio.file.Path
 
-import scala.reflect.runtime.universe.Type
-
 import com.github.choppythelumberjack.trivialgen.generator._
 import com.github.choppythelumberjack.trivialgen.schema._
+
+import scala.reflect.runtime.universe.Type
 
 case class DatabaseConfiguration(
   url: String,
