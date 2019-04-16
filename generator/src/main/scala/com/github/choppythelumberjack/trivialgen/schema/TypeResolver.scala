@@ -21,7 +21,6 @@ trait TypeResolver {
 class DefaultTypeResolver(jdbcToScala: Map[String, Type]) extends TypeResolver {
 
   override def apply(columnMeta: JdbcColumnMeta): Option[Type] = {
-    //implicit def toSomeScalaType[T](t: (ClassTag[_], String)): Option[ScalaType] = Some(ScalaType(t._1, t._2))
     implicit def toSome[T](t: Type): Option[Type] = Some(t)
 
     columnMeta.dataType match {
