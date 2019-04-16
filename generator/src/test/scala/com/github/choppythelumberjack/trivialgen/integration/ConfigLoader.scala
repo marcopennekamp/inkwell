@@ -11,10 +11,10 @@ object ConfigLoader {
     DatabaseConfiguration(s"jdbc:h2:mem:sample;INIT=RUNSCRIPT FROM 'generator/src/test/resources/$sqlScriptName'", "sa", "")
   }
 
-  def singleFileConfig(sqlScriptName: String, target: Path, pkg: String) = DefaultGeneratorConfiguration(
+  def singleFileConfig(sqlScriptName: String, target: Path, basePackage: String) = DefaultGeneratorConfiguration(
     databaseConfiguration(sqlScriptName),
     defaultSchemaName,
     target,
-    pkg,
+    basePackage,
   )
 }
