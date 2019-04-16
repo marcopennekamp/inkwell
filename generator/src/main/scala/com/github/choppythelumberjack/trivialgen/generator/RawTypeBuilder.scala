@@ -1,8 +1,9 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
 import scala.reflect.runtime.universe._
-
 import TypeUtil.TypeExtensions
+import com.github.choppythelumberjack.trivialgen.generator.TypeUtil.names.OwnerName
+import com.github.choppythelumberjack.trivialgen.util._
 
 /**
   * Turns a Scala [[Type]] into a string. Override this if you want to change how types are stringified
@@ -16,10 +17,9 @@ class DefaultRawTypeBuilder extends RawTypeBuilder {
   /**
     * Stringifies the full name of the current type.
     *
-    * Override this definition if you need to change how the T part of a raw type T[A, B, ...]
-    * is stringified.
+    * Override this definition if you need to change how the T part of a raw type T[A, B, ...] is stringified.
     */
-  def fullName(ownerName: Option[String], typeName: String): String = TypeUtil.names.concatOpt(ownerName, Some(typeName))
+  def fullName(ownerName: Option[OwnerName], typeName: String): String = TypeUtil.names.concat(ownerName, typeName)
 
   /**
     * Stringifies each type argument of the current type.
@@ -62,14 +62,25 @@ class ImportSimplifyingRawTypeBuilder(imports: Set[Import]) extends DefaultRawTy
     imports.filter(_.isInstanceOf[Import.Package]).map { case p: Import.Package => p.name } +
       "java.lang" + "scala" + "scala.Predef"
 
-  // TODO: Instead of matching packages one-to-one, simplify a name as much as possible.
+  /**
+    * @return The shortest version of the owner name possible based on imported packages.
+    */
+  private def simplifyOwnerName(ownerName: OwnerName): Option[OwnerName] = {
+    // The owner name has to start with the full package, because an import of a package is basically package._, so
+    // we can't, for example, take a substring of the package to simplify the owner name.
+    (packages.filter(p => ownerName.startsWith(p))
+      .map(p => ownerName.drop(p.length))
+      .map(n => if (n.startsWith(".")) n.drop(1) else n) + ownerName)
+      .minBy(_.length) // Take the shortest owner name.
+      .emptyToNone
+  }
 
-  override def fullName(ownerName: Option[String], typeName: String): String = {
+  override def fullName(ownerName: Option[OwnerName], typeName: String): String = {
     val fullName = super.fullName(ownerName, typeName)
-    if (packages.contains(ownerName.getOrElse("")) || classes.contains(fullName)) {
+    if (classes.contains(fullName)) {
       typeName
     } else {
-      fullName
+      super.fullName(ownerName.flatMap(simplifyOwnerName), typeName)
     }
   }
 }
