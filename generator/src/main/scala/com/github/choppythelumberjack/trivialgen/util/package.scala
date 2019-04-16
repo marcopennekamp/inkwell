@@ -11,4 +11,8 @@ package object util {
     }
   }
 
+  implicit class StringExtensions(str: String) {
+    def emptyToNone: Option[String] = if (str.nonEmpty) Some(str) else None
+  }
+
 }
