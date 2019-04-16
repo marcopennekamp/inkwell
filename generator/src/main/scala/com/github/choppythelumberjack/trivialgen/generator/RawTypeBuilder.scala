@@ -6,11 +6,19 @@ import com.github.choppythelumberjack.trivialgen.generator.TypeUtil.names.OwnerN
 import com.github.choppythelumberjack.trivialgen.util._
 
 /**
-  * Turns a Scala [[Type]] into a string. Override this if you want to change how types are stringified
+  * Turns a Scala [[Type]] into a String. Override this if you want to change how types are stringified
   * globally instead of just in specific instances.
   */
 trait RawTypeBuilder {
   def apply(scalaType: Type): String
+
+  /**
+    * Use this in cases where a [[Type]] can't be resolved at generator runtime. Does not support type
+    * arguments (yet).
+    *
+    * Used by [[DefaultModelEmitter]] to process [[TableInheritances]].
+    */
+  def apply(fullName: String): String
 }
 
 // TODO: Consider renaming RawTypeBuilder to TypeStringifier or even TypeEmitter.
@@ -33,10 +41,8 @@ class DefaultRawTypeBuilder extends RawTypeBuilder {
     */
   def rawTypeArgs(typeArgs: Seq[Type]): Seq[String] = typeArgs.map(this.apply)
 
-  override def apply(t: Type): String = {
-    val symbol = t.symbolPreserveAliases
-    val ownerName = TypeUtil.names.ownerName(symbol)
-    val typeName = symbol.name.toString
+  protected def transform(fullName: String, typeArgs: Seq[Type]): String = {
+    val (ownerName, typeName) = TypeUtil.names.split(fullName)
 
     // Now we have to treat type arguments:
     //   1. Type arguments aren't provided by fullName (obviously), but we still need them in the
@@ -45,10 +51,15 @@ class DefaultRawTypeBuilder extends RawTypeBuilder {
     //   2. To accommodate type arguments that have type arguments themselves and any potential
     //      overriding raw type builders (e.g. a raw type builder that simplifies packages based
     //      on imports) we simply call this apply function recursively.
-    val args = rawTypeArgs(t.typeArgs)
+    val args = rawTypeArgs(typeArgs)
 
-    fullName(ownerName, typeName) + (if (args.nonEmpty) s"[${args.mkString(", ")}]" else "")
+    this.fullName(ownerName, typeName) + (if (args.nonEmpty) s"[${args.mkString(", ")}]" else "")
   }
+
+  override def apply(t: Type): String = transform(t.symbolPreserveAliases.fullName, t.typeArgs)
+
+  // TODO: Add support for type arguments?
+  override def apply(fullName: String): String = transform(fullName, Seq.empty)
 }
 
 /**

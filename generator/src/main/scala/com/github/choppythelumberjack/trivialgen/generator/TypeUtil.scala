@@ -33,12 +33,15 @@ object TypeUtil {
       * This covers the edge case where no base package has been defined for some classes in a project and
       * is also used by [[ImportSimplifyingRawTypeBuilder]] to suggest that "no owner" is needed to
       * represent the current symbol.
+      *
+      * @return An owner name and a type name.
       */
-    def ownerName(sym: Symbol): Option[OwnerName] = {
-      // We cannot use sym.owner.fullName, because fullName drops package objects, but only if the current
+    def split(fullName: String): (Option[OwnerName], String) = {
+      // We cannot use symbol.owner.fullName, because fullName drops package objects, but only if the current
       // object is not a package object. Hence, we generate the fullName of the symbol itself and extract
       // the owner name through textual methods.
-      sym.fullName.split('.').init.mkString(".").emptyToNone
+      val parts = fullName.split('.')
+      (parts.init.mkString(".").emptyToNone, parts.last)
     }
 
     /**
