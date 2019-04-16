@@ -1,7 +1,6 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
 import com.github.choppythelumberjack.trivialgen.GeneratorConfiguration
-import com.github.choppythelumberjack.trivialgen.generator.DefaultModelEmitter.InheritanceMap
 import com.github.choppythelumberjack.trivialgen.schema.Table
 
 import scala.reflect.runtime.universe.Type
@@ -50,19 +49,16 @@ trait ModelEmitter {
 /**
   * Generates a simple case class based on the configured naming strategy, selected property emitter
   * and inheritance configurations.
-  *
-  * Note that the inheritance map uses SQL names as keys and <b>not</b> Scala names.
   */
 class DefaultModelEmitter(
   config: GeneratorConfiguration,
-  inheritanceMap: InheritanceMap,
+  schemaInheritances: SchemaInheritances,
   override val table: Table
 ) extends ModelEmitter {
   override def name: String = config.namingStrategy.model(table.name)
   override def properties: Seq[String] = table.columns.map(c => config.selectPropertyEmitter(c).code)
-  override def supertypes: Seq[String] = inheritanceMap.getOrElse(table.name, Seq.empty).map(config.rawTypeBuilder(_))
-}
-
-object DefaultModelEmitter {
-  type InheritanceMap = Map[Table.Name, Seq[Type]]
+  override def supertypes: Seq[String] = {
+    val inh = schemaInheritances.get(table.name)
+    inh.types.map(config.rawTypeBuilder(_)) ++ inh.fullNames.map(config.rawTypeBuilder(_))
+  }
 }
