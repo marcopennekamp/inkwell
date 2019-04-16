@@ -7,8 +7,6 @@ import scala.reflect.runtime.universe.Type
 import com.github.choppythelumberjack.trivialgen.generator._
 import com.github.choppythelumberjack.trivialgen.schema._
 
-import scala.reflect.ClassTag
-
 case class DatabaseConfiguration(
   url: String,
   username: String,
@@ -112,9 +110,7 @@ case class DefaultGeneratorConfiguration(
 
   /**
     * The schema inheritance map is used by [[DefaultModelEmitter]] to provide support for model supertypes.
-    * You can override this value to provide your own inheritance rules. Please note that the left-hand
-    * values of the map are <b>SQL names</b> not Scala names (since the latter is not stable due to a
-    * possible variance in naming strategies).
+    * You can override this value to provide your own inheritance rules.
     */
   def inheritances: SchemaInheritances = SchemaInheritances.empty
 

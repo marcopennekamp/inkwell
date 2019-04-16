@@ -1,7 +1,5 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
-import com.github.choppythelumberjack.trivialgen.schema.Table
-
 import scala.reflect.runtime.universe.Type
 
 /**
@@ -43,11 +41,12 @@ object TableInheritances {
 /**
   * [[SchemaInheritances]] holds all inheritance declarations (extends, with) for the whole schema.
   *
-  * Note that the inheritance map uses SQL names as keys and <b>not</b> Scala names. This is because
-  * SQL names are stable while Scala names depend on the [[NamingStrategy]].
+  * Note that the inheritance map should use Scala names. Although Scala names depend on the [[NamingStrategy]],
+  * SQL names are usually case insensitive. Additionally, Scala names are closer to the actual "A extends B" and
+  * thus easier to use in the context of inheritance.
   */
-case class SchemaInheritances(map: Map[Table.Name, TableInheritances] = Map.empty) {
-  def get(name: Table.Name): TableInheritances = map.getOrElse(name, TableInheritances.empty)
+case class SchemaInheritances(map: Map[String, TableInheritances] = Map.empty) {
+  def get(name: String): TableInheritances = map.getOrElse(name, TableInheritances.empty)
 }
 
 object SchemaInheritances {
