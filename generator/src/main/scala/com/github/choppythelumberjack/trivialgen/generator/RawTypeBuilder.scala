@@ -13,6 +13,8 @@ trait RawTypeBuilder {
   def apply(scalaType: Type): String
 }
 
+// TODO: Consider renaming RawTypeBuilder to TypeStringifier or even TypeEmitter.
+
 class DefaultRawTypeBuilder extends RawTypeBuilder {
   /**
     * Stringifies the full name of the current type.
