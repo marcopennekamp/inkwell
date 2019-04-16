@@ -31,6 +31,10 @@ trait CompanionEmitter {
   protected def innerCode: String
 }
 
+// TODO: Add inheritance support for the companion object? It's useful in cases where pre-defined implicits
+//       have to be associated with an object, or in general definitions. See also SchemaTests for an example
+//       of a good use case with the age quote.
+
 class DefaultCompanionEmitter(config: GeneratorConfiguration, override val table: Table) extends CompanionEmitter {
   override def name: String = config.namingStrategy.model(table.name)
   override def innerCode: String = ""
