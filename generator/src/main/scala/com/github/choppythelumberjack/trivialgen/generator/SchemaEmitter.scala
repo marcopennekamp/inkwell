@@ -15,7 +15,7 @@ trait SchemaEmitter {
   /**
     * The schema to be transformed.
     */
-  def schema: Schema
+  protected def schema: Schema
 
   /**
     * The generated compilation units which will be written to different files.
@@ -27,12 +27,12 @@ trait SchemaEmitter {
     *
     * @return An extensionless path to the file the unit should be written to.
     */
-  def unitPath(unitName: String): Path = Paths.get(packageName(unitName).replace(".", File.pathSeparator), unitName)
+  protected def unitPath(unitName: String): Path = Paths.get(packageName(unitName).replace(".", File.pathSeparator), unitName)
 
   /**
     * The emitted header generated from the package declaration, import code and possibly additional code.
     */
-  def header(unitName: String): String =
+  protected def header(unitName: String): String =
     s"""package ${packageName(unitName)}
        |
        |$importCode""".stripMargin
@@ -40,12 +40,12 @@ trait SchemaEmitter {
   /**
     * The package name referenced in the unit's package declaration.
     */
-  def packageName(unitName: String): String
+  protected def packageName(unitName: String): String
 
   /**
     * The emitted import section below each unit's package declaration.
     */
-  def importCode: String = imports.map {
+  protected def importCode: String = imports.map {
     case e: Import.Entity => e.fullName
     case p: Import.Package => s"${p.name}._"
   }.map(s => s"import $s").mkString("\n")
@@ -53,7 +53,7 @@ trait SchemaEmitter {
   /**
     * A set of imports.
     */
-  def imports: Set[Import]
+  protected def imports: Set[Import]
 }
 
 object SchemaEmitter {

@@ -12,7 +12,7 @@ trait ModelEmitter {
   /**
     * The table to be transformed.
     */
-  def table: Table
+  protected def table: Table
 
   /**
     * The generated code for the case class.
@@ -22,7 +22,7 @@ trait ModelEmitter {
   /**
     * The emitted extends clause of the case class declaration.
     */
-  def extendsClause: String = {
+  protected def extendsClause: String = {
     if (supertypes.nonEmpty) {
       (s"extends ${supertypes.head}" :: supertypes.tail.toList).mkString(" with ")
     } else {
@@ -33,17 +33,17 @@ trait ModelEmitter {
   /**
     * The name of the model.
     */
-  def name: String
+  protected def name: String
 
   /**
     * The (emitted) properties of the case class.
     */
-  def properties: Seq[String]
+  protected def properties: Seq[String]
 
   /**
     * The (emitted) supertypes of the case class.
     */
-  def supertypes: Seq[String]
+  protected def supertypes: Seq[String]
 }
 
 /**

@@ -14,7 +14,7 @@ trait PropertyEmitter {
   /**
     * The column to be transformed.
     */
-  def column: Column
+  protected def column: Column
 
   /**
     * The generated code. If all else fails (i.e. overriding name and rawType doesn't do it), override this
@@ -25,12 +25,12 @@ trait PropertyEmitter {
   /**
     * The name of the column (usually transformed by some kind of [[NamingStrategy]]).
     */
-  def name: String
+  protected def name: String
 
   /**
     * The emitted raw type but wrapped in an Option <b>if</b> the column is nullable.
     */
-  def typeWithNullable: String = if (column.isNullable) s"Option[$rawType]" else rawType
+  protected def typeWithNullable: String = if (column.isNullable) s"Option[$rawType]" else rawType
 
   /**
     * The emitted raw type of the column. Overriding the raw type directly can be used to implement types
@@ -43,13 +43,13 @@ trait PropertyEmitter {
     * but you can not provide the type parameter A = Person since Person does not exist until the generation
     * is finished. In such a case, overriding this definition is a good idea.
     */
-  def rawType: String
+  protected def rawType: String
 
   /**
     * The scala [[Type]] of the column. You can override this definition to change the type "at the last
     * minute" before [[rawType]] is calculated.
     */
-  def scalaType: Type = column.scalaType
+  protected def scalaType: Type = column.scalaType
 }
 
 /**

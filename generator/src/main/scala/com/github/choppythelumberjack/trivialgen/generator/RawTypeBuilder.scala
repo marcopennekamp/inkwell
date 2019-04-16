@@ -29,7 +29,7 @@ class DefaultRawTypeBuilder extends RawTypeBuilder {
     *
     * Override this definition if you need to change how the T part of a raw type T[A, B, ...] is stringified.
     */
-  def fullName(ownerName: Option[OwnerName], typeName: String): String = TypeUtil.names.concat(ownerName, typeName)
+  protected def fullName(ownerName: Option[OwnerName], typeName: String): String = TypeUtil.names.concat(ownerName, typeName)
 
   /**
     * Stringifies each type argument of the current type.
@@ -39,7 +39,7 @@ class DefaultRawTypeBuilder extends RawTypeBuilder {
     *
     * @param typeArgs Regularly empty for types without type arguments.
     */
-  def rawTypeArgs(typeArgs: Seq[Type]): Seq[String] = typeArgs.map(this.apply)
+  protected def rawTypeArgs(typeArgs: Seq[Type]): Seq[String] = typeArgs.map(this.apply)
 
   protected def transform(fullName: String, typeArgs: Seq[Type]): String = {
     val (ownerName, typeName) = TypeUtil.names.split(fullName)
@@ -69,14 +69,14 @@ class DefaultRawTypeBuilder extends RawTypeBuilder {
   * namespaces by default.
   */
 class ImportSimplifyingRawTypeBuilder(imports: Set[Import]) extends DefaultRawTypeBuilder {
-  val classes: Set[String] = imports.flatMap { case e: Import.Entity => Some(e.fullName); case _ => None }
-  val packages: Set[String] = imports.flatMap { case p: Import.Package => Some(p.name); case _ => None } ++
+  protected val classes: Set[String] = imports.flatMap { case e: Import.Entity => Some(e.fullName); case _ => None }
+  protected val packages: Set[String] = imports.flatMap { case p: Import.Package => Some(p.name); case _ => None } ++
       Set("java.lang", "scala", "scala.Predef")
 
   /**
     * @return The shortest version of the owner name possible based on imported packages.
     */
-  private def simplifyOwnerName(ownerName: OwnerName): Option[OwnerName] = {
+  protected def simplifyOwnerName(ownerName: OwnerName): Option[OwnerName] = {
     // The owner name has to start with the full package, because an import of a package is basically package._, so
     // we can't, for example, take a substring of the package to simplify the owner name.
     (packages.filter(p => ownerName.startsWith(p))

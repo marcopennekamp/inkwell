@@ -16,7 +16,7 @@ trait NamingStrategy {
   /**
     * The common naming strategy.
     */
-  def name(sqlName: String): String
+  protected def name(sqlName: String): String
 }
 
 /**

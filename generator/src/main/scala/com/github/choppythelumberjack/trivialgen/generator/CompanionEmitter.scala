@@ -10,7 +10,7 @@ trait CompanionEmitter {
   /**
     * The table to be transformed.
     */
-  def table: Table
+  protected def table: Table
 
   /**
     * The generated code for the companion object.
@@ -23,12 +23,12 @@ trait CompanionEmitter {
   /**
     * The name of the companion object.
     */
-  def name: String
+  protected def name: String
 
   /**
     * The inner code of the companion object.
     */
-  def innerCode: String
+  protected def innerCode: String
 }
 
 class DefaultCompanionEmitter(config: GeneratorConfiguration, override val table: Table) extends CompanionEmitter {
