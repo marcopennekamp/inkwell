@@ -2,20 +2,20 @@ DROP ALL OBJECTS;
 
 create table person (
   id int primary key auto_increment,
-  first_name varchar(255),
-  last_name varchar(255),
+  first_name varchar(255) not null,
+  last_name varchar(255) not null,
   birthday datetime not null
 );
 
 create table skill (
   id int primary key auto_increment,
-  name text
+  name text not null
 );
 
 create table person_skill (
   person_id int not null references person,
   skill_id int not null references skill,
-  level int
+  level int not null
 );
 
 insert into person values (default, 'Rick', 'Sanchez', parsedatetime('1958/07/03', 'yyyy/MM/dd'));
