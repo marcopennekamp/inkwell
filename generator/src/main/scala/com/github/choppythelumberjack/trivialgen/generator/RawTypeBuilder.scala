@@ -73,6 +73,8 @@ class ImportSimplifyingRawTypeBuilder(imports: Set[Import]) extends DefaultRawTy
   protected val packages: Set[String] = imports.flatMap { case p: Import.Package => Some(p.name); case _ => None } ++
       Set("java.lang", "scala", "scala.Predef")
 
+  // TODO: Include the base package of the generated source file in packages, since it's also "imported" by default.
+
   /**
     * @return The shortest version of the owner name possible based on imported packages.
     */

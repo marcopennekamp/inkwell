@@ -1,17 +1,19 @@
 package com.github.choppythelumberjack.trivialgen.generator
 
+import com.github.choppythelumberjack.trivialgen.schema.{Column, Table}
+
 trait NamingStrategy {
   /**
     * The naming strategy for turning table names into model (case class) names.
     * See [[ModelEmitter]].
     */
-  def model(sqlName: String): String = name(sqlName)
+  def model(sqlName: Table.Name): String = name(sqlName)
 
   /**
     * The naming strategy for turning column names into property names.
     * See [[PropertyEmitter]].
     */
-  def property(sqlName: String): String = name(sqlName)
+  def property(sqlName: Column.Name): String = name(sqlName)
 
   /**
     * The common naming strategy.
