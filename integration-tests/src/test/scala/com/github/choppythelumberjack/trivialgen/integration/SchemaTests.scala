@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 import io.getquill._
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
 import plumbus.academy.{Person, PersonSkill, Skill}
+import Util.GroupByExtensions
 
 class SchemaTests extends FlatSpec with Matchers with OptionValues with Schemas {
 
@@ -25,7 +26,9 @@ class SchemaTests extends FlatSpec with Matchers with OptionValues with Schemas 
     rick.firstName shouldEqual "Rick" // Check that we've really gotten Rick here (i.e. the age check works).
     rick.title shouldEqual Some("Dr.") // Check that the nullable title column is a Some in Rick's case.
 
+    // Test a more complex query with implicit joins. Also ensures that Person.title is an Option.
     case class SkillWithLevel(skill: Skill, level: Int)
+    case class SkilledPerson(person: Person, skills: Seq[SkillWithLevel])
 
     val skills = ctx.run {
       for {
@@ -34,12 +37,13 @@ class SchemaTests extends FlatSpec with Matchers with OptionValues with Schemas 
         s <- query[Skill] if s.id == ps.skillId
       } yield (p, s, ps)
     }.map { case (p, s, ps) => (p, SkillWithLevel(s, ps.level)) }
-     .groupBy(_._1).mapValues(_.map(_._2))
+     .combine.map(SkilledPerson.tupled)
 
-    skills.keySet.map(_.firstName) should contain ("Morty")
-    val (_, mortySkills) = skills.find(_._1.firstName == "Morty").value
-    mortySkills should have length 3
-    val martialArts = mortySkills.find(_.skill.name == "Martial Arts").value
+    val morty = skills.find(_.person.firstName == "Morty").value
+    morty.person.firstName shouldEqual "Morty" // Check that we've really gotten Morty here (i.e. the age check works).
+    morty.person.title shouldEqual None // Check that the nullable title column is a None in Morty's case.
+    morty.skills should have length 3
+    val martialArts = morty.skills.find(_.skill.name == "Martial Arts").value
     martialArts.level shouldEqual 3
   }
 
