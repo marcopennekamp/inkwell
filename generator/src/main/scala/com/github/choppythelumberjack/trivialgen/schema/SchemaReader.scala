@@ -32,7 +32,11 @@ class DefaultSchemaReader(config: GeneratorConfiguration) extends SchemaReader {
     computation
   }
 
-  protected def getSchema(db: Connection): Schema = Schema(getTables(db))
+  protected def getSchema(db: Connection): Schema = {
+    val schema = Schema(getTables(db))
+    schema.tables.foreach(_.schema = schema) // Setup "upwards" references.
+    schema
+  }
 
   import com.github.choppythelumberjack.trivialgen.util.ResultSetExtensions
 
@@ -46,11 +50,14 @@ class DefaultSchemaReader(config: GeneratorConfiguration) extends SchemaReader {
     val rs = db.getMetaData.getTables(null, config.sourceSchema, "%", Array("TABLE")) // The pattern % matches any name.
     val metas = rs.toIterator.map(rs => JdbcTableMeta.fromResultSet(rs))
       .filterNot(m => config.ignoredTables.contains(m.tableName)) // Exclude ignored tables.
+      .toVector
 
     metas.map { meta =>
       val columns = getColumns(db, meta.tableName)
-      Table(meta.tableName, columns, meta)
-    }.toVector
+      val table = Table(meta.tableName, columns, meta)
+      columns.foreach(_.table = table) // Setup "upwards" references.
+      table
+    }
   }
 
   protected def getColumns(db: Connection, tableName: Table.Name): Seq[Column] = {
