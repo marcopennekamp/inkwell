@@ -2,8 +2,8 @@ DROP ALL OBJECTS;
 
 create table person (
   id int primary key auto_increment,
-  first_name varchar(255) not null,
-  last_name varchar(255) not null,
+  first_name text not null,
+  last_name text not null,
   birthday datetime not null
 );
 
