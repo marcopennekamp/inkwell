@@ -18,13 +18,17 @@ trait Generator {
       ex => throw GenerationException("Couldn't read the schema due to an underlying exception.", ex),
       schema => {
         val scalafmt = Scalafmt.create(this.getClass.getClassLoader)
-        val scalafmtConfig = Paths.get("generator/src/main/resources/scalafmt.conf")
-        //val scalafmtConfig = Paths.get(ClassLoader.getSystemResource("/scalafmt.conf").toURI)
+        val scalafmtConfig = config.scalafmtConfig.filter { p => // Ensure that the config file exists.
+          val exists = Files.exists(p)
+          if (!exists) println(s"Warning: Your scalafmt config file could not be found at $p.")
+          exists
+        }
         config.selectSchemaEmitter(schema).compilationUnits.foreach { unit =>
-          val path = Paths.get(unit.path.toString + ".scala")
-          val code = scalafmt.format(scalafmtConfig, path, unit.code)
-          Files.createDirectories(path.getParent)
-          Files.write(path, code.getBytes(StandardCharsets.UTF_8))
+          val filePath = Paths.get(unit.path.toString + ".scala")
+          // Only format the code with scalafmt if formatting is desired.
+          val code = scalafmtConfig.map(path => scalafmt.format(path, filePath, unit.code)).getOrElse(unit.code)
+          Files.createDirectories(filePath.getParent)
+          Files.write(filePath, code.getBytes(StandardCharsets.UTF_8))
         }
       }
     )

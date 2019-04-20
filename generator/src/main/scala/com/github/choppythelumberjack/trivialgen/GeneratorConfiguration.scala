@@ -1,6 +1,6 @@
 package com.github.choppythelumberjack.trivialgen
 
-import java.nio.file.Path
+import java.nio.file.{Path, Paths}
 
 import com.github.choppythelumberjack.trivialgen.generator._
 import com.github.choppythelumberjack.trivialgen.schema._
@@ -40,6 +40,11 @@ trait GeneratorConfiguration {
     * The base package of the target.
     */
   def basePackage: String
+
+  /**
+    * A Path to your scalafmt configuration file or None if no code formatting is desired.
+    */
+  def scalafmtConfig: Option[Path]
 
   /**
     * Names of all tables that should be ignored during code generation.
@@ -101,7 +106,6 @@ case class DefaultGeneratorConfiguration(
   override val target: Path,
   override val basePackage: String,
 ) extends GeneratorConfiguration {
-
   /**
     * A map of custom JDBC to Scala type mappings, used by the [[DefaultTypeResolver]]. Note that this
     * map is not used if you override [[typeResolver]].
@@ -114,6 +118,7 @@ case class DefaultGeneratorConfiguration(
     */
   def inheritances: SchemaInheritances = SchemaInheritances.empty
 
+  override def scalafmtConfig: Option[Path] = Some(Paths.get("generator/src/main/resources/scalafmt.conf"))
   override def ignoredTables: Set[String] = Set.empty
   override def namingStrategy: NamingStrategy = SnakeCaseToCamelCase
   override def imports: Set[Import] = Set.empty
