@@ -4,6 +4,7 @@ create table person (
   id int primary key auto_increment,
   first_name text not null,
   last_name text not null,
+  title text, // Intentionally nullable, as a person might not always have a title.
   birthday datetime not null
 );
 
@@ -18,9 +19,9 @@ create table person_skill (
   level int not null
 );
 
-insert into person values (default, 'Rick', 'Sanchez', parsedatetime('1958/07/03', 'yyyy/MM/dd'));
+insert into person values (default, 'Rick', 'Sanchez', 'Dr.', parsedatetime('1958/07/03', 'yyyy/MM/dd'));
 // I don't actually know Morty's birthday, so don't go screaming at me.
-insert into person values (default, 'Morty', 'Smith', parsedatetime('2003/02/19', 'yyyy/MM/dd'));
+insert into person values (default, 'Morty', 'Smith', null, parsedatetime('2003/02/19', 'yyyy/MM/dd'));
 insert into skill values (default, 'Science');
 insert into skill values (default, 'Martial Arts');
 insert into skill values (default, 'Compassion');

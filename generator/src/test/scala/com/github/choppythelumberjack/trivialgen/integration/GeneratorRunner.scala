@@ -13,7 +13,6 @@ import scala.reflect.runtime.universe.typeOf
   */
 object GeneratorRunner {
 
-  // TODO: Add Option type test.
   // TODO: Add multiple trait inheritance test.
   // TODO: Add companion object code generation test.
   // TODO: Add enum types test.
@@ -26,7 +25,7 @@ object GeneratorRunner {
   }
 
   /**
-    * This configuration tests: Code generation, basic package imports, single trait inheritance.
+    * This configuration tests: Code generation, nullable columns to Options, basic imports, single trait inheritance.
     */
   def plumbusAcademy(basePath: String): Unit = {
     val config: DefaultGeneratorConfiguration = new DefaultGeneratorConfiguration(
