@@ -3,6 +3,8 @@ package com.github.choppythelumberjack.trivialgen
 import java.nio.charset.StandardCharsets
 import java.nio.file._
 
+import org.scalafmt.interfaces.Scalafmt
+
 case class GenerationException(message: String, cause: Throwable) extends RuntimeException(message, cause)
 
 trait Generator {
@@ -15,11 +17,14 @@ trait Generator {
     config.schemaReader.read().fold(
       ex => throw GenerationException("Couldn't read the schema due to an underlying exception.", ex),
       schema => {
+        val scalafmt = Scalafmt.create(this.getClass.getClassLoader)
+        val scalafmtConfig = Paths.get("generator/src/main/resources/scalafmt.conf")
+        //val scalafmtConfig = Paths.get(ClassLoader.getSystemResource("/scalafmt.conf").toURI)
         config.selectSchemaEmitter(schema).compilationUnits.foreach { unit =>
-          // TODO: Use scalafmt to format the generated code.
           val path = Paths.get(unit.path.toString + ".scala")
+          val code = scalafmt.format(scalafmtConfig, path, unit.code)
           Files.createDirectories(path.getParent)
-          Files.write(path, unit.code.getBytes(StandardCharsets.UTF_8))
+          Files.write(path, code.getBytes(StandardCharsets.UTF_8))
         }
       }
     )

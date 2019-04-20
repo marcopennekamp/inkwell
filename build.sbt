@@ -80,6 +80,7 @@ lazy val commonSettings = Seq(
     "io.getquill" %% "quill-core" % quillVersion,
     "io.getquill" %% "quill-sql" % quillVersion,
     "io.getquill" %% "quill-jdbc" % quillVersion,
+    "org.scalameta" %% "scalafmt-dynamic" % "2.0.0-RC6",
     "com.h2database" % "h2" % "1.4.196" % Test,
     "org.scalatest" %% "scalatest" % "3.0.4" % Test,
     "org.slf4j" % "slf4j-log4j12" % "1.7.16" % Test,
