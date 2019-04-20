@@ -56,3 +56,7 @@ object JdbcColumnMeta {
       isAutoincrement = rs.getString("IS_AUTOINCREMENT"),
     )
 }
+
+case class ColumnIdentifier(tableName: Table.Name, columnName: Column.Name)
+
+case class JdbcForeignKeyMeta(from: ColumnIdentifier, to: ColumnIdentifier)
