@@ -15,10 +15,15 @@ class SchemaTests extends FlatSpec with Matchers with OptionValues with Schemas 
     // TODO: Add this as an extended trait PersonQuotes to Person's companion object.
     val age = quote((date: LocalDateTime) => infix"DATEDIFF(YEAR, $date, CURRENT_DATE)".as[Int])
 
+    // Test general accessibility and querying. This ensures that our generated code works properly together
+    // with Quill. Also ensures that Person.title is an Option.
     val over18 = ctx.run {
       query[Person].filter(p => age(p.birthday) >= 18)
     }
-    over18.map(_.firstName) should (have length 1 and contain ("Rick"))
+    over18 should have length 1
+    val rick = over18.head
+    rick.firstName shouldEqual "Rick" // Check that we've really gotten Rick here (i.e. the age check works).
+    rick.title shouldEqual Some("Dr.") // Check that the nullable title column is a Some in Rick's case.
 
     case class SkillWithLevel(skill: Skill, level: Int)
 
