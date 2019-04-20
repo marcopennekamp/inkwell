@@ -1,9 +1,12 @@
 package com.github.choppythelumberjack.trivialgen.integration
 
 import java.nio.file.Paths
+import java.time.LocalDateTime
 
 import com.github.choppythelumberjack.trivialgen.generator.{Import, SchemaInheritances, TableInheritances}
 import com.github.choppythelumberjack.trivialgen.{DefaultGenerator, DefaultGeneratorConfiguration}
+
+import scala.reflect.runtime.universe.typeOf
 
 /**
   * Generates source files for the integration-tests project.
@@ -11,7 +14,6 @@ import com.github.choppythelumberjack.trivialgen.{DefaultGenerator, DefaultGener
 object GeneratorRunner {
 
   // TODO: Add Option type test.
-  // TODO: Add entity imports test.
   // TODO: Add multiple trait inheritance test.
   // TODO: Add companion object code generation test.
   // TODO: Add enum types test.
@@ -34,12 +36,15 @@ object GeneratorRunner {
       basePackage = "plumbus.academy",
     ) {
       override val imports: Set[Import] = Set(
-        Import.Package("plumbus.academy"),
+        Import.Package("plumbus.academy"), // Testing package imports.
+        Import.Entity.fromType(typeOf[LocalDateTime]), // Testing Entity.fromType imports.
+        Import.Entity("java.nio.file.Paths"), // Testing fullName "raw" imports.
       )
 
       override def inheritances: SchemaInheritances = SchemaInheritances(Map(
         "Person" -> TableInheritances(
-          fullNames = Seq("plumbus.academy.PersonFunctions"),
+          // TODO: Test referring to a trait via typeOf.
+          fullNames = Seq("plumbus.academy.PersonFunctions"), // Testing simple trait inheritance based on raw names.
         ),
       ))
     }
