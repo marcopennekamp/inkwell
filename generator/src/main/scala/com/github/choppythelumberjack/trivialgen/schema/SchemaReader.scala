@@ -43,7 +43,6 @@ class DefaultSchemaReader(config: GeneratorConfiguration) extends SchemaReader {
   // Note that in the following code, toVector unravels the iterator, so that we don't access the DB (through maps)
   // after closing it. The more general toSeq does NOT transform the iterator to a list but instead keeps the iterator.
 
-  // TODO: Handle primary keys (for IDs).
   // TODO: Handle foreign keys.
 
   protected def getTables(db: Connection): Seq[Table] = {
@@ -54,10 +53,20 @@ class DefaultSchemaReader(config: GeneratorConfiguration) extends SchemaReader {
 
     metas.map { meta =>
       val columns = getColumns(db, meta.tableName)
-      val table = Table(meta.tableName, columns, meta)
+      val primaryKeyNames = getPrimaryKeyNames(db, meta.tableName)
+      val primaryKey = columns.filter(c => primaryKeyNames.contains(c.name))
+      assert(primaryKeyNames.length == primaryKey.length)
+      val table = Table(meta.tableName, columns, primaryKey, meta)
       columns.foreach(_.table = table) // Setup "upwards" references.
       table
     }
+  }
+
+  protected def getPrimaryKeyNames(db: Connection, tableName: String): Seq[String] = {
+    val rs = db.getMetaData.getPrimaryKeys(null, null, tableName)
+    rs.toIterator.map { row =>
+      row.getString("COLUMN_NAME")
+    }.toVector
   }
 
   protected def getColumns(db: Connection, tableName: Table.Name): Seq[Column] = {

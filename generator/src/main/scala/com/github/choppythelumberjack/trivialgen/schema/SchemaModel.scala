@@ -9,6 +9,7 @@ case class Schema(
 case class Table(
   name: Table.Name,
   columns: Seq[Column],
+  primaryKey: Seq[Column],
   meta: JdbcTableMeta,
 ) {
   /**
