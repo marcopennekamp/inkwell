@@ -90,7 +90,7 @@ trait GeneratorConfiguration {
   def selectCompanionEmitter(table: Table): CompanionEmitter
 
   /**
-    * Selects the property emitter based on the given column (and possibly table and even schema).
+    * Selects the property emitter based on the given column (and possibly the table and even schema).
     */
   def selectPropertyEmitter(column: Column): PropertyEmitter
 }

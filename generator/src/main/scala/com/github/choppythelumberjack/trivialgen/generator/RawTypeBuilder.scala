@@ -75,6 +75,8 @@ class ImportSimplifyingRawTypeBuilder(imports: Set[Import]) extends DefaultRawTy
       Set("java.lang", "scala", "scala.Predef")
 
   // TODO: Include the base package of the generated source file in packages, since it's also "imported" by default.
+  //       This would depend on the package of the current compilation unit (see SchemaEmitter), so this is not as
+  //       trivial to implement.
 
   /**
     * @return The shortest version of the owner name possible based on imported packages.

@@ -3,6 +3,7 @@ package com.github.choppythelumberjack.trivialgen.schema
 import scala.reflect.runtime.universe.Type
 
 // TODO: Add the ability to navigate "up" the model to columns and tables.
+//       This is required for getting a table or schema object in a PropertyEmitter, for example.
 
 case class Schema(
   tables: Seq[Table],
