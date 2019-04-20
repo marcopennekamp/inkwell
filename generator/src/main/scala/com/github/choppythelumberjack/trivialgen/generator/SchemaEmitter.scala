@@ -74,7 +74,7 @@ class SingleFileSchemaEmitter(config: GeneratorConfiguration, override val schem
          |${config.selectCompanionEmitter(table).code}""".stripMargin
     }
     val unitName = config.target.getFileName.toString
-    val code = (header(unitName) +: tableCodes).mkString("\n")
+    val code = (header(unitName) +: "" +: tableCodes).mkString("\n") // "" Adds a new line between the header and the table codes.
     Seq(CompilationUnit(config.target, code))
   }
 
