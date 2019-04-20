@@ -56,7 +56,7 @@ class RawTypeBuilderSpec extends FlatSpec with Matchers {
   it should "simplify imported names correctly" in {
     val builder = new ImportSimplifyingRawTypeBuilder(Set(
       Import.Package("com.github.choppythelumberjack.trivialgen.test.RawTypeBuilderSpec"),
-      Import.Entity(typeOf[LocalDateTime]),
+      Import.Entity.fromType(typeOf[LocalDateTime]),
     ))
 
     // CaseClass should be simplified fully while Trait should be simplified up to the traits object.
