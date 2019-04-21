@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 import io.getquill._
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
-import plumbus.academy.{Person, PersonSkill, Skill}
+import plumbus.academy.{Id, Person, PersonSkill, Skill}
 import Util.GroupByExtensions
 
 class SchemaTests extends FlatSpec with Matchers with OptionValues with Schemas {
@@ -25,6 +25,7 @@ class SchemaTests extends FlatSpec with Matchers with OptionValues with Schemas 
     val rick = over18.head
     rick.firstName shouldEqual "Rick" // Check that we've really gotten Rick here (i.e. the age check works).
     rick.title shouldEqual Some("Dr.") // Check that the nullable title column is a Some in Rick's case.
+    assert(rick.id.isInstanceOf[Id[Person]]) // Check that we are really working with Id[A] types.
 
     // Test a more complex query with implicit joins. Also ensures that Person.title is an Option.
     case class SkillWithLevel(skill: Skill, level: Int)

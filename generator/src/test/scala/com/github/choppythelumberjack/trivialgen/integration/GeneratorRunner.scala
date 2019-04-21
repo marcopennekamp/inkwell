@@ -17,6 +17,7 @@ object GeneratorRunner {
   // TODO: Add companion object code generation test.
   // TODO: Add enum types test.
   // TODO: Test "upwards" references in schema model (column -> table and table -> schema).
+  // TODO: Test how KeyAsIdColumnPlugin behaves with multi-line primary and foreign keys.
 
   def main(args: Array[String]): Unit = {
     val path = args(0)
@@ -24,7 +25,8 @@ object GeneratorRunner {
   }
 
   /**
-    * This configuration tests: Code generation, nullable columns to Options, basic imports, single trait inheritance.
+    * This configuration tests: Code generation, nullable columns to Options, basic imports, single trait inheritance,
+    * KeyAsIdColumnPlugin and the foreign/primary key model.
     */
   def plumbusAcademy(basePath: String): Unit = {
     val config: DefaultGeneratorConfiguration = new DefaultGeneratorConfiguration(
