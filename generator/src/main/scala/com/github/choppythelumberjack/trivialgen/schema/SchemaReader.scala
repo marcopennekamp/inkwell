@@ -36,12 +36,13 @@ class DefaultSchemaReader(config: GeneratorConfiguration) extends SchemaReader {
     val schema = Schema(getTables(db))
 
     // Setup foreign keys now so we can build proper references to Column instances.
-    val foreignKeyMetas = getForeignKeyMetas(db)
     schema.tables.foreach { table =>
+      val foreignKeyMetas = getForeignKeyMetas(db, table.name)
+      assert(foreignKeyMetas.forall(_.from.tableName == table.name))
       // Grouping the table's foreign keys by from.columnName essentially gives us one sequence element
       // per individual foreign key. For example, if a foreign key references two columns of the other
       // table, foreignKeyMetas would contain two entries while they would be combined in foreignKeys.
-      val foreignKeys = foreignKeyMetas.filter(_.from.tableName == table.name).groupBy(_.from.columnName)
+      val foreignKeys = foreignKeyMetas.groupBy(_.from.columnName)
       foreignKeys.foreach { case (columnName, fkMeta) =>
         table.columns.find(_.name == columnName) match {
           case None => throw new RuntimeException(s"Inconsistent database schema: Unknown column name $columnName")
@@ -114,11 +115,13 @@ class DefaultSchemaReader(config: GeneratorConfiguration) extends SchemaReader {
   }
 
   /**
-    * Note that foreign keys are read in "backwards". JDBC returns the foreign keys pointing to a primary key
-    * of a specific table, so we have to get them all at once and then resolve at the end.
+    * Retrieves the foreign keys of a specific table.
     */
-  protected def getForeignKeyMetas(db: Connection): Seq[JdbcForeignKeyMeta] = {
-    val rs = db.getMetaData.getExportedKeys(null, config.sourceSchema, null)
+  protected def getForeignKeyMetas(db: Connection, tableName: String): Seq[JdbcForeignKeyMeta] = {
+    // We have to get the foreign keys per table, since 'table' may not be null in getImportedKeys! This is true
+    // while using H2 DB, but I wonder if this is an artifact of a shoddily written JDBC spec. I see no reason
+    // why JDBC wouldn't allow getting all foreign keys at once.
+    val rs = db.getMetaData.getImportedKeys(null, config.sourceSchema, tableName)
     rs.toIterator.map { row =>
       JdbcForeignKeyMeta(
         from = ColumnIdentifier(
