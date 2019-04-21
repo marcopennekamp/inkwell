@@ -17,15 +17,15 @@ trait PropertyEmitter {
   protected def column: Column
 
   /**
-    * The generated code. If all else fails (i.e. overriding name and rawType doesn't do it), override this
-    * definition.
+    * The generated code. Please ensure that the generated name and type are consistent with the naming strategy
+    * and type emitter.
     */
-  def code: String = s"$name: $typeWithNullable"
+  def code: String = s"${namingStrategy.property(column)}: $typeWithNullable"
 
   /**
-    * The name of the column (usually transformed by some kind of [[NamingStrategy]]).
+    * The naming strategy for the property name.
     */
-  protected def name: String
+  def namingStrategy: NamingStrategy
 
   /**
     * The emitted raw type but wrapped in an Option <b>if</b> the column is nullable.
@@ -56,8 +56,8 @@ trait PropertyEmitter {
   * Emits a property based on the globally configured naming strategy and without locally modifying the raw type.
   */
 class DefaultPropertyEmitter(config: GeneratorConfiguration, override val column: Column) extends PropertyEmitter {
-  override def name: String = config.namingStrategy.property(column.name)
   override def rawType: String = config.rawTypeBuilder(scalaType)
+  override def namingStrategy: NamingStrategy = config.namingStrategy
 }
 
 // TODO: Add an Id property emitter that uses foreign keys and primary keys.

@@ -13,9 +13,9 @@ trait ModelEmitter {
   protected def table: Table
 
   /**
-    * The generated code for the case class.
+    * The generated code for the case class. Please ensure that the name is consistent with the naming strategy.
     */
-  def code: String = s"case class $name(${properties.mkString(", ")}) $extendsClause"
+  def code: String = s"case class ${namingStrategy.model(table)}(${properties.mkString(", ")}) $extendsClause"
 
   /**
     * The emitted extends clause of the case class declaration.
@@ -29,9 +29,9 @@ trait ModelEmitter {
   }
 
   /**
-    * The name of the model.
+    * The naming strategy for the model name.
     */
-  protected def name: String
+  def namingStrategy: NamingStrategy
 
   /**
     * The (emitted) properties of the case class.
@@ -53,10 +53,10 @@ class DefaultModelEmitter(
   schemaInheritances: SchemaInheritances,
   override val table: Table
 ) extends ModelEmitter {
-  override def name: String = config.namingStrategy.model(table.name)
+  override def namingStrategy: NamingStrategy = config.namingStrategy
   override def properties: Seq[String] = table.columns.map(c => config.selectPropertyEmitter(c).code)
   override def supertypes: Seq[String] = {
-    val inh = schemaInheritances.get(config.namingStrategy.model(table.name))
     inh.types.map(config.rawTypeBuilder(_)) ++ inh.fullNames.map(config.rawTypeBuilder(_))
+    val inh = schemaInheritances.get(config.namingStrategy.model(table))
   }
 }

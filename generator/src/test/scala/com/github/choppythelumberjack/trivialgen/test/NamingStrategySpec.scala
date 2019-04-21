@@ -1,9 +1,18 @@
 package com.github.choppythelumberjack.trivialgen.test
 
 import com.github.choppythelumberjack.trivialgen.generator.{CamelCaseToSnakeCase, SnakeCaseToCamelCase}
+import com.github.choppythelumberjack.trivialgen.schema.{Column, Table}
 import org.scalatest.{FlatSpec, Matchers}
 
+import scala.reflect.runtime.universe.typeOf
+
 class NamingStrategySpec extends FlatSpec with Matchers {
+
+  // TODO: Test a naming strategy which operates on some meaningful Column property (such as isNullable).
+
+  // The null isn't safe, these objects aren't safely initialised either, but it's sufficient for the current purpose.
+  implicit def mockColumn(name: String): Column = Column(name, typeOf[Int], isNullable = false, null)
+  implicit def mockTable(name: String): Table = Table(name, Seq.empty, Seq.empty, null)
 
   "CamelCaseToSnakeCase" should "translate camel case to snake case" in {
     val st = CamelCaseToSnakeCase

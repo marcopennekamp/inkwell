@@ -4,16 +4,14 @@ import com.github.choppythelumberjack.trivialgen.schema.{Column, Table}
 
 trait NamingStrategy {
   /**
-    * The naming strategy for turning table names into model (case class) names.
-    * See [[ModelEmitter]].
+    * The naming strategy for turning table names into model (case class) names. See [[ModelEmitter]].
     */
-  def model(sqlName: Table.Name): String = name(sqlName)
+  def model(table: Table): String = name(table.name)
 
   /**
-    * The naming strategy for turning column names into property names.
-    * See [[PropertyEmitter]].
+    * The naming strategy for turning column names into property names. See [[PropertyEmitter]].
     */
-  def property(sqlName: Column.Name): String = name(sqlName)
+  def property(column: Column): String = name(column.name)
 
   /**
     * The common naming strategy.
@@ -71,7 +69,7 @@ trait SnakeCaseToCamelCase extends NamingStrategy {
   // The sqlName is lowercased because some databases seem to return case-insensitive names in upper case
   // and snake_case names are supposed to be lower case only.
   override def name(sqlName: String): String = io.getquill.CamelCase.default(sqlName.toLowerCase)
-  override def model(sqlName: String): String = name(sqlName).capitalize
+  override def model(table: Table): String = name(table.name).capitalize
 }
 
 object SnakeCaseToCamelCase extends SnakeCaseToCamelCase

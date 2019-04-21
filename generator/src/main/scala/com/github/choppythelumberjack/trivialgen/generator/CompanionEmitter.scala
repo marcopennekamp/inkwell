@@ -13,17 +13,17 @@ trait CompanionEmitter {
   protected def table: Table
 
   /**
-    * The generated code for the companion object.
+    * The generated code for the companion object. Please ensure that the name is consistent with the naming strategy.
     */
   def code: String = if (innerCode.isEmpty) "" else
-    s"""object $name {
+    s"""object ${namingStrategy.model(table)} {
        |  $innerCode
        |}""".stripMargin
 
   /**
-    * The name of the companion object.
+    * The naming strategy for the companion name.
     */
-  protected def name: String
+  def namingStrategy: NamingStrategy
 
   /**
     * The inner code of the companion object.
@@ -36,6 +36,6 @@ trait CompanionEmitter {
 //       of a good use case with the age quote.
 
 class DefaultCompanionEmitter(config: GeneratorConfiguration, override val table: Table) extends CompanionEmitter {
-  override def name: String = config.namingStrategy.model(table.name)
+  override def namingStrategy: NamingStrategy = config.namingStrategy
   override def innerCode: String = ""
 }
