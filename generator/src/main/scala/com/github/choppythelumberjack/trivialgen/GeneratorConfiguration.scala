@@ -74,10 +74,9 @@ trait GeneratorConfiguration {
   def typeResolver: TypeResolver
 
   /**
-    * The raw type builder can be overridden to change how type names are turned to strings globally, instead
-    * of overriding a specific emitter's rawType definition.
+    * The type emitter can be overridden to change how types, type names and/or column types are emitted.
     */
-  def rawTypeBuilder: RawTypeBuilder
+  def typeEmitter: TypeEmitter
 
   /**
     * Selects the schema emitter based on the given schema.
@@ -125,7 +124,7 @@ case class DefaultGeneratorConfiguration(
 
   override lazy val schemaReader: SchemaReader = new DefaultSchemaReader(this)
   override lazy val typeResolver: TypeResolver = new DefaultTypeResolver(customTypes)
-  override lazy val rawTypeBuilder: RawTypeBuilder = new ImportSimplifyingRawTypeBuilder(imports)
+  override lazy val typeEmitter: TypeEmitter = new ImportSimplifyingTypeEmitter(imports)
 
   override def selectSchemaEmitter(schema: Schema): SchemaEmitter = new SingleFileSchemaEmitter(this, schema)
   override def selectModelEmitter(table: Table): ModelEmitter = new DefaultModelEmitter(this, inheritances, table)

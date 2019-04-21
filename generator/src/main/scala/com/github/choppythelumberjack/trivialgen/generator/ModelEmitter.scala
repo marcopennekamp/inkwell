@@ -56,7 +56,7 @@ class DefaultModelEmitter(
   override def namingStrategy: NamingStrategy = config.namingStrategy
   override def properties: Seq[String] = table.columns.map(c => config.selectPropertyEmitter(c).code)
   override def supertypes: Seq[String] = {
-    inh.types.map(config.rawTypeBuilder(_)) ++ inh.fullNames.map(config.rawTypeBuilder(_))
     val inh = schemaInheritances.get(config.namingStrategy.model(table))
+    inh.types.map(config.typeEmitter.fromType(_)) ++ inh.fullNames.map(config.typeEmitter.fromName(_))
   }
 }

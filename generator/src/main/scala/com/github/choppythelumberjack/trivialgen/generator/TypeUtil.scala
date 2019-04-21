@@ -31,7 +31,7 @@ object TypeUtil {
     /**
       * An owner name may be None, which means that the symbol for which an owner was sought has no owner.
       * This covers the edge case where no base package has been defined for some classes in a project and
-      * is also used by [[ImportSimplifyingRawTypeBuilder]] to suggest that "no owner" is needed to
+      * is also used by [[ImportSimplifyingTypeEmitter]] to suggest that "no owner" is needed to
       * represent the current symbol.
       *
       * @return An owner name and a type name.
