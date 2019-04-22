@@ -10,30 +10,11 @@ lazy val `generator` =
   (project in file("generator"))
     .settings(commonSettings ++ releaseSettings)
     .settings(
-      name := "trivial-codegen",
+      name := "inkwell",
       fork in Test := true
     )
 
-def runMyCodeGenerator(source: File, cp: Seq[File]): File = {
-  val mainClass = "app.wordpace.inkwell.Main"
-  val tmp = new JFile("Foo.scala")
-  val os = new FileOutputStream(tmp)
-
-  try {
-    val i = new Fork("java", Some(mainClass))
-      .fork(ForkOptions().withBootJars(cp.toVector).withOutputStrategy(CustomOutput(os)), Nil).exitValue()
-
-    if (i != 0) {
-      throw new RuntimeException("Trouble with code generator")
-    }
-
-    tmp
-  } finally {
-    os.close()
-  }
-}
-
-val codeGen = taskKey[Seq[File]]("my code gen")
+val codeGen = taskKey[Seq[File]]("Run code generation for integration tests")
 
 lazy val `integration-tests` =
   (project in file("integration-tests"))
