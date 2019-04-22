@@ -1,10 +1,11 @@
-import java.io.FileOutputStream
-
-import ReleaseTransformations._
-import sbtrelease.ReleasePlugin
 import java.io.{File => JFile}
+import java.nio.file.{Files, Path, Paths}
 
-import scala.util.{Failure, Success, Try}
+import sbtrelease.ReleasePlugin
+import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
+
+import scala.collection.JavaConverters._
+import scala.util.Try
 
 lazy val `generator` =
   (project in file("generator"))
@@ -24,26 +25,23 @@ lazy val `integration-tests` =
       fork in Test := true,
       (sourceGenerators in Compile) += (codeGen in Compile),
       (codeGen in Compile) := {
-        //  import scala.concurrent.JavaConversions._
-        def recrusiveList(file:JFile): List[JFile] = {
-          if (file.isDirectory)
-            Option(file.listFiles()).map(_.flatMap(child=> recrusiveList(child)).toList).toList.flatten
-          else
-            List(file)
+        val sourcePath = Paths.get(sourceManaged.value.getPath, "main")
+        val classPath = (fullClasspath in Test in `generator`).value.map(_.data)
+
+        //val fileDir = new File(sourcePath, "main").getAbsoluteFile
+        (runner in Compile).value.run(
+          "app.wordpace.inkwell.integration.GeneratorRunner",
+          classPath, Seq(sourcePath.toString), streams.value.log
+        )
+
+        // Discover all generated files under src_managed/main in integration-tests.
+        var stream: Option[java.util.stream.Stream[Path]] = None
+        val files: Try[Seq[JFile]] = Try {
+          stream = Some(Files.walk(sourcePath))
+          stream.get.iterator.asScala.toVector.map(_.toFile).filter(_.isFile)
         }
-
-    val r = (runner in Compile).value
-    val s = streams.value.log
-    val sourcePath = sourceManaged.value
-    val classPath = (fullClasspath in Test in `generator`).value.map(_.data)
-
-    val fileDir = new File(sourcePath, "main").getAbsoluteFile
-    r.run(
-      "app.wordpace.inkwell.integration.GeneratorRunner",
-      classPath, Seq(fileDir.getAbsolutePath), s
-    )
-
-        recrusiveList(fileDir)
+        stream.foreach(s => s.close())
+        files.get
       }
     )
     .dependsOn(generator % "compile->test")
