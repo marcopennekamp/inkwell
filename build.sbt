@@ -49,18 +49,15 @@ lazy val commonSettings = Seq(
   licenses := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt")),
   scalaVersion := "2.12.8",
   libraryDependencies ++= Seq(
-    "com.github.choppythelumberjack" %% "tryclose" % "1.0.0",
-    "commons-lang" % "commons-lang" % "2.6",
-    "io.getquill" %% "quill-core" % quillVersion,
-    "io.getquill" %% "quill-sql" % quillVersion,
-    "io.getquill" %% "quill-jdbc" % quillVersion,
+    "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     "org.scalameta" %% "scalafmt-dynamic" % "2.0.0-RC6",
+    "io.getquill" %% "quill-core" % quillVersion,
+    "io.getquill" %% "quill-sql" % quillVersion % Test,
+    "io.getquill" %% "quill-jdbc" % quillVersion % Test,
     "com.h2database" % "h2" % "1.4.196" % Test,
     "org.scalatest" %% "scalatest" % "3.0.4" % Test,
     "org.slf4j" % "slf4j-log4j12" % "1.7.16" % Test,
-    "org.scala-lang" % "scala-compiler" % scalaVersion.value % Test,
-    "com.github.scopt" %% "scopt" % "4.0.0-RC2"
-  )
+  ),
   fork in Test := true,
   scalacOptions ++= Seq(
     "-feature",
