@@ -2,7 +2,6 @@ import java.io.{File => JFile}
 import java.nio.file.{Files, Path, Paths}
 
 import sbtrelease.ReleasePlugin
-import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -13,6 +12,7 @@ lazy val `generator` =
     .settings(
       name := "inkwell",
       fork in Test := true
+      version := "0.1.0-SNAPSHOT",
     )
 
 val codeGen = taskKey[Seq[File]]("Run code generation for integration tests")
@@ -27,8 +27,6 @@ lazy val `integration-tests` =
       (codeGen in Compile) := {
         val sourcePath = Paths.get(sourceManaged.value.getPath, "main")
         val classPath = (fullClasspath in Test in `generator`).value.map(_.data)
-
-        //val fileDir = new File(sourcePath, "main").getAbsoluteFile
         (runner in Compile).value.run(
           "app.wordpace.inkwell.integration.GeneratorRunner",
           classPath, Seq(sourcePath.toString), streams.value.log
@@ -42,7 +40,7 @@ lazy val `integration-tests` =
         }
         stream.foreach(s => s.close())
         files.get
-      }
+      },
     )
     .dependsOn(generator % "compile->test")
 
