@@ -42,7 +42,7 @@ lazy val `integration-tests` =
     )
     .dependsOn(generator % "compile->test")
 
-lazy val quillVersion = "2.3.1"
+lazy val quillVersion = "3.1.0"
 
 lazy val commonSettings = Seq(
   organization := "app.wordpace",
