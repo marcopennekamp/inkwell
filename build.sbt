@@ -15,7 +15,7 @@ lazy val `generator` =
     )
 
 def runMyCodeGenerator(source: File, cp: Seq[File]): File = {
-  val mainClass = "com.github.choppythelumberjack.trivialgen.Main"
+  val mainClass = "app.wordpace.inkwell.Main"
   val tmp = new JFile("Foo.scala")
   val os = new FileOutputStream(tmp)
 
@@ -58,7 +58,7 @@ lazy val `integration-tests` =
 
     val fileDir = new File(sourcePath, "main").getAbsoluteFile
     r.run(
-      "com.github.choppythelumberjack.trivialgen.integration.GeneratorRunner",
+      "app.wordpace.inkwell.integration.GeneratorRunner",
       classPath, Seq(fileDir.getAbsolutePath), s
     )
 
