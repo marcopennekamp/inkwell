@@ -69,56 +69,24 @@ lazy val commonSettings = Seq(
 )
 
 lazy val releaseSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
-  licenses := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt")),
-  releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   publishMavenStyle := true,
+  publishArtifact := true,
+  publishArtifact in Test := false,
+  releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
-    if (isSnapshot.value)
+    if (isSnapshot.value) {
       Some("snapshots" at nexus + "content/repositories/snapshots")
-    else
+    } else {
       Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-  },
-  releaseProcess := {
-    CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, 11)) =>
-        Seq[ReleaseStep](
-          checkSnapshotDependencies,
-          inquireVersions,
-          runClean,
-          setReleaseVersion,
-          commitReleaseVersion,
-          tagRelease,
-          publishArtifacts,
-          setNextVersion,
-          commitNextVersion,
-          releaseStepCommand("sonatypeReleaseAll"),
-          pushChanges
-        )
-      case Some((2, 12)) =>
-        Seq[ReleaseStep](
-          checkSnapshotDependencies,
-          inquireVersions,
-          runClean,
-          setReleaseVersion,
-          publishArtifacts,
-          releaseStepCommand("sonatypeReleaseAll")
-        )
-      case _ => Seq[ReleaseStep]()
     }
   },
-  pomExtra := (
-      <url>https://github.com/choppythelumberjack</url>
-      <scm>
-        <connection>scm:git:git@github.com:choppythelumberjack/trivial-codegen.git</connection>
-        <developerConnection>scm:git:git@github.com:choppythelumberjack/trivial-codegen.git</developerConnection>
-        <url>https://github.com/choppythelumberjack/trivial-codegen</url>
-      </scm>
-      <developers>
-        <developer>
-          <id>choppythelumberjack</id>
-          <name>Choppy The Lumberjack</name>
-          <url>https://github.com/choppythelumberjack</url>
-        </developer>
-      </developers>)
+  autoAPIMappings := true,
+  homepage := Some(url("https://github.com/marcopennekamp/inkwell")),
+  apiURL := Some(url("https://github.com/marcopennekamp/inkwell")),
+  scmInfo := Some(ScmInfo(url("https://github.com/marcopennekamp/inkwell"),
+    "scm:git:git@github.com:marcopennekamp/inkwell.git")),
+  developers := List(
+    Developer("marcopennekamp", "Marco Pennekamp", "marco@wordpace.app", url("https://marcopennekamp.com/"))
+  ),
 )
