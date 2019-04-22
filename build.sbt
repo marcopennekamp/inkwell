@@ -11,7 +11,6 @@ lazy val `generator` =
     .settings(commonSettings ++ releaseSettings)
     .settings(
       name := "inkwell",
-      fork in Test := true
       version := "0.1.0-SNAPSHOT",
     )
 
@@ -22,7 +21,6 @@ lazy val `integration-tests` =
     .settings(commonSettings)
     .settings(
       publishArtifact := false,
-      fork in Test := true,
       (sourceGenerators in Compile) += (codeGen in Compile),
       (codeGen in Compile) := {
         val sourcePath = Paths.get(sourceManaged.value.getPath, "main")
@@ -64,6 +62,7 @@ lazy val commonSettings = Seq(
     "org.scala-lang" % "scala-compiler" % scalaVersion.value % Test,
     "com.github.scopt" %% "scopt" % "4.0.0-RC2"
   )
+  fork in Test := true,
 )
 
 lazy val releaseSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
