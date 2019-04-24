@@ -16,14 +16,14 @@ trait CompanionEmitter {
     * The generated code for the companion object. Please ensure that the name is consistent with the naming strategy.
     */
   def code: String = if (innerCode.isEmpty) "" else
-    s"""object ${namingStrategy.model(table)} {
+    s"""object ${table.scalaName} {
        |  $innerCode
        |}""".stripMargin
 
   /**
     * The naming strategy for the companion name.
     */
-  def namingStrategy: NamingStrategy
+  implicit def namingStrategy: NamingStrategy
 
   /**
     * The inner code of the companion object.
@@ -36,6 +36,6 @@ trait CompanionEmitter {
 //       of a good use case with the age quote.
 
 class DefaultCompanionEmitter(config: GeneratorConfiguration, override val table: Table) extends CompanionEmitter {
-  override def namingStrategy: NamingStrategy = config.namingStrategy
+  override implicit def namingStrategy: NamingStrategy = config.namingStrategy
   override def innerCode: String = ""
 }

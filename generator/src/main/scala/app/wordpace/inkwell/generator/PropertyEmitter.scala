@@ -18,12 +18,12 @@ trait PropertyEmitter {
     * The generated code. Please ensure that the generated name and type are consistent with the naming strategy
     * and type emitter.
     */
-  def code: String = s"${namingStrategy.property(column)}: $typeWithNullable"
+  def code: String = s"${column.scalaName}: $typeWithNullable"
 
   /**
     * The naming strategy for the property name.
     */
-  def namingStrategy: NamingStrategy
+  implicit def namingStrategy: NamingStrategy
 
   /**
     * The emitted raw type but wrapped in an Option <b>if</b> the column is nullable.
@@ -43,6 +43,6 @@ trait PropertyEmitter {
   * Emits a property based on the globally configured naming strategy and without locally modifying the raw type.
   */
 class DefaultPropertyEmitter(config: GeneratorConfiguration, override val column: Column) extends PropertyEmitter {
-  override def namingStrategy: NamingStrategy = config.namingStrategy
+  override implicit def namingStrategy: NamingStrategy = config.namingStrategy
   override def typeEmitter: TypeEmitter = config.typeEmitter
 }

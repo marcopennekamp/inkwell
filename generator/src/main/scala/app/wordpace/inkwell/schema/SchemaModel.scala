@@ -1,5 +1,7 @@
 package app.wordpace.inkwell.schema
 
+import app.wordpace.inkwell.generator.NamingStrategy
+
 import scala.reflect.runtime.universe.Type
 
 case class Schema(
@@ -18,6 +20,8 @@ case class Table(
     * The parent schema of the table. The property is safely initialised by [[SchemaReader]].
     */
   var schema: Schema = _
+
+  def scalaName(implicit namingStrategy: NamingStrategy): String = namingStrategy.model(this)
 }
 
 object Table {
@@ -41,6 +45,8 @@ case class Column(
     * The name 'references' mirrors the SQL keyword. The property is safely initialised by [[SchemaReader]].
     */
   var references: Seq[Column] = Seq.empty
+
+  def scalaName(implicit namingStrategy: NamingStrategy): String = namingStrategy.property(this)
 }
 
 object Column {

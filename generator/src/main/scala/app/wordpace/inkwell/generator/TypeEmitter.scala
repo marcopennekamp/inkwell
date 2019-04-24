@@ -164,7 +164,7 @@ trait KeyAsIdColumnPlugin extends TypeEmitter.ColumnPlugin { self: TypeEmitter =
       self.fromColumn(column.references.head)
     } else if (table.primaryKey == Seq(column)) {
       // Case (1): The column is the only primary key of its table.
-      id(config.namingStrategy.model(table))
+      id(table.scalaName(config.namingStrategy))
     } else {
       self.fromType(column.scalaType)
     }
