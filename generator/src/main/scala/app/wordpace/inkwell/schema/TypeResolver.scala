@@ -23,21 +23,25 @@ class DefaultTypeResolver(jdbcToScala: Map[String, Type]) extends TypeResolver {
   override def apply(columnMeta: JdbcColumnMeta): Option[Type] = {
     implicit def toSome[T](t: Type): Option[Type] = Some(t)
 
-    columnMeta.dataType match {
-      case CHAR | VARCHAR | LONGVARCHAR | NCHAR | NVARCHAR | LONGNVARCHAR | CLOB => typeOf[String]
-      case NUMERIC | DECIMAL => typeOf[BigDecimal]
-      case BIT | BOOLEAN => typeOf[Boolean]
-      case TINYINT => typeOf[Byte]
-      case SMALLINT => typeOf[Short]
-      case INTEGER => typeOf[Int]
-      case BIGINT => typeOf[Long]
-      case REAL => typeOf[Float]
-      case FLOAT | DOUBLE => typeOf[Double]
-      case BINARY | VARBINARY | LONGVARBINARY => typeOf[Array[Byte]]
-      case DATE => typeOf[java.time.LocalDate]
-      case TIME => typeOf[java.time.LocalDateTime]
-      case TIMESTAMP => typeOf[java.time.LocalDateTime]
-      case _ => jdbcToScala.get(columnMeta.typeName)
+    // Check custom type names first, since custom types may appear to have a standard data type
+    // regardless (such as Postgres enums being treated as strings).
+    jdbcToScala.get(columnMeta.typeName).orElse {
+      columnMeta.dataType match {
+        case CHAR | VARCHAR | LONGVARCHAR | NCHAR | NVARCHAR | LONGNVARCHAR | CLOB => typeOf[String]
+        case NUMERIC | DECIMAL => typeOf[BigDecimal]
+        case BIT | BOOLEAN => typeOf[Boolean]
+        case TINYINT => typeOf[Byte]
+        case SMALLINT => typeOf[Short]
+        case INTEGER => typeOf[Int]
+        case BIGINT => typeOf[Long]
+        case REAL => typeOf[Float]
+        case FLOAT | DOUBLE => typeOf[Double]
+        case BINARY | VARBINARY | LONGVARBINARY => typeOf[Array[Byte]]
+        case DATE => typeOf[java.time.LocalDate]
+        case TIME => typeOf[java.time.LocalDateTime]
+        case TIMESTAMP => typeOf[java.time.LocalDateTime]
+        case _ => None
+      }
     }
   }
 
