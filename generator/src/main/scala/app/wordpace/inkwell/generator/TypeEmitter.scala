@@ -72,10 +72,10 @@ class DefaultTypeEmitter extends TypeEmitter {
   */
 class ImportSimplifyingTypeEmitter(imports: Set[Import]) extends DefaultTypeEmitter {
   protected val classes: Set[String] = imports.flatMap { case e: Import.Entity => Some(e.fullName); case _ => None }
-  protected val packages: Set[String] = imports.flatMap { case p: Import.Package => Some(p.name); case _ => None } ++
+  protected val wildcards: Set[String] = imports.flatMap { case w: Import.Wildcard => Some(w.name); case _ => None } ++
       Set("java.lang", "scala", "scala.Predef")
 
-  // TODO: Include the base package of the generated source file in packages, since it's also "imported" by default.
+  // TODO: Include the base package of the generated source file in wildcards, since it's also "imported" by default.
   //       This would depend on the package of the current compilation unit (see SchemaEmitter), so this is not as
   //       trivial to implement.
 
@@ -83,10 +83,10 @@ class ImportSimplifyingTypeEmitter(imports: Set[Import]) extends DefaultTypeEmit
     * @return The shortest version of the owner name possible based on imported packages.
     */
   protected def simplifyOwnerName(ownerName: OwnerName): Option[OwnerName] = {
-    // The owner name has to start with the full package, because an import of a package is basically
+    // The owner name has to start with the full package name, because an import of a wildcard is basically
     // package._, so we can't, for example, take a substring of the package to simplify the owner name.
-    (packages.filter(p => ownerName.startsWith(p))
-      .map(p => ownerName.drop(p.length))
+    (wildcards.filter(w => ownerName.startsWith(w))
+      .map(w => ownerName.drop(w.length))
       .map(n => if (n.startsWith(".")) n.drop(1) else n) + ownerName)
       .minBy(_.length) // Take the shortest owner name.
       .emptyToNone

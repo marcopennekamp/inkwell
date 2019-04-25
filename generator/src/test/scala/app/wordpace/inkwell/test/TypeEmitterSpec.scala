@@ -22,7 +22,7 @@ object TypeEmitterSpec {
 class TypeEmitterSpec extends FlatSpec with Matchers {
 
   private def basicEmitter() = new ImportSimplifyingTypeEmitter(Set(
-    Import.Package("app.wordpace.inkwell.test.TypeEmitterSpec"),
+    Import.Wildcard("app.wordpace.inkwell.test.TypeEmitterSpec"),
   ))
 
   private implicit def toScalaTypeReference(t: Type): ScalaTypeReference = ScalaTypeReference(t)
@@ -57,8 +57,8 @@ class TypeEmitterSpec extends FlatSpec with Matchers {
 
   it should "simplify imported names correctly" in {
     val emitter = new ImportSimplifyingTypeEmitter(Set(
-      Import.Package("app.wordpace.inkwell.test.TypeEmitterSpec"),
-      Import.Entity.fromType(typeOf[LocalDateTime]),
+      Import.Wildcard("app.wordpace.inkwell.test.TypeEmitterSpec"),
+      Import.Entity(typeOf[LocalDateTime]),
     ))
 
     // CaseClass should be simplified fully while Trait should be simplified up to the traits object.

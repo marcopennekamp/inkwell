@@ -47,7 +47,7 @@ trait SchemaEmitter {
     */
   protected def importCode: String = imports.map {
     case e: Import.Entity => e.fullName
-    case p: Import.Package => s"${p.name}._"
+    case p: Import.Wildcard => s"${p.name}._"
   }.map(s => s"import $s").mkString("\n")
 
   /**

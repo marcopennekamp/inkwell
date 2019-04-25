@@ -1,26 +1,24 @@
 package app.wordpace.inkwell.generator
 
-import app.wordpace.inkwell.generator.TypeUtil.TypeExtensions
-
 import scala.reflect.runtime.universe.Type
 
 sealed trait Import
 
 object Import {
   /**
-    * A single type to import with `import fullName`.
+    * A single entity to import with `import fullName`. "Entities" are mostly types, but may also be objects
+    * or any other named entity which can be imported.
     *
-    * If possible (see [[TableInheritances]] for an example case in which it is not possible to refer to
-    * a type via typeOf at generator runtime), use Entity.fromType to construct this case class, since typeOf
-    * gives certain compile-time guarantees and is also resilient against refactoring.
+    * If possible, use `Entity(typeOf[A])` to construct this case class, since typeOf gives certain compile-time
+    * guarantees and is also resilient against refactoring.
     */
   case class Entity(fullName: String) extends Import
   object Entity {
-    def fromType(tpe: Type): Entity = Entity(tpe.symbolPreserveAliases.fullName)
+    def apply(t: Type): Entity = Entity(ScalaTypeReference(t).fullName)
   }
 
   /**
-    * A package to import with `import name._`.
+    * A wildcard import (`import name._`) from any named package or object.
     */
-  case class Package(name: String) extends Import
+  case class Wildcard(name: String) extends Import
 }

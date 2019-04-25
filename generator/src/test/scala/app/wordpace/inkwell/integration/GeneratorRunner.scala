@@ -36,9 +36,9 @@ object GeneratorRunner {
       basePackage = "plumbus.academy",
     ) { configSelf =>
       override val imports: Set[Import] = Set(
-        Import.Package("plumbus.academy"), // Testing package imports.
-        Import.Entity.fromType(typeOf[LocalDateTime]), // Testing Entity.fromType imports.
-        Import.Entity("java.nio.file.Paths"), // Testing fullName "raw" imports.
+        Import.Wildcard("plumbus.academy"), // Testing package imports.
+        Import.Entity(typeOf[LocalDateTime]), // Testing typeOf imports.
+        Import.Entity("java.nio.file.Paths"), // Testing fullName imports.
       )
 
       override def inheritances: Inheritances = Inheritances(Map(
