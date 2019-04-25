@@ -21,7 +21,7 @@ trait PropertyEmitter {
   /**
     * The naming strategy for the property name.
     */
-  implicit def namingStrategy: NamingStrategy
+  protected implicit def namingStrategy: NamingStrategy
 
   /**
     * The emitted raw type but wrapped in an Option <b>if</b> the column is nullable.

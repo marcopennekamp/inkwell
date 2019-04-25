@@ -23,7 +23,7 @@ trait CompanionEmitter {
   /**
     * The naming strategy for the companion name.
     */
-  implicit def namingStrategy: NamingStrategy
+  protected implicit def namingStrategy: NamingStrategy
 
   /**
     * The inner code of the companion object.

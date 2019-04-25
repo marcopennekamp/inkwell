@@ -31,7 +31,7 @@ trait ModelEmitter {
   /**
     * The naming strategy for the model name.
     */
-  implicit def namingStrategy: NamingStrategy
+  protected implicit def namingStrategy: NamingStrategy
 
   /**
     * The (emitted) properties of the case class.
