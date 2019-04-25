@@ -10,6 +10,8 @@ trait TypeResolver {
     * types (such as enum types).
     */
   def apply(columnMeta: JdbcColumnMeta): Option[Type]
+
+  // TODO: Resolve to TypeReference instead to support types not available at generation time.
 }
 
 /**

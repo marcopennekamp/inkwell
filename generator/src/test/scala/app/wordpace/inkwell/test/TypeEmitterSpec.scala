@@ -2,12 +2,12 @@ package app.wordpace.inkwell.test
 
 import java.time.{LocalDate, LocalDateTime}
 
-import app.wordpace.inkwell.generator.{Import, ImportSimplifyingTypeEmitter}
+import app.wordpace.inkwell.generator.{Import, ImportSimplifyingTypeEmitter, ScalaTypeReference}
 import app.wordpace.inkwell.test.TypeEmitterSpec.traits.Trait
 import app.wordpace.inkwell.test.TypeEmitterSpec.{CaseClass, ParamAlias, SimpleAlias}
 import org.scalatest.{FlatSpec, Matchers}
 
-import scala.reflect.runtime.universe.typeOf
+import scala.reflect.runtime.universe.{Type, typeOf}
 
 object TypeEmitterSpec {
   type SimpleAlias = Boolean
@@ -25,31 +25,33 @@ class TypeEmitterSpec extends FlatSpec with Matchers {
     Import.Package("app.wordpace.inkwell.test.TypeEmitterSpec"),
   ))
 
+  private implicit def toScalaTypeReference(t: Type): ScalaTypeReference = ScalaTypeReference(t)
+
   "ImportSimplifyingTypeEmitter" should "build primitive types correctly" in {
     val emitter = basicEmitter()
-    emitter.fromType(typeOf[Boolean]) shouldEqual "Boolean"
-    emitter.fromType(typeOf[Byte]) shouldEqual "Byte"
-    emitter.fromType(typeOf[Short]) shouldEqual "Short"
-    emitter.fromType(typeOf[Int]) shouldEqual "Int"
-    emitter.fromType(typeOf[Long]) shouldEqual "Long"
-    emitter.fromType(typeOf[Float]) shouldEqual "Float"
-    emitter.fromType(typeOf[Double]) shouldEqual "Double"
-    emitter.fromType(typeOf[Char]) shouldEqual "Char"
+    emitter(typeOf[Boolean]) shouldEqual "Boolean"
+    emitter(typeOf[Byte]) shouldEqual "Byte"
+    emitter(typeOf[Short]) shouldEqual "Short"
+    emitter(typeOf[Int]) shouldEqual "Int"
+    emitter(typeOf[Long]) shouldEqual "Long"
+    emitter(typeOf[Float]) shouldEqual "Float"
+    emitter(typeOf[Double]) shouldEqual "Double"
+    emitter(typeOf[Char]) shouldEqual "Char"
   }
 
   it should "build array types correctly" in {
     val emitter = basicEmitter()
-    emitter.fromType(typeOf[Array[Boolean]]) shouldEqual "Array[Boolean]"
-    emitter.fromType(typeOf[Array[Int]]) shouldEqual "Array[Int]"
-    emitter.fromType(typeOf[Array[String]]) shouldEqual "Array[String]"
-    emitter.fromType(typeOf[Array[CaseClass]]) shouldEqual "Array[CaseClass]"
+    emitter(typeOf[Array[Boolean]]) shouldEqual "Array[Boolean]"
+    emitter(typeOf[Array[Int]]) shouldEqual "Array[Int]"
+    emitter(typeOf[Array[String]]) shouldEqual "Array[String]"
+    emitter(typeOf[Array[CaseClass]]) shouldEqual "Array[CaseClass]"
   }
 
   it should "preserve aliases" in {
     val emitter = basicEmitter()
-    emitter.fromType(typeOf[SimpleAlias]) shouldEqual "SimpleAlias"
-    emitter.fromType(typeOf[Array[SimpleAlias]]) shouldEqual "Array[SimpleAlias]"
-    emitter.fromType(typeOf[ParamAlias[String, Seq[String]]]) shouldEqual
+    emitter(typeOf[SimpleAlias]) shouldEqual "SimpleAlias"
+    emitter(typeOf[Array[SimpleAlias]]) shouldEqual "Array[SimpleAlias]"
+    emitter(typeOf[ParamAlias[String, Seq[String]]]) shouldEqual
      "ParamAlias[String, Seq[String]]"
   }
 
@@ -60,12 +62,12 @@ class TypeEmitterSpec extends FlatSpec with Matchers {
     ))
 
     // CaseClass should be simplified fully while Trait should be simplified up to the traits object.
-    emitter.fromType(typeOf[CaseClass]) shouldEqual "CaseClass"
-    emitter.fromType(typeOf[Trait]) shouldEqual "traits.Trait"
+    emitter(typeOf[CaseClass]) shouldEqual "CaseClass"
+    emitter(typeOf[Trait]) shouldEqual "traits.Trait"
 
     // Only LocalDateTime has been imported as an entity, so LocalDate should need to be fully qualified.
-    emitter.fromType(typeOf[LocalDateTime]) shouldEqual "LocalDateTime"
-    emitter.fromType(typeOf[LocalDate]) shouldEqual "java.time.LocalDate"
+    emitter(typeOf[LocalDateTime]) shouldEqual "LocalDateTime"
+    emitter(typeOf[LocalDate]) shouldEqual "java.time.LocalDate"
   }
 
 }

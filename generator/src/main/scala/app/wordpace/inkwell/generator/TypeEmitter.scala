@@ -1,51 +1,29 @@
 package app.wordpace.inkwell.generator
 
 import app.wordpace.inkwell.GeneratorConfiguration
-import app.wordpace.inkwell.GeneratorConfiguration
-import app.wordpace.inkwell.generator.TypeUtil.TypeExtensions
 import app.wordpace.inkwell.generator.TypeUtil.names.OwnerName
 import app.wordpace.inkwell.schema.Column
-import app.wordpace.inkwell.schema.TypeResolver
 import app.wordpace.inkwell.util._
-
-import scala.reflect.runtime.universe._
 
 /**
   * Provides various ways to turn a scala type into a string.
   *
-  * The plugins are defined so that you can mix in proper implementations at your leisure.
+  * Plugins are defined so that you can mix in proper implementations at your leisure.
   */
 trait TypeEmitter extends TypeEmitter.ColumnPlugin {
   /**
-    * Turns a scala type into a raw type string.
+    * Turns a type reference into a raw type string.
     */
-  def fromType(scalaType: Type): String
+  def apply(ref: TypeReference): String
 
-  // TODO: Add support for type arguments?
-  /**
-    * Turns a type name into a raw type string.
-    *
-    * Use this in cases where a [[Type]] can't be resolved at generator runtime. Does not support
-    * type arguments (yet).
-    *
-    * Used by [[DefaultModelEmitter]] to process [[TableInheritances]].
-    */
-  def fromName(fullName: String): String
-
-  // Provide simple default implementations for all plugins,
-  override def fromColumn(column: Column): String = fromType(column.scalaType)
+  // Provide sensible default implementations for all plugins.
+  override def fromColumn(column: Column): String = apply(ScalaTypeReference(column.scalaType))
 }
 
 object TypeEmitter {
   trait ColumnPlugin {
     /**
-      * Emits a raw type string for the specified column.
-      *
-      * For example, let's say the application (using this code generator library) defines an `Id[A]` type,
-      * which represents (database) IDs for any type `A`. Say you have a table `person` from which a case class
-      * `Person` is generated. You can resolve the JDBC type of its ID column to `Id` with [[TypeResolver]], but
-      * you can not provide the type argument `A = Person` since `Person` does not exist until code generation is
-      * finished. In such a case, fromColumn can be used to emit the right type for the property.
+      * Stringifies the type of the specified column.
       */
     def fromColumn(column: Column): String
   }
@@ -57,7 +35,7 @@ class DefaultTypeEmitter extends TypeEmitter {
     *
     * Override this definition if you need to change how the T part of a raw type T[A, B, ...] is stringified.
     */
-  protected def fullName(ownerName: Option[OwnerName], typeName: String): String = TypeUtil.names.concat(ownerName, typeName)
+  protected def stringifyFullName(ownerName: Option[OwnerName], typeName: String): String = TypeUtil.names.concat(ownerName, typeName)
 
   /**
     * Stringifies each type argument of the current type.
@@ -65,30 +43,25 @@ class DefaultTypeEmitter extends TypeEmitter {
     * Override this definition if you need to change how the A, B, ... parts of a raw type T[A, B, ...]
     * are stringified.
     *
-    * @param typeArgs Regularly empty for types without type arguments.
+    * @param typeArguments Most of the time, the sequence is empty for types without type arguments, so don't
+    *                      assume the sequence has elements!
     */
-  protected def rawTypeArgs(typeArgs: Seq[Type]): Seq[String] = typeArgs.map(this.fromType)
+  protected def stringifyTypeArguments(typeArguments: Seq[TypeReference]): Seq[String] = typeArguments.map(apply)
 
-  /**
-    * Transforms the full name and the type arguments into the raw type string.
-    */
-  protected def transform(fullName: String, typeArgs: Seq[Type]): String = {
-    val (ownerName, typeName) = TypeUtil.names.split(fullName)
+  override def apply(ref: TypeReference): String = {
+    val (ownerName, typeName) = TypeUtil.names.split(ref.fullName)
 
     // Now we have to treat type arguments:
     //   1. Type arguments aren't provided by fullName (obviously), but we still need them in the
     //      raw string representation of the type. So for example, we need to turn a scala.Array
     //      into a scala.Array[java.lang.String] for a type Array[String].
     //   2. To accommodate type arguments that have type arguments themselves and any potential
-    //      overriding raw type builders (e.g. a raw type builder that simplifies packages based
-    //      on imports) we simply call this apply function recursively.
-    val args = rawTypeArgs(typeArgs)
+    //      overriding type emitters (e.g. our type emitter that simplifies packages based on
+    //      imports) we simply call apply recursively.
+    val args = stringifyTypeArguments(ref.typeArguments)
 
-    this.fullName(ownerName, typeName) + (if (args.nonEmpty) s"[${args.mkString(", ")}]" else "")
+    this.stringifyFullName(ownerName, typeName) + (if (args.nonEmpty) s"[${args.mkString(", ")}]" else "")
   }
-
-  override def fromType(t: Type): String = transform(t.symbolPreserveAliases.fullName, t.typeArgs)
-  override def fromName(fullName: String): String = transform(fullName, Seq.empty)
 }
 
 /**
@@ -119,12 +92,12 @@ class ImportSimplifyingTypeEmitter(imports: Set[Import]) extends DefaultTypeEmit
       .emptyToNone
   }
 
-  override def fullName(ownerName: Option[OwnerName], typeName: String): String = {
-    val fullName = super.fullName(ownerName, typeName)
+  override def stringifyFullName(ownerName: Option[OwnerName], typeName: String): String = {
+    val fullName = super.stringifyFullName(ownerName, typeName)
     if (classes.contains(fullName)) {
       typeName
     } else {
-      super.fullName(ownerName.flatMap(simplifyOwnerName), typeName)
+      super.stringifyFullName(ownerName.flatMap(simplifyOwnerName), typeName)
     }
   }
 }
@@ -166,7 +139,7 @@ trait KeyAsIdColumnPlugin extends TypeEmitter.ColumnPlugin { self: TypeEmitter =
       // Case (1): The column is the only primary key of its table.
       id(table.scalaName(config.namingStrategy))
     } else {
-      self.fromType(column.scalaType)
+      self.apply(ScalaTypeReference(column.scalaType))
     }
   }
 }
