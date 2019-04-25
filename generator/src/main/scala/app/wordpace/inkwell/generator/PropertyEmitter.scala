@@ -7,8 +7,6 @@ import app.wordpace.inkwell.schema.Column
   * Handles the transformation of one column to a class property.
   */
 trait PropertyEmitter {
-  // TODO: Support default values.
-
   /**
     * The column to be transformed.
     */
@@ -18,7 +16,7 @@ trait PropertyEmitter {
     * The generated code. Please ensure that the generated name and type are consistent with the naming strategy
     * and type emitter.
     */
-  def code: String = s"${column.scalaName}: $typeWithNullable"
+  def code: String = s"${column.scalaName}: $typeWithNullable${defaultValue.map(v => s" = $v").getOrElse("")}"
 
   /**
     * The naming strategy for the property name.
@@ -37,6 +35,16 @@ trait PropertyEmitter {
     * The type emitter used for the property type.
     */
   protected def typeEmitter: TypeEmitter
+
+  /**
+    * The default value of the property.
+    *
+    * By default, only nullables are translated to a Scala default value. If you need to translate other
+    * default values, please override this method.
+    */
+  protected def defaultValue: Option[String] = {
+    if (column.isNullable) Some("None") else None // What a fun piece of code.
+  }
 }
 
 /**
