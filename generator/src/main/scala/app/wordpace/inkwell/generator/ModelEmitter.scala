@@ -55,9 +55,5 @@ class DefaultModelEmitter(
 ) extends ModelEmitter {
   override implicit def namingStrategy: NamingStrategy = config.namingStrategy
   override def properties: Seq[String] = table.columns.map(c => config.selectPropertyEmitter(c).code)
-  override def supertypes: Seq[String] = {
-    val inh = schemaInheritances.get(table.scalaName)
-    inh.types.map(t => config.typeEmitter(ScalaTypeReference(t))) ++
-      inh.fullNames.map(n => config.typeEmitter(NamedTypeReference(n)))
-  }
+  override def supertypes: Seq[String] = schemaInheritances.get(table.scalaName).refs.map(config.typeEmitter.apply)
 }

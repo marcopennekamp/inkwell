@@ -42,10 +42,10 @@ object GeneratorRunner {
       )
 
       override def inheritances: SchemaInheritances = SchemaInheritances(Map(
-        "Person" -> TableInheritances(
+        "Person" -> TableInheritances(Seq(
           // TODO: Test referring to a trait via typeOf.
-          fullNames = Seq("plumbus.academy.PersonFunctions"), // Testing simple trait inheritance based on raw names.
-        ),
+          NamedTypeReference("plumbus.academy.PersonFunctions"),
+        )),
       ))
 
       override def scalafmtConfig: Option[Path] = Some(Paths.get("generator", "src", "test", "resources", "scalafmt.conf"))
