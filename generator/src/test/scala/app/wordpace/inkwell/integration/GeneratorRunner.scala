@@ -41,11 +41,11 @@ object GeneratorRunner {
         Import.Entity("java.nio.file.Paths"), // Testing fullName "raw" imports.
       )
 
-      override def inheritances: SchemaInheritances = SchemaInheritances(Map(
-        "Person" -> TableInheritances(Seq(
+      override def inheritances: Inheritances = Inheritances(Map(
+        "Person" -> Seq(
           // TODO: Test referring to a trait via typeOf.
           NamedTypeReference("plumbus.academy.PersonFunctions"),
-        )),
+        ),
       ))
 
       override def scalafmtConfig: Option[Path] = Some(Paths.get("generator", "src", "test", "resources", "scalafmt.conf"))

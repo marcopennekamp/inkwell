@@ -50,10 +50,10 @@ trait ModelEmitter {
   */
 class DefaultModelEmitter(
   config: GeneratorConfiguration,
-  schemaInheritances: SchemaInheritances,
+  inheritances: Inheritances,
   override val table: Table
 ) extends ModelEmitter {
   override implicit def namingStrategy: NamingStrategy = config.namingStrategy
   override def properties: Seq[String] = table.columns.map(c => config.selectPropertyEmitter(c).code)
-  override def supertypes: Seq[String] = schemaInheritances.get(table.scalaName).refs.map(config.typeEmitter.apply)
+  override def supertypes: Seq[String] = inheritances.get(table.scalaName).map(config.typeEmitter.apply)
 }

@@ -115,7 +115,7 @@ case class DefaultGeneratorConfiguration(
     * The schema inheritance map is used by [[DefaultModelEmitter]] to provide support for model supertypes.
     * You can override this value to provide your own inheritance rules.
     */
-  def inheritances: SchemaInheritances = SchemaInheritances.empty
+  def inheritances: Inheritances = Inheritances.empty
 
   override def scalafmtConfig: Option[Path] = None
   override def ignoredTables: Set[String] = Set.empty
