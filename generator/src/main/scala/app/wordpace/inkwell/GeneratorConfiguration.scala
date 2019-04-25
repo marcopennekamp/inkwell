@@ -1,6 +1,6 @@
 package app.wordpace.inkwell
 
-import java.nio.file.{Path, Paths}
+import java.nio.file.Path
 
 import app.wordpace.inkwell.generator._
 import app.wordpace.inkwell.schema._
@@ -117,7 +117,7 @@ case class DefaultGeneratorConfiguration(
     */
   def inheritances: SchemaInheritances = SchemaInheritances.empty
 
-  override def scalafmtConfig: Option[Path] = Some(Paths.get("generator/src/main/resources/scalafmt.conf"))
+  override def scalafmtConfig: Option[Path] = None
   override def ignoredTables: Set[String] = Set.empty
   override def namingStrategy: NamingStrategy = SnakeCaseToCamelCase
   override def imports: Set[Import] = Set.empty

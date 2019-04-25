@@ -1,6 +1,6 @@
 package app.wordpace.inkwell.integration
 
-import java.nio.file.Paths
+import java.nio.file.{Path, Paths}
 import java.time.LocalDateTime
 
 import app.wordpace.inkwell.generator._
@@ -47,6 +47,8 @@ object GeneratorRunner {
           fullNames = Seq("plumbus.academy.PersonFunctions"), // Testing simple trait inheritance based on raw names.
         ),
       ))
+
+      override def scalafmtConfig: Option[Path] = Some(Paths.get("generator", "src", "test", "resources", "scalafmt.conf"))
 
       override lazy val typeEmitter: TypeEmitter = new ImportSimplifyingTypeEmitter(imports) with KeyAsIdColumnPlugin {
         override protected def config: GeneratorConfiguration = configSelf
