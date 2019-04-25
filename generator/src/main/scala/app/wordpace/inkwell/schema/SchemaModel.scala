@@ -1,12 +1,8 @@
 package app.wordpace.inkwell.schema
 
-import app.wordpace.inkwell.generator.NamingStrategy
+import app.wordpace.inkwell.generator.{NamingStrategy, TypeReference}
 
-import scala.reflect.runtime.universe.Type
-
-case class Schema(
-  tables: Seq[Table],
-) {
+case class Schema(tables: Seq[Table]) {
   lazy val tableMap: Map[Table.Name, Table] = tables.map(t => t.name -> t).toMap
 }
 
@@ -30,7 +26,7 @@ object Table {
 
 case class Column(
   name: Column.Name,
-  scalaType: Type,
+  dataType: TypeReference,
   isNullable: Boolean,
   meta: JdbcColumnMeta,
 ) {

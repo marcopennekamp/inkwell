@@ -2,28 +2,27 @@ package app.wordpace.inkwell.schema
 
 import java.sql.Types._
 
+import app.wordpace.inkwell.generator.{ScalaTypeReference, TypeReference}
+
 import scala.reflect.runtime.universe.{Type, typeOf}
 
 trait TypeResolver {
   /**
-    * Resolves a JDBC type to a Scala type if possible. Override [[DefaultTypeResolver]] to support your own custom
-    * types (such as enum types).
+    * Resolves a JDBC type to a [[TypeReference]] if possible.
     */
-  def apply(columnMeta: JdbcColumnMeta): Option[Type]
-
-  // TODO: Resolve to TypeReference instead to support types not available at generation time.
+  def apply(columnMeta: JdbcColumnMeta): Option[TypeReference]
 }
 
 /**
   * Resolves common native JDBC types as well as user-defined types given in the [[jdbcToScala]] map.
   *
   * @param jdbcToScala A map of user-defined (or exotic) JDBC type names pointing to their corresponding
-  *                    Scala types.
+  *                    type references.
   */
-class DefaultTypeResolver(jdbcToScala: Map[String, Type]) extends TypeResolver {
+class DefaultTypeResolver(jdbcToScala: Map[String, TypeReference]) extends TypeResolver {
 
-  override def apply(columnMeta: JdbcColumnMeta): Option[Type] = {
-    implicit def toSome[T](t: Type): Option[Type] = Some(t)
+  override def apply(columnMeta: JdbcColumnMeta): Option[TypeReference] = {
+    implicit def toSomeScalaTypeReference[T](t: Type): Option[TypeReference] = Some(ScalaTypeReference(t))
 
     // Check custom type names first, since custom types may appear to have a standard data type
     // regardless (such as Postgres enums being treated as strings).

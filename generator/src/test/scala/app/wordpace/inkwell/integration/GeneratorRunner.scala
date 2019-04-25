@@ -15,7 +15,7 @@ object GeneratorRunner {
 
   // TODO: Add multiple trait inheritance test.
   // TODO: Add companion object code generation test.
-  // TODO: Add enum types test.
+  // TODO: Add custom types test.
   // TODO: Test "upwards" references in schema model (column -> table and table -> schema).
   // TODO: Test how KeyAsIdColumnPlugin behaves with multi-line primary and foreign keys.
 

@@ -3,7 +3,6 @@ package app.wordpace.inkwell.schema
 import java.sql.{Connection, DatabaseMetaData, DriverManager}
 
 import app.wordpace.inkwell.GeneratorConfiguration
-import app.wordpace.inkwell.GeneratorConfiguration
 import app.wordpace.inkwell.schema.SchemaReader.UnknownJdbcTypeException
 
 import scala.util.Try

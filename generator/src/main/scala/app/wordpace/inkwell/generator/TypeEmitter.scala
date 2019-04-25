@@ -17,7 +17,7 @@ trait TypeEmitter extends TypeEmitter.ColumnPlugin {
   def apply(ref: TypeReference): String
 
   // Provide sensible default implementations for all plugins.
-  override def fromColumn(column: Column): String = apply(ScalaTypeReference(column.scalaType))
+  override def fromColumn(column: Column): String = apply(column.dataType)
 }
 
 object TypeEmitter {
@@ -139,7 +139,7 @@ trait KeyAsIdColumnPlugin extends TypeEmitter.ColumnPlugin { self: TypeEmitter =
       // Case (1): The column is the only primary key of its table.
       id(table.scalaName(config.namingStrategy))
     } else {
-      self.apply(ScalaTypeReference(column.scalaType))
+      self.apply(column.dataType)
     }
   }
 }

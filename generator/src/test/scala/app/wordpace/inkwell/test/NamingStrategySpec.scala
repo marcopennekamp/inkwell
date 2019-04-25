@@ -1,6 +1,6 @@
 package app.wordpace.inkwell.test
 
-import app.wordpace.inkwell.generator.{CamelCaseToSnakeCase, SnakeCaseToCamelCase}
+import app.wordpace.inkwell.generator.{CamelCaseToSnakeCase, ScalaTypeReference, SnakeCaseToCamelCase}
 import app.wordpace.inkwell.schema.{Column, Table}
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -10,8 +10,8 @@ class NamingStrategySpec extends FlatSpec with Matchers {
 
   // TODO: Test a naming strategy which operates on some meaningful Column property (such as isNullable).
 
-  // The null isn't safe, these objects aren't safely initialised either, but it's sufficient for the current purpose.
-  implicit def mockColumn(name: String): Column = Column(name, typeOf[Int], isNullable = false, null)
+  // The null isn't safe, these objects aren't safely initialised either, but it's sufficient for the purpose of mocking.
+  implicit def mockColumn(name: String): Column = Column(name, ScalaTypeReference(typeOf[Int]), isNullable = false, null)
   implicit def mockTable(name: String): Table = Table(name, Seq.empty, Seq.empty, null)
 
   "CamelCaseToSnakeCase" should "translate camel case to snake case" in {

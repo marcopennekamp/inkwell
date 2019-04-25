@@ -5,8 +5,6 @@ import java.nio.file.Path
 import app.wordpace.inkwell.generator._
 import app.wordpace.inkwell.schema._
 
-import scala.reflect.runtime.universe.Type
-
 case class DatabaseConfiguration(
   url: String,
   username: String,
@@ -106,14 +104,15 @@ case class DefaultGeneratorConfiguration(
   override val basePackage: String,
 ) extends GeneratorConfiguration {
   /**
-    * A map of custom JDBC to Scala type mappings, used by the [[DefaultTypeResolver]]. Note that this
-    * map is not used if you override [[typeResolver]].
+    * A map of custom JDBC to [[TypeReference]] mappings, used by the [[DefaultTypeResolver]]. Note that this
+    * map is not (automatically) used if you override [[typeResolver]].
     */
-  def customTypes: Map[String, Type] = Map.empty
+  def customTypes: Map[String, TypeReference] = Map.empty
 
   /**
-    * The schema inheritance map is used by [[DefaultModelEmitter]] to provide support for model supertypes.
-    * You can override this value to provide your own inheritance rules.
+    * The inheritance map is used by [[DefaultModelEmitter]] to provide support for model supertypes. You can
+    * override this value to provide your own inheritance rules. Note that this map is not (automatically) used
+    * if you override [[selectModelEmitter]].
     */
   def inheritances: Inheritances = Inheritances.empty
 
