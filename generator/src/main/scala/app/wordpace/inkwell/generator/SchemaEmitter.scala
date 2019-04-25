@@ -64,23 +64,26 @@ object SchemaEmitter {
   case class CompilationUnit(path: Path, code: String)
 }
 
+abstract class DefaultSchemaEmitter(config: GeneratorConfiguration, override val schema: Schema) extends SchemaEmitter {
+  override def packageName(unitName: String): String = config.basePackage
+  override def imports: Set[Import] = config.imports
+
+  protected def tableCode(table: Table): String =
+    s"""${config.selectModelEmitter(table).code}
+       |${config.selectCompanionEmitter(table).code}""".stripMargin
+
+  protected def unitCode(unitName: String, body: String): String = header(unitName) + "\n\n" + body
+}
+
 /**
   * Generates the whole schema into a single file.
   */
-class SingleFileSchemaEmitter(config: GeneratorConfiguration, override val schema: Schema) extends SchemaEmitter {
+class SingleFileSchemaEmitter(config: GeneratorConfiguration, schema: Schema) extends DefaultSchemaEmitter(config, schema) {
   override def compilationUnits: Seq[CompilationUnit] = {
-    val tableCodes = schema.tables.map { table =>
-      s"""${config.selectModelEmitter(table).code}
-         |${config.selectCompanionEmitter(table).code}""".stripMargin
-    }
-    val unitName = config.target.getFileName.toString
-    // Each "" adds a blank line. Thus, we add a blank line between the header and the main code and also between tables.
-    val code = (header(unitName) +: "" +: tableCodes.flatMap(s => Seq(s, ""))).mkString("\n")
+    val code = unitCode(unitName = config.target.getFileName.toString, schema.tables.map(tableCode).mkString("\n\n"))
     Seq(CompilationUnit(config.target, code))
   }
 
-  override def packageName(unitName: String): String = config.basePackage
-  override def imports: Set[Import] = config.imports
 }
 
 // TODO: Idea: Partitioning schema emitter which emits models to different subpackages based on a predefined table.
