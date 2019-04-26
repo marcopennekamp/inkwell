@@ -1,5 +1,6 @@
 package app.wordpace.inkwell
 
+import java.io.File
 import java.sql.ResultSet
 
 package object util {
@@ -13,6 +14,20 @@ package object util {
 
   implicit class StringExtensions(str: String) {
     def emptyToNone: Option[String] = if (str.nonEmpty) Some(str) else None
+
+    /**
+      * Converts a package or full name to a file name.
+      *
+      * @example `"a.b.c".toFileName == "a/b/c"` (on Unix-based systems)
+      */
+    def toFileName: String = str.replace(".", File.separator)
+
+    /**
+      * Remove the last section of the string separated by `separator`.
+      *
+      * @example `"a.b.c".cutLast('.') == "a.b"`
+      */
+    def cutLast(separator: Char): String = str.split(separator).init.mkString(separator.toString)
   }
 
 }

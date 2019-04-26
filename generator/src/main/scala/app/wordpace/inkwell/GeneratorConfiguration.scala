@@ -28,14 +28,16 @@ trait GeneratorConfiguration {
   def sourceSchema: String
 
   /**
-    * The target folder or <b>extensionless</b> target file (depending on your [[SchemaEmitter]]).
+    * The target folder where the root folder of the base package will be placed.
     *
-    * For example, [[SingleFileSchemaEmitter]] assumes the target to be a file.
+    * For example, assume the base package is `com.example`, we have one compilation unit with a
+    * name `schema.Schema`, and the target folder is `target/scala-2.12/src_managed`. [[Generator]]
+    * will write the compilation unit to the file `target/scala-2.12/src_managed/com/example/schema/Schema.scala`.
     */
-  def target: Path
+  def targetFolder: Path
 
   /**
-    * The base package of the target.
+    * The base package of all compilation units, which is basically concatenated with each unit's name.
     */
   def basePackage: String
 
@@ -100,7 +102,7 @@ trait GeneratorConfiguration {
 case class DefaultGeneratorConfiguration(
   override val db: DatabaseConfiguration,
   override val sourceSchema: String,
-  override val target: Path,
+  override val targetFolder: Path,
   override val basePackage: String,
 ) extends GeneratorConfiguration {
   /**
@@ -125,7 +127,7 @@ case class DefaultGeneratorConfiguration(
   override lazy val typeResolver: TypeResolver = new DefaultTypeResolver(customTypes)
   override lazy val typeEmitter: TypeEmitter = new ImportSimplifyingTypeEmitter(imports)
 
-  override def selectSchemaEmitter(schema: Schema): SchemaEmitter = new SingleFileSchemaEmitter(this, schema)
+  override def selectSchemaEmitter(schema: Schema): SchemaEmitter = new SingleFileSchemaEmitter(this, schema, "Schema")
   override def selectModelEmitter(table: Table): ModelEmitter = new DefaultModelEmitter(this, inheritances, table)
   override def selectCompanionEmitter(table: Table): CompanionEmitter = new DefaultCompanionEmitter(this, table)
   override def selectPropertyEmitter(column: Column): PropertyEmitter = new DefaultPropertyEmitter(this, column)

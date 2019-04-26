@@ -2,7 +2,6 @@ package app.wordpace.inkwell.integration
 
 import java.nio.file.Path
 
-import app.wordpace.inkwell.DatabaseConfiguration
 import app.wordpace.inkwell.{DatabaseConfiguration, DefaultGeneratorConfiguration}
 
 object ConfigLoader {

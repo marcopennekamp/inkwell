@@ -28,11 +28,11 @@ object GeneratorRunner {
     * This configuration tests: Code generation, nullable columns to Options, basic imports, single trait inheritance,
     * KeyAsIdColumnPlugin and the foreign/primary key model.
     */
-  def plumbusAcademy(basePath: String): Unit = {
+  def plumbusAcademy(targetFolder: String): Unit = {
     val config: DefaultGeneratorConfiguration = new DefaultGeneratorConfiguration(
       ConfigLoader.databaseConfiguration("plumbus_academy.sql"),
       sourceSchema = "PUBLIC",
-      target = Paths.get(basePath, "plumbus", "academy", "Schema"),
+      targetFolder = Paths.get(targetFolder),
       basePackage = "plumbus.academy",
     ) { configSelf =>
       override val imports: Set[Import] = Set(

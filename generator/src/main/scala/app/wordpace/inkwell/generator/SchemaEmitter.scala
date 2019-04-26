@@ -7,6 +7,8 @@ import app.wordpace.inkwell.GeneratorConfiguration
 import app.wordpace.inkwell.generator.SchemaEmitter.CompilationUnit
 import app.wordpace.inkwell.schema._
 
+import app.wordpace.inkwell.util.StringExtensions
+
 /**
   * Handles the generation of the whole schema and has the power to decide in which files, objects or even
   * packages specific classes are placed.
@@ -23,14 +25,7 @@ trait SchemaEmitter {
   def compilationUnits: Seq[CompilationUnit]
 
   /**
-    * This default implementation builds a file path from the package and name of the unit.
-    *
-    * @return An extensionless path to the file the unit should be written to.
-    */
-  protected def unitPath(unitName: String): Path = Paths.get(packageName(unitName).replace(".", File.pathSeparator), unitName)
-
-  /**
-    * The emitted header generated from the package declaration, import code and possibly additional code.
+    * The emitted header generated from the package declaration, imports and possibly additional code.
     */
   protected def header(unitName: String): String =
     s"""package ${packageName(unitName)}
@@ -58,14 +53,14 @@ trait SchemaEmitter {
 
 object SchemaEmitter {
   /**
-    * @param path An extensionless, absolute path to the file the unit should be written to.
+    * @param name The name of the unit relative to the base package, e.g. `schema.Schema`.
     * @param code The unit's complete generated code.
     */
-  case class CompilationUnit(path: Path, code: String)
+  case class CompilationUnit(name: String, code: String)
 }
 
 abstract class DefaultSchemaEmitter(config: GeneratorConfiguration, override val schema: Schema) extends SchemaEmitter {
-  override def packageName(unitName: String): String = config.basePackage
+  override def packageName(unitName: String): String = (config.basePackage + "." + unitName).cutLast('.')
   override def imports: Set[Import] = config.imports
 
   protected def tableCode(table: Table): String =
@@ -73,15 +68,17 @@ abstract class DefaultSchemaEmitter(config: GeneratorConfiguration, override val
        |${config.selectCompanionEmitter(table).code}""".stripMargin
 
   protected def unitCode(unitName: String, body: String): String = header(unitName) + "\n\n" + body
+  protected def unitCode(unitName: String, tables: Seq[Table]): String = unitCode(unitName, tables.map(tableCode).mkString("\n\n"))
 }
 
 /**
   * Generates the whole schema into a single file.
   */
-class SingleFileSchemaEmitter(config: GeneratorConfiguration, schema: Schema) extends DefaultSchemaEmitter(config, schema) {
+class SingleFileSchemaEmitter(config: GeneratorConfiguration, schema: Schema, unitName: String)
+  extends DefaultSchemaEmitter(config, schema)
+{
   override def compilationUnits: Seq[CompilationUnit] = {
-    val code = unitCode(unitName = config.target.getFileName.toString, schema.tables.map(tableCode).mkString("\n\n"))
-    Seq(CompilationUnit(config.target, code))
+    Seq(CompilationUnit(unitName, unitCode(unitName, schema.tables)))
   }
 
 }
