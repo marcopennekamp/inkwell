@@ -84,21 +84,24 @@ class SingleFileSchemaEmitter(config: GeneratorConfiguration, schema: Schema, un
 }
 
 /**
-  * Partitions the schema into different packages based on a partitioning table. A single table may be included
-  * in multiple partitions. Tables not included in any partition will be generated into the base package.
+  * Partitions the schema into different packages based on a partitioning map. A single model may be included
+  * in multiple partitions. Models not included in any partition will be generated into the base package.
   *
-  * @param simpleUnitName The simple name for every unit. For example, let's say we have a partition `(pack -> t1,
-  *                 pack -> t2, back -> t3)`, tables t1, t2, t3, t4, and a unit name `Schema`. This schema
-  *                 emitter will generate three units: `Schema` (t4), `pack.Schema` (t1, t2), and `back.Schema` (t3).
+  * @param partitions The map of partitions from a partition name to a set of <b>scala names.</b> We, again,
+  *                   believe Scala names are more apt to represent each table, because we are ultimately
+  *                   partitioning the space of Scala types, not the space of database tables.
+  * @param simpleUnitName The simple name for every unit. For example, let's say we have a partition `(pack -> c1,
+  *                 pack -> c2, back -> c3)`, class names c1, c2, c3, c4, and a unit name `Schema`. This schema
+  *                 emitter will generate three units: `Schema` (c4), `pack.Schema` (c1, c2), and `back.Schema` (c3).
   */
-class PartitioningSchemaEmitter(config: GeneratorConfiguration, schema: Schema, partitions: Map[String, Set[Table.Name]],
+class PartitioningSchemaEmitter(config: GeneratorConfiguration, schema: Schema, partitions: Map[String, Set[String]],
   simpleUnitName: String) extends DefaultSchemaEmitter(config, schema)
 {
   override def compilationUnits: Seq[CompilationUnit] = {
     // Note that toVector ensures that the map is properly executed before we use the mutable unpartitioned set.
     val unpartitioned = mutable.Set(schema.tables: _*)
-    val units = partitions.toSeq.map { case (partitionName, tableNames) =>
-      val tables = schema.tables.filter(t => tableNames.contains(t.name))
+    val units = partitions.toSeq.map { case (partitionName, classNames) =>
+      val tables = schema.tables.filter(t => classNames.contains(t.scalaName(config.namingStrategy)))
 
       // Register the partitioned tables so they aren't generated into the unpartitioned unit.
       tables.foreach(unpartitioned.remove)
