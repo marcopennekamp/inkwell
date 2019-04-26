@@ -70,7 +70,7 @@ abstract class DefaultSchemaEmitter(config: GeneratorConfiguration, override val
   }
 
   protected def toUnit(unitName: String, tables: Seq[Table]): CompilationUnit = {
-    toUnit(unitName, tables.map(tableCode).mkString("\n\n"))
+    toUnit(unitName, tables.sortBy(_.scalaName(config.namingStrategy)).map(tableCode).mkString("\n\n"))
   }
 }
 
@@ -90,9 +90,10 @@ class SingleFileSchemaEmitter(config: GeneratorConfiguration, schema: Schema, un
   * @param partitions The map of partitions from a partition name to a set of <b>scala names.</b> We, again,
   *                   believe Scala names are more apt to represent each table, because we are ultimately
   *                   partitioning the space of Scala types, not the space of database tables.
-  * @param simpleUnitName The simple name for every unit. For example, let's say we have a partition `(pack -> c1,
-  *                 pack -> c2, back -> c3)`, class names c1, c2, c3, c4, and a unit name `Schema`. This schema
-  *                 emitter will generate three units: `Schema` (c4), `pack.Schema` (c1, c2), and `back.Schema` (c3).
+  * @param simpleUnitName The simple name for every unit. For example, let's say we have a partition
+  *                       `(pack -> c1, pack -> c2, back -> c3)`, class names c1, c2, c3, c4, and a unit
+  *                       name `Schema`. This schema emitter will generate three units: `Schema` (c4),
+  *                       `pack.Schema` (c1, c2), and `back.Schema` (c3).
   */
 class PartitioningSchemaEmitter(config: GeneratorConfiguration, schema: Schema, partitions: Map[String, Set[String]],
   simpleUnitName: String) extends DefaultSchemaEmitter(config, schema)
