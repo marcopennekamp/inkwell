@@ -13,11 +13,12 @@ import scala.reflect.runtime.universe.typeOf
   */
 object GeneratorRunner {
 
-  // TODO: Add multiple trait inheritance test.
-  // TODO: Add companion object code generation test.
-  // TODO: Add custom types test.
+  // TODO: Test multiple trait inheritance.
+  // TODO: Test companion object code generation.
+  // TODO: Test custom types.
   // TODO: Test "upwards" references in schema model (column -> table and table -> schema).
   // TODO: Test how KeyAsIdColumnPlugin behaves with multi-line primary and foreign keys.
+  // TODO: Test PartitioningSchemaEmitter.
 
   def main(args: Array[String]): Unit = {
     val path = args(0)
