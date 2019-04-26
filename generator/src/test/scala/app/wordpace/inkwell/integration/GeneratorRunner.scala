@@ -30,6 +30,8 @@ object GeneratorRunner {
     * KeyAsIdColumnPlugin and the foreign/primary key model.
     */
   def plumbusAcademy(targetFolder: String): Unit = {
+    import TypeReference.conversions._
+
     val config: DefaultGeneratorConfiguration = new DefaultGeneratorConfiguration(
       ConfigLoader.databaseConfiguration("plumbus_academy.sql"),
       sourceSchema = "PUBLIC",
@@ -45,7 +47,7 @@ object GeneratorRunner {
       override def inheritances: Inheritances = Inheritances(Map(
         "Person" -> Seq(
           // TODO: Test referring to a trait via typeOf.
-          NamedTypeReference("plumbus.academy.PersonFunctions"),
+          "plumbus.academy.PersonFunctions",
         ),
       ))
 

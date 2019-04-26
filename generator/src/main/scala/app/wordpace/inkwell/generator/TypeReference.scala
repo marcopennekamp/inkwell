@@ -12,6 +12,18 @@ trait TypeReference {
   def typeArguments: Seq[TypeReference]
 }
 
+object TypeReference {
+  /**
+    * Provides implicit conversions as a convenient way of creating type references. Take care to only
+    * use these conversions for easy configuration definitions.
+    */
+  object conversions {
+    implicit def fromType(t: Type): TypeReference = ScalaTypeReference(t)
+    implicit def fromName(fullName: String): TypeReference = NamedTypeReference(fullName)
+    implicit def fromNameWithArguments(tuple: (String, Seq[TypeReference])): TypeReference = NamedTypeReference.tupled(tuple)
+  }
+}
+
 /**
   * A type reference pointing to a Scala [[Type]], which is the most natural and safe representation possible.
   * However, a [[Type]] is not always available, in which case you need to choose a different representation.
