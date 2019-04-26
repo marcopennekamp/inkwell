@@ -4,7 +4,7 @@ import java.nio.file.{Path, Paths}
 import java.time.LocalDateTime
 
 import app.wordpace.inkwell.generator._
-import app.wordpace.inkwell.{DefaultGenerator, DefaultGeneratorConfiguration, GeneratorConfiguration}
+import app.wordpace.inkwell.{FileGenerator, DefaultGeneratorConfiguration, GeneratorConfiguration}
 
 import scala.reflect.runtime.universe.typeOf
 
@@ -54,7 +54,7 @@ object GeneratorRunner {
         override protected def config: GeneratorConfiguration = configSelf
       }
     }
-    new DefaultGenerator(config).generate()
+    new FileGenerator(config).generate()
   }
 
 }
