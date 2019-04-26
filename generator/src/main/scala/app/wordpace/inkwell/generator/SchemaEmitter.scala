@@ -67,8 +67,13 @@ abstract class DefaultSchemaEmitter(config: GeneratorConfiguration, override val
     s"""${config.selectModelEmitter(table).code}
        |${config.selectCompanionEmitter(table).code}""".stripMargin
 
-  protected def unitCode(unitName: String, body: String): String = header(unitName) + "\n\n" + body
-  protected def unitCode(unitName: String, tables: Seq[Table]): String = unitCode(unitName, tables.map(tableCode).mkString("\n\n"))
+  protected def toUnit(unitName: String, bodyCode: String): CompilationUnit = {
+    CompilationUnit(unitName, header(unitName) + "\n\n" + bodyCode)
+  }
+
+  protected def toUnit(unitName: String, tables: Seq[Table]): CompilationUnit = {
+    toUnit(unitName, tables.map(tableCode).mkString("\n\n"))
+  }
 }
 
 /**
@@ -78,7 +83,7 @@ class SingleFileSchemaEmitter(config: GeneratorConfiguration, schema: Schema, un
   extends DefaultSchemaEmitter(config, schema)
 {
   override def compilationUnits: Seq[CompilationUnit] = {
-    Seq(CompilationUnit(unitName, unitCode(unitName, schema.tables)))
+    Seq(toUnit(unitName, schema.tables))
   }
 
 }
