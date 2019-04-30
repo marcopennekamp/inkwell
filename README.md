@@ -6,10 +6,10 @@ The name Inkwell is a play on Quill. To write with a quill, you first need to di
 
 What makes Inkwell special? Check this out:
 
-- **It's customisable:** Generate exactly the code you need. Inkwell is *highly* customisable. You can adjust *every* aspect of schema code generation with varying degrees of ease.   
-- **It's easy to use:** Inkwell provides opinionated default implementations to help you get started quickly. You can pick and choose exactly the components you need or write your own. It's very easy to extend Inkwell's default implementations.
+- **It's customisable:** Generate exactly the code you need. Inkwell is *highly* customisable. You can adjust every aspect of schema code generation with varying degrees of ease.   
+- **It's easy to use:** Inkwell provides opinionated default implementations to help you get started quickly. You can pick and choose the components you need or write your own. It's also very easy to extend Inkwell's default implementations.
 - **It's well documented:** I know how frustrating bad documentation (or none at all!) can be, so I took my time to carefully document everything important. Just check out the source code! Is anything unclear? Go raise an issue!
-- **It's open for more:** I'd love to enrich Inkwell even more with your feedback, so get issue tracking!
+- **It's open for more:** I'd love to enrich Inkwell with your feedback, so get issue tracking!
 
 
 #### Getting Started
