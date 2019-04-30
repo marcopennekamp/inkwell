@@ -14,19 +14,19 @@ trait TypeResolver {
 }
 
 /**
-  * Resolves common native JDBC types as well as user-defined types given in the [[jdbcToScala]] map.
+  * Resolves common native JDBC types as well as user-defined types given in the [[toTypeReference]] map.
   *
-  * @param jdbcToScala A map of user-defined (or exotic) JDBC type names pointing to their corresponding
-  *                    type references.
+  * @param toTypeReference A map of user-defined (or exotic) JDBC type names pointing to their corresponding
+  *                        type references.
   */
-class DefaultTypeResolver(jdbcToScala: Map[String, TypeReference]) extends TypeResolver {
+class DefaultTypeResolver(toTypeReference: Map[String, TypeReference]) extends TypeResolver {
 
   override def apply(columnMeta: JdbcColumnMeta): Option[TypeReference] = {
     implicit def toSomeScalaTypeReference[T](t: Type): Option[TypeReference] = Some(ScalaTypeReference(t))
 
     // Check custom type names first, since custom types may appear to have a standard data type
     // regardless (such as Postgres enums being treated as strings).
-    jdbcToScala.get(columnMeta.typeName).orElse {
+    toTypeReference.get(columnMeta.typeName).orElse {
       columnMeta.dataType match {
         case CHAR | VARCHAR | LONGVARCHAR | NCHAR | NVARCHAR | LONGNVARCHAR | CLOB => typeOf[String]
         case NUMERIC | DECIMAL => typeOf[BigDecimal]
