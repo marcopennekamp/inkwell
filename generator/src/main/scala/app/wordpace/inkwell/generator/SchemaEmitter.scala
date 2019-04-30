@@ -61,14 +61,23 @@ abstract class DefaultSchemaEmitter(config: GeneratorConfiguration, override val
   override def packageName(unitName: String): String = (config.basePackage + "." + unitName).cutLast('.')
   override def imports: Set[Import] = config.imports
 
+  /**
+    * Emits code for the given table.
+    */
   protected def tableCode(table: Table): String =
     s"""${config.selectModelEmitter(table).code}
        |${config.selectCompanionEmitter(table).code}""".stripMargin
 
+  /**
+    * Turns a unit name and code body (without the header) into a full compilation unit.
+    */
   protected def toUnit(unitName: String, bodyCode: String): CompilationUnit = {
     CompilationUnit(unitName, header(unitName) + "\n\n" + bodyCode)
   }
 
+  /**
+    * Turns a unit name and a sequence of tables into a compilation unit.
+    */
   protected def toUnit(unitName: String, tables: Seq[Table]): CompilationUnit = {
     toUnit(unitName, tables.sortBy(_.scalaName(config.namingStrategy)).map(tableCode).mkString("\n\n"))
   }

@@ -6,7 +6,7 @@ import app.wordpace.inkwell.schema.Column
 import app.wordpace.inkwell.util._
 
 /**
-  * Provides various ways to turn a scala type into a string.
+  * Provides various ways to turn a type reference into a string.
   *
   * Plugins are defined so that you can mix in proper implementations at your leisure.
   */
