@@ -55,3 +55,20 @@ All components have default implementations contained in the same file. We don't
 - [PropertyEmitter](https://github.com/marcopennekamp/inkwell/blob/master/generator/src/main/scala/app/wordpace/inkwell/generator/PropertyEmitter.scala) emits a single property of a case class.
 
 
+## State of the Project
+
+Inkwell is in early stages. I have just started using it in my own projects. However, since it's a code generator, it's very easy to try it out (and rip it out if the need arises), so give it a go!
+
+Inkwell has been tested with:
+ 
+- **Databases** – PostgreSQL 10
+- **Libraries** – Quill 3.1.0 
+
+You can help by testing whether Inkwell works with other databases.
+
+
+## Changelog
+
+##### 0.1.0
+
+- Initial Release
