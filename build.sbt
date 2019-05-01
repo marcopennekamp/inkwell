@@ -4,8 +4,8 @@ import java.nio.file.{Files, Path => NioPath, Paths}
 import scala.collection.JavaConverters._
 import scala.util.Try
 
-lazy val `generator` =
-  (project in file("generator"))
+lazy val inkwell =
+  (project in file("inkwell"))
     .settings(commonSettings ++ releaseSettings)
     .settings(
       name := "inkwell",
@@ -21,7 +21,7 @@ lazy val `generate-test-schema` =
     .settings(
       skip in publish := true,
     )
-    .dependsOn(`generator`)
+    .dependsOn(inkwell)
 
 // Tests the code generated from test schemas.
 lazy val `test-generated-code` =
