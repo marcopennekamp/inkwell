@@ -60,8 +60,6 @@ lazy val commonSettings = Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     "org.scalameta" %% "scalafmt-dynamic" % "2.0.0-RC6",
     "io.getquill" %% "quill-core" % quillVersion,
-    "io.getquill" %% "quill-sql" % quillVersion % Test,
-    "io.getquill" %% "quill-jdbc" % quillVersion % Test,
     "org.scalatest" %% "scalatest" % "3.0.4" % Test,
     "org.slf4j" % "slf4j-log4j12" % "1.7.16" % Test,
   ),
@@ -75,6 +73,8 @@ lazy val commonSettings = Seq(
 lazy val schemaTestSettings = Seq(
   libraryDependencies ++= Seq(
     "com.h2database" % "h2" % "1.4.196",
+    "io.getquill" %% "quill-sql" % quillVersion % Test,
+    "io.getquill" %% "quill-jdbc" % quillVersion % Test,
   ),
 )
 
