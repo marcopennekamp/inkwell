@@ -28,9 +28,10 @@ abstract class DefaultGenerator[Output](val config: GeneratorConfiguration) exte
   }
 
   /**
-    * Create a file path from the given compilation unit. From a design perspective, this shouldn't actually
-    * be part of [[DefaultGenerator]] but rather [[FileGenerator]], but [[Scalafmt]] requires the file path
-    * of the generated "file".
+    * Create a file path from the given compilation unit.
+    *
+    * From a design perspective, this shouldn't actually be part of [[DefaultGenerator]] but rather
+    * [[FileGenerator]]. However, [[Scalafmt]] requires the file path of the generated "file".
     */
   protected def filePath(unit: CompilationUnit): Path = {
     Paths.get(config.targetFolder.toString, config.basePackage.toFileName, unit.name.toFileName + ".scala")
@@ -59,10 +60,16 @@ abstract class DefaultGenerator[Output](val config: GeneratorConfiguration) exte
   protected def produce(units: Seq[CompilationUnit]): Output
 }
 
+/**
+  * Simply returns each [[CompilationUnit]].
+  */
 class StringGenerator(config: GeneratorConfiguration) extends DefaultGenerator[Seq[CompilationUnit]](config) {
   override def produce(units: Seq[CompilationUnit]): Seq[CompilationUnit] = units
 }
 
+/**
+  * Writes each [[CompilationUnit]] to a file.
+  */
 class FileGenerator(config: GeneratorConfiguration) extends DefaultGenerator[Unit](config) {
   override def produce(units: Seq[CompilationUnit]): Unit = {
     units.foreach { unit =>
