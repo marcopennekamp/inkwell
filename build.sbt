@@ -9,7 +9,7 @@ lazy val inkwell =
     .settings(commonSettings ++ releaseSettings)
     .settings(
       name := "inkwell",
-      version := "0.1.0-SNAPSHOT",
+      version := "0.1.0",
     )
 
 val codeGen = taskKey[Seq[File]]("Run code generation for test schema tests")
