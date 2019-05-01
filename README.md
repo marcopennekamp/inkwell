@@ -148,6 +148,8 @@ Inkwell has been tested with:
 
 You can help by testing whether Inkwell works with other databases.
 
+Thanks to @deusaquilus and @olafurpg for prior work!
+
 
 ## Changelog
 
