@@ -12,15 +12,99 @@ What makes Inkwell special? Check this out:
 The name Inkwell is a play on Quill. To write with a quill, you first need to dip it in ink. An inkwell is a quick and easy method of inking your quill *consistently*. Inkwell provides consistently up-to-date "ink" for Quill by generating all the classes you need to get started with your queries.
 
 
-## Getting Started
+## Installation
 
-TODO
+TODO: SBT dependencies line.
 
-Note that Inkwell works with `scala.reflect.runtime.universe.Type` and `typeOf`, because `ClassTag` doesn't contain information about type arguments. To use `Type` and `typeOf`, you may have to add the following dependency to your build:
+Note that Inkwell works with `scala.reflect.runtime.universe.Type` and `typeOf`, because `ClassTag` doesn't contain any information about type arguments. To use `Type` and `typeOf`, you may have to add the following dependency to your build:
 
 ```scala
 libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 ```
+
+
+## Getting Started
+
+Inkwell must be invoked from Scala code. There is no standalone executable or command line interface. Hence, you will need to set up a [multi-project build](https://www.scala-sbt.org/1.x/docs/Multi-Project.html) in SBT with a main project and a code generation project, which your main project should depend on. Your Inkwell generator will be placed in the code generation project, but *invoked* as a [code generation task](https://www.scala-sbt.org/1.0/docs/Howto-Generating-Files.html) in the settings of the main project. Check out Inkwell's own [build.sbt](https://github.com/marcopennekamp/inkwell/blob/master/build.sbt) as an example.
+
+Once you have set up the code generation framework, you need to configure and invoke the Inkwell code generator. A minimal setup with a `FileGenerator` looks like this:
+
+```scala
+val config: DefaultGeneratorConfiguration = new DefaultGeneratorConfiguration(
+  DatabaseConfiguration(url, username, password),
+  // Check your database's documentation for the default schema name. It is "public" in Postgres.
+  sourceSchema = "public",
+  // The src folder that all files get generated to.
+  targetFolder = Paths.get(outputDir),
+  // The base package of every generated file and conversely all case classes/objects.
+  basePackage = "com.example.schema",
+) { configSelf =>
+
+}
+new FileGenerator(config).generate()
+```
+
+**And now you can start overriding.** The following code samples would be placed between the curly brackets of the basic example above. 
+
+Let's say you want to **ignore a table** `schema_version` (used by Flyway):
+
+```scala
+override def ignoredTables: Set[String] = Set("schema_version")
+```
+
+Or maybe **import some types:**
+
+```scala
+override val imports: Set[Import] = Set(
+  Import.Wildcard("java.time"),
+  Import.Entity("play.api.libs.json.Json"),
+  Import.Entity("core.Id"),
+  Import.Entity(typeOf[Identity]),
+)
+```
+
+**Extend a case class** generated from a table `account`:
+
+```scala
+override def inheritances: Inheritances = Inheritances(Map(
+  "Account" -> Seq(typeOf[Identity]),
+))
+```
+
+**Map custom types.** `TypeReference.conversions` allow you to create a type reference from a `String` or `Type` without any boilerplate code.
+
+```scala
+import TypeReference.conversions._
+
+override def customTypes: Map[String, TypeReference] = Map(
+  "my_enum_1" -> typeOf[MyEnum1],
+  "my_enum_2" -> "com.example.enums.MyEnum2",
+)
+```
+
+Generate an `Id[A]` type (e.g. `id: Id[Account]` for `Account`) for **foreign key and primary key** properties:
+
+```scala
+override lazy val typeEmitter: TypeEmitter = {
+  new ImportSimplifyingTypeEmitter(imports) with KeyAsIdColumnPlugin {
+    // This is where we need configSelf!
+    override protected def config: GeneratorConfiguration = configSelf
+  }      
+}
+```
+
+And *of course* you can **just ******* generate some code:**
+
+```scala
+override def selectCompanionEmitter(table: Table): CompanionEmitter = new DefaultCompanionEmitter(this, table) {
+  override def innerCode: String =
+    s"""implicit val reads = Json.reads[${table.scalaName}]
+       |implicit val writes = Json.writes[${table.scalaName}]
+       |def tupled = (${table.scalaName}.apply _).tupled""".stripMargin
+}
+```
+
+The options presented above are just a small subset of what you can do with Inkwell. The next section gives you an overview of Inkwell's concepts and components. When in doubt, **read the source documentation and code**. You'll find it quite approachable.
 
 
 ## Concepts and Components
