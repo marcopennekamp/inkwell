@@ -1,15 +1,15 @@
-package app.wordpace.inkwell.integration
+package app.wordpace.inkwell.test
 
 import java.nio.file.{Path, Paths}
 import java.time.LocalDateTime
 
 import app.wordpace.inkwell.generator._
-import app.wordpace.inkwell.{FileGenerator, DefaultGeneratorConfiguration, GeneratorConfiguration}
+import app.wordpace.inkwell.{DefaultGeneratorConfiguration, FileGenerator, GeneratorConfiguration}
 
 import scala.reflect.runtime.universe.typeOf
 
 /**
-  * Generates source files for the integration-tests project.
+  * Generates source files for the test-generated-code project.
   */
 object GeneratorRunner {
 

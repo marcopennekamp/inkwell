@@ -12,19 +12,29 @@ lazy val `generator` =
       version := "0.1.0-SNAPSHOT",
     )
 
-val codeGen = taskKey[Seq[File]]("Run code generation for integration tests")
+val codeGen = taskKey[Seq[File]]("Run code generation for test schema tests")
 
-lazy val `integration-tests` =
-  (project in file("integration-tests"))
-    .settings(commonSettings)
+// Provides the generators that generate test schemas.
+lazy val `generate-test-schema` =
+  (project in file("generate-test-schema"))
+    .settings(commonSettings ++ schemaTestSettings)
     .settings(
-      publishArtifact := false,
+      skip in publish := true,
+    )
+    .dependsOn(`generator`)
+
+// Tests the code generated from test schemas.
+lazy val `test-generated-code` =
+  (project in file("test-generated-code"))
+    .settings(commonSettings ++ schemaTestSettings)
+    .settings(
+      skip in publish := true,
       (sourceGenerators in Compile) += (codeGen in Compile),
       (codeGen in Compile) := {
         val sourcePath = Paths.get(sourceManaged.value.getPath, "main")
-        val classPath = (fullClasspath in Test in `generator`).value.map(_.data)
+        val classPath = (fullClasspath in Compile in `generate-test-schema`).value.map(_.data)
         (runner in Compile).value.run(
-          "app.wordpace.inkwell.integration.GeneratorRunner",
+          "app.wordpace.inkwell.test.GeneratorRunner",
           classPath, Seq(sourcePath.toString), streams.value.log
         )
 
@@ -38,7 +48,7 @@ lazy val `integration-tests` =
         files.get
       },
     )
-    .dependsOn(generator % "compile->test")
+    .dependsOn(`generate-test-schema`)
 
 lazy val quillVersion = "3.1.0"
 
@@ -52,7 +62,6 @@ lazy val commonSettings = Seq(
     "io.getquill" %% "quill-core" % quillVersion,
     "io.getquill" %% "quill-sql" % quillVersion % Test,
     "io.getquill" %% "quill-jdbc" % quillVersion % Test,
-    "com.h2database" % "h2" % "1.4.196" % Test,
     "org.scalatest" %% "scalatest" % "3.0.4" % Test,
     "org.slf4j" % "slf4j-log4j12" % "1.7.16" % Test,
   ),
@@ -60,6 +69,12 @@ lazy val commonSettings = Seq(
   scalacOptions ++= Seq(
     "-feature",
     "-language:implicitConversions",
+  ),
+)
+
+lazy val schemaTestSettings = Seq(
+  libraryDependencies ++= Seq(
+    "com.h2database" % "h2" % "1.4.196",
   ),
 )
 

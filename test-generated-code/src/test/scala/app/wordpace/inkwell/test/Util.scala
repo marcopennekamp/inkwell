@@ -1,4 +1,4 @@
-package app.wordpace.inkwell.integration
+package app.wordpace.inkwell.test
 
 object Util {
   implicit class GroupByExtensions[A, B](seq: Seq[(A, B)]) {

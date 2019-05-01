@@ -1,4 +1,4 @@
-package app.wordpace.inkwell.integration
+package app.wordpace.inkwell.test
 
 import java.time.LocalDateTime
 

@@ -1,4 +1,4 @@
-package app.wordpace.inkwell.integration
+package app.wordpace.inkwell.test
 
 import java.nio.file.Path
 
@@ -7,8 +7,9 @@ import app.wordpace.inkwell.{DatabaseConfiguration, DefaultGeneratorConfiguratio
 object ConfigLoader {
   val defaultSchemaName = "PUBLIC"
 
-  def databaseConfiguration(sqlScriptName: String): DatabaseConfiguration = {
-    DatabaseConfiguration(s"jdbc:h2:mem:sample;INIT=RUNSCRIPT FROM 'generator/src/test/resources/$sqlScriptName'", "sa", "")
+  def databaseConfiguration(sqlScriptName: String, scriptRoot: String = ""): DatabaseConfiguration = {
+    val url = s"jdbc:h2:mem:sample;INIT=RUNSCRIPT FROM '${scriptRoot}generate-test-schema/src/main/resources/$sqlScriptName'"
+    DatabaseConfiguration(url, "sa", "")
   }
 
   def singleFileConfig(sqlScriptName: String, target: Path, basePackage: String) = DefaultGeneratorConfiguration(
