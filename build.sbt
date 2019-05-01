@@ -1,7 +1,5 @@
 import java.io.{File => JFile}
-import java.nio.file.{Files, Path, Paths}
-
-import sbtrelease.ReleasePlugin
+import java.nio.file.{Files, Path => NioPath, Paths}
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -31,7 +29,7 @@ lazy val `integration-tests` =
         )
 
         // Discover all generated files under src_managed/main in integration-tests.
-        var stream: Option[java.util.stream.Stream[Path]] = None
+        var stream: Option[java.util.stream.Stream[NioPath]] = None
         val files: Try[Seq[JFile]] = Try {
           stream = Some(Files.walk(sourcePath))
           stream.get.iterator.asScala.toVector.map(_.toFile).filter(_.isFile)
@@ -65,11 +63,10 @@ lazy val commonSettings = Seq(
   ),
 )
 
-lazy val releaseSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
+lazy val releaseSettings = Seq(
   publishMavenStyle := true,
   publishArtifact := true,
   publishArtifact in Test := false,
-  releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
     if (isSnapshot.value) {
@@ -78,6 +75,8 @@ lazy val releaseSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
       Some("releases"  at nexus + "service/local/staging/deploy/maven2")
     }
   },
+  credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credentials"),
+  useGpg := true,
   autoAPIMappings := true,
   homepage := Some(url("https://github.com/marcopennekamp/inkwell")),
   apiURL := Some(url("https://github.com/marcopennekamp/inkwell")),
