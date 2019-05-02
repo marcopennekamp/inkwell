@@ -4,6 +4,13 @@ import java.nio.file.{Files, Path => NioPath, Paths}
 import scala.collection.JavaConverters._
 import scala.util.Try
 
+// sbt-pgp's publishLocalSigned task requires all projects  to define the publishTo setting, despite publishing
+// local, UNLESS the project is skipped. Since a root project is defined implicitly if an explicit definition is
+// absent, we have to manually skip publishing the root project.
+lazy val root = (project in file("."))
+  .aggregate(inkwell, `generate-test-schema`, `test-generated-code`)
+  .settings(skip in publish := true)
+
 lazy val inkwell =
   (project in file("inkwell"))
     .settings(commonSettings ++ releaseSettings)
@@ -18,9 +25,7 @@ val codeGen = taskKey[Seq[File]]("Run code generation for test schema tests")
 lazy val `generate-test-schema` =
   (project in file("generate-test-schema"))
     .settings(commonSettings ++ schemaTestSettings)
-    .settings(
-      skip in publish := true,
-    )
+    .settings(skip in publish := true)
     .dependsOn(inkwell)
 
 // Tests the code generated from test schemas.
@@ -91,7 +96,6 @@ lazy val releaseSettings = Seq(
     }
   },
   credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credentials"),
-  useGpg := true,
   autoAPIMappings := true,
   homepage := Some(url("https://github.com/marcopennekamp/inkwell")),
   apiURL := Some(url("https://github.com/marcopennekamp/inkwell")),
