@@ -9,6 +9,7 @@ import scala.util.Try
 // absent, we have to manually skip publishing the root project.
 lazy val root = (project in file("."))
   .aggregate(inkwell, `generate-test-schema`, `test-generated-code`)
+  .settings(commonSettings)
   .settings(skip in publish := true)
 
 lazy val inkwell =
