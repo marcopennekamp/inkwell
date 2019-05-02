@@ -95,7 +95,6 @@ lazy val releaseSettings = Seq(
       Some("releases"  at nexus + "service/local/staging/deploy/maven2")
     }
   },
-  credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credentials"),
   autoAPIMappings := true,
   homepage := Some(url("https://github.com/marcopennekamp/inkwell")),
   apiURL := Some(url("https://github.com/marcopennekamp/inkwell")),
