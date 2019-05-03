@@ -14,7 +14,13 @@ The name Inkwell is a play on Quill. To write with a quill, you first need to di
 
 ## Installation
 
-TODO: SBT dependencies line.
+[![Maven][mavenImage]][mavenUrl]
+
+Add Inkwell to your project's library dependencies:
+
+```
+libraryDependencies += "app.wordpace" %% "inkwell" % "0.1.0"
+```
 
 Note that Inkwell works with `scala.reflect.runtime.universe.Type` and `typeOf`, because `ClassTag` doesn't contain any information about type arguments. To use `Type` and `typeOf`, you may have to add the following dependency to your build:
 
@@ -156,3 +162,6 @@ Thanks to @deusaquilus and @olafurpg for prior work!
 ##### 0.1.0
 
 - Initial Release
+
+[mavenImage]: https://img.shields.io/maven-central/v/app.wordpace/inkwell_2.12.svg
+[mavenUrl]: https://search.maven.org/artifact/app.wordpace/inkwell_2.12/
