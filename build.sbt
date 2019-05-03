@@ -17,6 +17,7 @@ lazy val inkwell =
     .settings(commonSettings ++ releaseSettings)
     .settings(
       name := "inkwell",
+      description := "Generate Scala code from a database schema. Highly extensible. Built for and tested with Quill.",
       version := "0.1.0",
     )
 
