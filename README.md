@@ -154,7 +154,7 @@ Inkwell has been tested with:
 
 You can help by testing whether Inkwell works with other databases.
 
-Thanks to @deusaquilus and @olafurpg for prior work!
+Thanks to [@deusaquilus](https://github.com/deusaquilus) and [@olafurpg](https://github.com/olafurpg) for prior work!
 
 
 ## Changelog
