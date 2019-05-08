@@ -45,11 +45,19 @@ object TypeUtil {
     }
 
     /**
-      * @return A concatenation of the owner name and the type name.
+      * Concatenates the owner name and the type name.
       */
-    def concat(ownerName: Option[OwnerName], typeName: String): String = {
-      Seq(ownerName, Some(typeName)).flatten.mkString(".")
-    }
+    def concat(ownerName: Option[OwnerName], typeName: String): String = concatSome(ownerName, Some(typeName))
+
+    /**
+      * Concatenates the names to a full name, ignoring any empty strings.
+      */
+    def concat(names: String*): String = concatSome(names.map(_.emptyToNone) : _*)
+
+    /**
+      * Concatenates all names that are not None to a full name.
+      */
+    def concatSome(names: Option[String]*): String = names.flatten.mkString(".")
   }
 
 }

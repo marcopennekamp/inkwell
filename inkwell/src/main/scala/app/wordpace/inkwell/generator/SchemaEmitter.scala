@@ -28,7 +28,7 @@ trait SchemaEmitter {
   protected def header(unitName: String): String =
     s"""package ${packageName(unitName)}
        |
-       |$importCode""".stripMargin
+       |${importCode(unitName)}""".stripMargin
 
   /**
     * The package name referenced in the unit's package declaration.
@@ -38,7 +38,7 @@ trait SchemaEmitter {
   /**
     * The emitted import section below each unit's package declaration.
     */
-  protected def importCode: String = imports.map {
+  protected def importCode(unitName: String): String = imports(unitName).map {
     case e: Import.Entity => e.fullName
     case p: Import.Wildcard => s"${p.name}._"
   }.map(s => s"import $s").mkString("\n")
@@ -46,7 +46,7 @@ trait SchemaEmitter {
   /**
     * A set of imports.
     */
-  protected def imports: Set[Import]
+  protected def imports(unitName: String): Set[Import]
 }
 
 object SchemaEmitter {
@@ -58,8 +58,8 @@ object SchemaEmitter {
 }
 
 abstract class DefaultSchemaEmitter(config: GeneratorConfiguration, override val schema: Schema) extends SchemaEmitter {
-  override def packageName(unitName: String): String = (config.basePackage + "." + unitName).cutLast('.')
-  override def imports: Set[Import] = config.imports
+  override def packageName(unitName: String): String = TypeUtil.names.concat(config.basePackage, unitName).cutLast('.')
+  override def imports(unitName: String): Set[Import] = config.imports
 
   /**
     * Emits code for the given table.
@@ -117,9 +117,27 @@ class PartitioningSchemaEmitter(config: GeneratorConfiguration, schema: Schema, 
       tables.foreach(unpartitioned.remove)
 
       // The name of the compilation unit contains the partition name, so that it's generated to the correct unit.
-      val unitName = partitionName + "." + simpleUnitName
+      val unitName = TypeUtil.names.concat(partitionName, simpleUnitName)
       toUnit(unitName, tables)
     }.toVector
     units ++ Seq(unpartitioned).filter(_.nonEmpty).map(tables => toUnit(simpleUnitName, tables.toSeq))
+  }
+
+  /**
+    * Import all other partitions (potentially including the unpartitioned package).
+    */
+  override def imports(unitName: String): Set[Import] = {
+    val names = partitions.keys ++ Seq("") // Also (potentially) import unpartitioned units.
+    val partitionImports = names.flatMap { name =>
+      // This is the package that is already "imported", since the package a unit belongs to doesn't need
+      // to be imported.
+      val unitPackage = packageName(unitName)
+
+      // This is the package of the partition to be imported.
+      val partitionPackage = TypeUtil.names.concat(config.basePackage, name)
+
+      if (partitionPackage == unitPackage) None else Some(partitionPackage)
+    }.map(name => Import.Wildcard(name))
+    super.imports(unitName) ++ partitionImports
   }
 }
