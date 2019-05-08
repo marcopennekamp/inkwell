@@ -159,6 +159,10 @@ Thanks to [@deusaquilus](https://github.com/deusaquilus) and [@olafurpg](https:/
 
 ## Changelog
 
+##### 0.1.1
+
+- Fix missing imports for `PartitioningSchemaEmitter`. The emitter now automatically imports all other partitions (including the unpartitioned set), so that references to classes in other partitions can be made with a simple name. 
+
 ##### 0.1.0
 
 - Initial Release
