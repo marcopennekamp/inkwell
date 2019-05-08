@@ -2,10 +2,11 @@ package app.wordpace.inkwell.test
 
 import java.time.LocalDateTime
 
+import app.wordpace.inkwell.test.Util.GroupByExtensions
+import core.Id
 import io.getquill._
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
-import plumbus.academy.{Id, Person, PersonSkill, Skill}
-import Util.GroupByExtensions
+import plumbus.academy.{Person, PersonSkill, Skill}
 
 class SchemaTests extends FlatSpec with Matchers with OptionValues with Schemas {
 
