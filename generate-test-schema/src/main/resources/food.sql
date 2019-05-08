@@ -37,11 +37,15 @@ create table orange(
 );
 
 insert into apple values (default);
+insert into apple values (default);
+insert into apple values (default);
 insert into pear values (default, 1);
 insert into knife values (default, 1, now());
-insert into knife values (default, 2, now());
-insert into bread values (default, 1);
+insert into knife values (default, 1, now());
+insert into bread values (default, 2);
+insert into bread values (default, 2);
 insert into pizza values (default, 1);
 insert into pizza values (default, 2);
 insert into pizza values (default, 2);
+insert into orange values (default, 1);
 insert into orange values (default, 1);

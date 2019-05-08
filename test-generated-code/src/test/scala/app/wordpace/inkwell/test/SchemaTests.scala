@@ -49,4 +49,34 @@ class SchemaTests extends FlatSpec with Matchers with OptionValues with Schemas 
     martialArts.level shouldEqual 3
   }
 
+  "Food Schema" should "be queryable with the generated code" in {
+    // These imports are very explicit to test the actual partitioning.
+    import food.Knife
+    import food.fruit.Apple
+    import food.fruit.Pear
+    import food.fruit.Orange
+    import food.dough.Bread
+    import food.dough.Pizza
+
+    val ctx = new H2JdbcContext[SnakeCase](SnakeCase, foodDataSource)
+    import ctx._
+
+    val pizzaKnives = ctx.run(
+      query[Pizza].flatMap(pizza => query[Knife].filter(_.id == pizza.knifeId)).distinct
+    )
+    pizzaKnives should have length 2
+
+    val companionApples = ctx.run(
+      query[Pear].map(_.appleId).union(query[Bread].map(_.appleId)).flatMap { id =>
+        query[Apple].filter(_.id == id)
+      }.distinct
+    )
+    companionApples should have length 2
+
+    val orangedBreads = ctx.run(
+      query[Orange].flatMap(orange => query[Bread].filter(_.id == orange.breadId)).distinct
+    )
+    orangedBreads should have length 1
+  }
+
 }

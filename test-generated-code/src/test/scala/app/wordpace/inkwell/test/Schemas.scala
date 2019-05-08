@@ -16,4 +16,5 @@ trait Schemas {
   }
 
   def plumbusAcademyDataSource: DataSource with Closeable = makeDataSource("plumbus_academy.sql")
+  def foodDataSource: DataSource with Closeable = makeDataSource("food.sql")
 }
