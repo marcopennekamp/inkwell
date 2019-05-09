@@ -2,7 +2,7 @@ package app.wordpace.inkwell.test
 
 import java.time.{LocalDate, LocalDateTime}
 
-import app.wordpace.inkwell.generator.{Import, ImportSimplifyingTypeEmitter, ScalaTypeReference}
+import app.wordpace.inkwell.generator.{CompilationUnit, DefaultCompilationUnit, Import, ImportSimplifyingTypeEmitter, ScalaTypeReference}
 import app.wordpace.inkwell.test.TypeEmitterSpec.traits.Trait
 import app.wordpace.inkwell.test.TypeEmitterSpec.{CaseClass, ParamAlias, SimpleAlias}
 import org.scalatest.{FlatSpec, Matchers}
@@ -17,18 +17,23 @@ object TypeEmitterSpec {
   object traits {
     trait Trait
   }
+
+  private def createContext(imports: Set[Import]): CompilationUnit = {
+    DefaultCompilationUnit("app.wordpace.inkwell.test.Schema", Set.empty, imports)
+  }
+
+  private implicit val basicContext: CompilationUnit = {
+    createContext(Set(Import.Wildcard("app.wordpace.inkwell.test.TypeEmitterSpec")))
+  }
 }
 
 class TypeEmitterSpec extends FlatSpec with Matchers {
 
-  private def basicEmitter() = new ImportSimplifyingTypeEmitter(Set(
-    Import.Wildcard("app.wordpace.inkwell.test.TypeEmitterSpec"),
-  ))
-
   private implicit def toScalaTypeReference(t: Type): ScalaTypeReference = ScalaTypeReference(t)
 
   "ImportSimplifyingTypeEmitter" should "build primitive types correctly" in {
-    val emitter = basicEmitter()
+    import TypeEmitterSpec.basicContext
+    val emitter = new ImportSimplifyingTypeEmitter
     emitter(typeOf[Boolean]) shouldEqual "Boolean"
     emitter(typeOf[Byte]) shouldEqual "Byte"
     emitter(typeOf[Short]) shouldEqual "Short"
@@ -40,7 +45,8 @@ class TypeEmitterSpec extends FlatSpec with Matchers {
   }
 
   it should "build array types correctly" in {
-    val emitter = basicEmitter()
+    import TypeEmitterSpec.basicContext
+    val emitter = new ImportSimplifyingTypeEmitter
     emitter(typeOf[Array[Boolean]]) shouldEqual "Array[Boolean]"
     emitter(typeOf[Array[Int]]) shouldEqual "Array[Int]"
     emitter(typeOf[Array[String]]) shouldEqual "Array[String]"
@@ -48,7 +54,8 @@ class TypeEmitterSpec extends FlatSpec with Matchers {
   }
 
   it should "preserve aliases" in {
-    val emitter = basicEmitter()
+    import TypeEmitterSpec.basicContext
+    val emitter = new ImportSimplifyingTypeEmitter
     emitter(typeOf[SimpleAlias]) shouldEqual "SimpleAlias"
     emitter(typeOf[Array[SimpleAlias]]) shouldEqual "Array[SimpleAlias]"
     emitter(typeOf[ParamAlias[String, Seq[String]]]) shouldEqual
@@ -56,7 +63,8 @@ class TypeEmitterSpec extends FlatSpec with Matchers {
   }
 
   it should "simplify imported names correctly" in {
-    val emitter = new ImportSimplifyingTypeEmitter(Set(
+    val emitter = new ImportSimplifyingTypeEmitter()
+    implicit val context: CompilationUnit = TypeEmitterSpec.createContext(Set(
       Import.Wildcard("app.wordpace.inkwell.test.TypeEmitterSpec"),
       Import.Entity(typeOf[LocalDateTime]),
     ))
