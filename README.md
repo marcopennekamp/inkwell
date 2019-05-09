@@ -31,6 +31,8 @@ libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 
 ## Getting Started
 
+TODO: Update this for version 0.2.0.
+
 Inkwell must be invoked from Scala code. There is no standalone executable or command line interface. Hence, you will need to set up a [multi-project build](https://www.scala-sbt.org/1.x/docs/Multi-Project.html) in SBT with a main project and a code generation project, which your main project should depend on. Your Inkwell generator will be placed in the code generation project, but *invoked* as a [code generation task](https://www.scala-sbt.org/1.0/docs/Howto-Generating-Files.html) in the settings of the main project. Check out Inkwell's own [build.sbt](https://github.com/marcopennekamp/inkwell/blob/master/build.sbt) as an example.
 
 Once you have set up the code generation framework, you need to configure and invoke the Inkwell code generator. A minimal setup with a `FileGenerator` looks like this:
@@ -50,7 +52,7 @@ val config: DefaultGeneratorConfiguration = new DefaultGeneratorConfiguration(
 new FileGenerator(config).generate()
 ```
 
-**And now you can start overriding.** The following code samples would be placed between the curly brackets of the basic example above. 
+**And now you can start overriding.** The following code samples would be placed between the curly brackets of the basic example above.
 
 Let's say you want to **ignore a table** `schema_version` (used by Flyway):
 
@@ -114,6 +116,8 @@ The options presented above are just a small subset of what you can do with Inkw
 
 
 ## Concepts and Components
+
+TODO: Update this for version 0.2.0.
 
 This is a high-level overview of the different kinds of concepts and components in Inkwell. For more in-depth information, please consult the linked source files.
 

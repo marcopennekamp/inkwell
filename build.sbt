@@ -18,7 +18,7 @@ lazy val inkwell =
     .settings(
       name := "inkwell",
       description := "Generate Scala code from a database schema. Highly extensible. Built for and tested with Quill.",
-      version := "0.1.1-SNAPSHOT",
+      version := "0.2.0-SNAPSHOT",
     )
 
 val codeGen = taskKey[Seq[File]]("Run code generation for test schema tests")
