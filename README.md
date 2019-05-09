@@ -159,7 +159,16 @@ Thanks to [@deusaquilus](https://github.com/deusaquilus) and [@olafurpg](https:/
 
 ## Changelog
 
-##### 0.1.1
+##### 0.2.0 (unpublished)
+
+This version is a very extensive refactoring, as you can read below. This is the first step in my ongoing efforts to improve the design and structure of Inkwell.
+
+- Split `Model` and `Property` from their respective emitters, to separate the emitter from the additional data processing that can now be done with `Model` and `Property`. This is a much cleaner design, albeit a little bit more complex.
+- Split `SchemaEmitter` into, on the one hand, `CompilationUnit` and `CompilationUnitEmitter`, which hold info about each code unit and emit it, and `SchemaSlicer`, which distributes each model to a compilation unit. Previously, `SchemaEmitter` had both of these tasks, which became messy.
+- Allow `TypeEmitter` to access the `CompilationUnit` a given type should be emitted to, which can be used, for example, to glean the imports specific to said compilation unit.
+- Move Id-type resolution based on database keys from `TypeEmitter` to `Property`. There was previously a design oversight which meant that the Id type wasn't treated as a `TypeReference`. 
+
+##### 0.1.1 (unpublished)
 
 - Fix missing imports for `PartitioningSchemaEmitter`. The emitter now automatically imports all other partitions (including the unpartitioned set), so that references to classes in other partitions can be made with a simple name. 
 
