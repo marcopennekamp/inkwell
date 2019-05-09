@@ -74,29 +74,44 @@ trait GeneratorConfiguration {
   def typeResolver: TypeResolver
 
   /**
+    * The schema slicer slices the schema into a set of [[CompilationUnit]].
+    */
+  def schemaSlicer: SchemaSlicer
+
+  /**
+    * Creates a model from the given table. The model's [[CompilationUnit]] must be linked by [[SchemaSlicer]].
+    */
+  def createModel(table: Table): Model
+
+  /**
+    * Crates a property from the given column as part of the given model.
+    */
+  def createProperty(column: Column, model: Model): Property
+
+  /**
     * The type emitter can be overridden to change how types, type names and/or column types are emitted.
     */
   def typeEmitter: TypeEmitter
 
   /**
-    * Selects the schema emitter based on the given schema.
+    * The unit emitter generates the code for a whole [[CompilationUnit]].
     */
-  def selectSchemaEmitter(schema: Schema): SchemaEmitter
+  def unitEmitter: CompilationUnitEmitter
 
   /**
-    * Selects the model emitter based on the given table (and possibly the schema).
+    * The model emitter generates case class code for a given [[Model]].
     */
-  def selectModelEmitter(table: Table): ModelEmitter
+  def modelEmitter: ModelEmitter
 
   /**
-    * Selects the companion emitter based on the given table (and possibly the schema).
+    * The companion emitter generates companion object code for a given [[Model]].
     */
-  def selectCompanionEmitter(table: Table): CompanionEmitter
+  def companionEmitter: CompanionEmitter
 
   /**
-    * Selects the property emitter based on the given column (and possibly the table and even schema).
+    * The property emitter generates property code for a given [[Property]].
     */
-  def selectPropertyEmitter(column: Column): PropertyEmitter
+  def propertyEmitter: PropertyEmitter
 }
 
 case class DefaultGeneratorConfiguration(
@@ -114,7 +129,7 @@ case class DefaultGeneratorConfiguration(
   /**
     * The inheritance map is used by [[DefaultModelEmitter]] to provide support for model supertypes. You can
     * override this value to provide your own inheritance rules. Note that this map is not (automatically) used
-    * if you override [[selectModelEmitter]].
+    * if you override [[modelEmitter]].
     */
   def inheritances: Inheritances = Inheritances.empty
 
@@ -125,10 +140,14 @@ case class DefaultGeneratorConfiguration(
 
   override lazy val schemaReader: SchemaReader = new DefaultSchemaReader(this)
   override lazy val typeResolver: TypeResolver = new DefaultTypeResolver(customTypes)
-  override lazy val typeEmitter: TypeEmitter = new ImportSimplifyingTypeEmitter(imports)
 
-  override def selectSchemaEmitter(schema: Schema): SchemaEmitter = new SingleFileSchemaEmitter(this, schema, "Schema")
-  override def selectModelEmitter(table: Table): ModelEmitter = new DefaultModelEmitter(this, inheritances, table)
-  override def selectCompanionEmitter(table: Table): CompanionEmitter = new DefaultCompanionEmitter(this, table)
-  override def selectPropertyEmitter(column: Column): PropertyEmitter = new DefaultPropertyEmitter(this, column)
+  override lazy val schemaSlicer: SchemaSlicer = new SingleUnitSchemaSlicer(this, "Schema")
+  override def createModel(table: Table): Model = DefaultModel(table, this, inheritances)
+  override def createProperty(column: Column, model: Model): Property = DefaultProperty(column, model, this)
+
+  override lazy val typeEmitter: TypeEmitter = new ImportSimplifyingTypeEmitter
+  override def unitEmitter: CompilationUnitEmitter = new DefaultCompilationUnitEmitter(this)
+  override lazy val modelEmitter: ModelEmitter = new DefaultModelEmitter(this)
+  override lazy val companionEmitter: CompanionEmitter = new DefaultCompanionEmitter(this)
+  override lazy val propertyEmitter: PropertyEmitter = new DefaultPropertyEmitter(this)
 }

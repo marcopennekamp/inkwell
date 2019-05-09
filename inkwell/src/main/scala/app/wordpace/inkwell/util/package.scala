@@ -23,11 +23,16 @@ package object util {
     def toFileName: String = str.replace(".", File.separator)
 
     /**
-      * Remove the last section of the string separated by `separator`.
+      * Removes the last section of the string separated by `separator`.
       *
       * @example `"a.b.c".cutLast('.') == "a.b"`
       */
     def cutLast(separator: Char): String = str.split(separator).init.mkString(separator.toString)
+
+    /**
+      * Returns the package name of the given full name.
+      */
+    def cutPackageName: String = str.cutLast('.')
   }
 
 }

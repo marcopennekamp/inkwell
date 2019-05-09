@@ -1,26 +1,24 @@
 package app.wordpace.inkwell.generator
 
 import app.wordpace.inkwell.GeneratorConfiguration
-import app.wordpace.inkwell.schema.Table
 
-/**
-  * Handles the transformation of one table to a (case) class.
-  */
 trait ModelEmitter {
   /**
-    * The table to be transformed.
+    * Emits the code for the given model.
     */
-  protected def table: Table
+  def apply(model: Model): String
+}
 
-  /**
-    * The generated code for the case class. Please ensure that the name is consistent with the naming strategy.
-    */
-  def code: String = s"case class ${table.scalaName}(${properties.mkString(", ")}) $extendsClause"
+class DefaultModelEmitter(config: GeneratorConfiguration) extends ModelEmitter {
+  override def apply(model: Model): String = {
+    s"case class ${model.simpleName}(${emitProperties(model).mkString(", ")}) ${extendsClause(model)}"
+  }
 
   /**
     * The emitted extends clause of the case class declaration.
     */
-  protected def extendsClause: String = {
+  protected def extendsClause(model: Model): String = {
+    val supertypes = emitSupertypes(model)
     if (supertypes.nonEmpty) {
       (s"extends ${supertypes.head}" :: supertypes.tail.toList).mkString(" with ")
     } else {
@@ -29,31 +27,14 @@ trait ModelEmitter {
   }
 
   /**
-    * The naming strategy for the model name.
-    */
-  protected implicit def namingStrategy: NamingStrategy
-
-  /**
     * The (emitted) properties of the case class.
     */
-  protected def properties: Seq[String]
+  protected def emitProperties(model: Model): Seq[String] = model.properties.map(p => config.propertyEmitter(p))
 
   /**
     * The (emitted) supertypes of the case class.
     */
-  protected def supertypes: Seq[String]
-}
-
-/**
-  * Generates a simple case class based on the configured naming strategy, selected property emitter
-  * and inheritance configurations.
-  */
-class DefaultModelEmitter(
-  config: GeneratorConfiguration,
-  inheritances: Inheritances,
-  override val table: Table
-) extends ModelEmitter {
-  override implicit def namingStrategy: NamingStrategy = config.namingStrategy
-  override def properties: Seq[String] = table.columns.map(c => config.selectPropertyEmitter(c).code)
-  override def supertypes: Seq[String] = inheritances.get(table.scalaName).map(config.typeEmitter.apply)
+  protected def emitSupertypes(model: Model): Seq[String] = {
+    model.supertypes.map(t => config.typeEmitter.apply(t)(model.compilationUnit))
+  }
 }

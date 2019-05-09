@@ -1,6 +1,6 @@
 package app.wordpace.inkwell.schema
 
-import app.wordpace.inkwell.generator.{NamingStrategy, TypeReference}
+import app.wordpace.inkwell.generator.TypeReference
 
 case class Schema(tables: Seq[Table]) {
   lazy val tableMap: Map[Table.Name, Table] = tables.map(t => t.name -> t).toMap
@@ -16,8 +16,6 @@ case class Table(
     * The parent schema of the table. The property is safely initialised by [[SchemaReader]].
     */
   var schema: Schema = _
-
-  def scalaName(implicit namingStrategy: NamingStrategy): String = namingStrategy.model(this)
 }
 
 object Table {
@@ -41,8 +39,6 @@ case class Column(
     * The name 'references' mirrors the SQL keyword. The property is safely initialised by [[SchemaReader]].
     */
   var references: Seq[Column] = Seq.empty
-
-  def scalaName(implicit namingStrategy: NamingStrategy): String = namingStrategy.property(this)
 }
 
 object Column {

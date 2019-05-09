@@ -4,12 +4,12 @@ import app.wordpace.inkwell.schema.{Column, Table}
 
 trait NamingStrategy {
   /**
-    * The naming strategy for turning table names into model (case class) names. See [[ModelEmitter]].
+    * The naming strategy for turning table names into model (case class) names. See [[Model]].
     */
   def model(table: Table): String = name(table.name)
 
   /**
-    * The naming strategy for turning column names into property names. See [[PropertyEmitter]].
+    * The naming strategy for turning column names into property names. See [[Property]].
     */
   def property(column: Column): String = name(column.name)
 

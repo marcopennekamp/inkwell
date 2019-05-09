@@ -28,15 +28,21 @@ object TypeReference {
   * A type reference pointing to a Scala [[Type]], which is the most natural and safe representation possible.
   * However, a [[Type]] is not always available, in which case you need to choose a different representation.
   *
+  * Note that [[t]] may not always contain proper type arguments (but instead a wildcard type), since they can be
+  * custom-set via [[typeArguments]].
+  *
   * @example Use this class as follows:
   *          ```
   *          import scala.reflect.runtime.universe.typeOf
   *          ScalaTypeReference(typeOf[MyType])
   *          ```
   */
-case class ScalaTypeReference(t: Type) extends TypeReference {
+case class ScalaTypeReference(t: Type, override val typeArguments: Seq[TypeReference]) extends TypeReference {
   override def fullName: String = t.symbolPreserveAliases.fullName
-  override def typeArguments: Seq[TypeReference] = t.typeArgs.map(ScalaTypeReference)
+}
+
+object ScalaTypeReference {
+  def apply(t: Type): ScalaTypeReference = ScalaTypeReference(t, t.typeArgs.map(a => ScalaTypeReference(a)))
 }
 
 /**
