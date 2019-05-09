@@ -118,6 +118,7 @@ The options presented above are just a small subset of what you can do with Inkw
 ## Concepts and Components
 
 TODO: Update this for version 0.2.0.
+TODO: Fix all these links.
 
 This is a high-level overview of the different kinds of concepts and components in Inkwell. For more in-depth information, please consult the linked source files.
 

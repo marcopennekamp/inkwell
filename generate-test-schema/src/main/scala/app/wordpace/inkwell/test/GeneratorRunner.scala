@@ -53,7 +53,7 @@ object GeneratorRunner {
         ),
       ))
 
-      override def scalafmtConfig: Option[Path] = Some(Paths.get("generator", "src", "test", "resources", "scalafmt.conf"))
+      override def scalafmtConfig: Option[Path] = Some(Paths.get("generate-test-schema", "src", "main", "resources", "scalafmt.conf"))
 
       override def createProperty(column: Column, model: Model): Property = {
         new KeyAsIdProperty(column, model, configSelf) {
@@ -80,7 +80,7 @@ object GeneratorRunner {
         Import.Entity("core.Id"),
       )
 
-      override def scalafmtConfig: Option[Path] = Some(Paths.get("generator", "src", "test", "resources", "scalafmt.conf"))
+      override def scalafmtConfig: Option[Path] = Some(Paths.get("generate-test-schema", "src", "main", "resources", "scalafmt.conf"))
 
       // We need the KeyAsIdProperty, because we want to test that references to other partitions are resolved
       // correctly.

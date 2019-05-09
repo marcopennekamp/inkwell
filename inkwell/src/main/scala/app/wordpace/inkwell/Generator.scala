@@ -43,7 +43,7 @@ abstract class DefaultGenerator[Output](val config: GeneratorConfiguration) exte
     * This emitter formats all compilation units either with Scalafmt or a code formatter of your choice
     * if you override this. Wraps the configured unit emitter.
     */
-  protected def formattingUnitEmitter: CompilationUnitEmitter = {
+  protected lazy val formattingUnitEmitter: CompilationUnitEmitter = {
     val scalafmt = Scalafmt.create(this.getClass.getClassLoader)
     val scalafmtConfig = config.scalafmtConfig.filter { p => // Ensure that the config file exists.
       val exists = Files.exists(p)

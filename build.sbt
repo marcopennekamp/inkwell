@@ -74,6 +74,7 @@ lazy val commonSettings = Seq(
 lazy val schemaTestSettings = Seq(
   libraryDependencies ++= Seq(
     "com.h2database" % "h2" % "1.4.196",
+    "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
     "io.getquill" %% "quill-sql" % quillVersion % Test,
     "io.getquill" %% "quill-jdbc" % quillVersion % Test,
   ),
