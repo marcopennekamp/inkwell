@@ -56,8 +56,8 @@ class DefaultTypeEmitter extends TypeEmitter {
 /**
   * Simplifies the names of all imported types and packages.
   *
-  * Simplifies "java.lang._", "scala._" and "scala.Predef._" by default, since Scala imports these
-  * namespaces by default.
+  * Simplifies "java.lang._", "scala._", "scala.Predef._" and the current compilation unit's package by default,
+  * since Scala imports these namespaces by default.
   */
 class ImportSimplifyingTypeEmitter extends DefaultTypeEmitter {
   protected def classes(implicit context: CompilationUnit): Set[String] = {
@@ -65,12 +65,8 @@ class ImportSimplifyingTypeEmitter extends DefaultTypeEmitter {
   }
   protected def wildcards(implicit context: CompilationUnit): Set[String] = {
     context.imports.flatMap { case w: Import.Wildcard => Some(w.name); case _ => None } ++
-      Set("java.lang", "scala", "scala.Predef")
+      Set("java.lang", "scala", "scala.Predef", context.packageName)
   }
-
-  // TODO: Include the base package of the generated source file in wildcards, since it's also "imported" by default.
-  //       This would depend on the package of the current compilation unit (see SchemaEmitter), so this is not as
-  //       trivial to implement.
 
   /**
     * @return The shortest version of the owner name possible based on imported packages.
