@@ -15,6 +15,7 @@ trait CompanionEmitter {
 
 class DefaultCompanionEmitter(config: GeneratorConfiguration) extends CompanionEmitter {
   override def apply(model: Model): String = {
+    val innerCode = this.innerCode(model)
     if (innerCode.isEmpty) {
       ""
     } else {
@@ -27,5 +28,5 @@ class DefaultCompanionEmitter(config: GeneratorConfiguration) extends CompanionE
   /**
     * The inner code of the companion object.
     */
-  protected def innerCode: String = ""
+  protected def innerCode(model: Model): String = ""
 }
