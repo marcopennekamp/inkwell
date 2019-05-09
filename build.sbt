@@ -45,14 +45,8 @@ lazy val `test-generated-code` =
           classPath, Seq(sourcePath.toString), streams.value.log
         )
 
-        // Discover all generated files under src_managed/main in integration-tests.
-        var stream: Option[java.util.stream.Stream[NioPath]] = None
-        val files: Try[Seq[JFile]] = Try {
-          stream = Some(Files.walk(sourcePath))
-          stream.get.iterator.asScala.toVector.map(_.toFile).filter(_.isFile)
-        }
-        stream.foreach(s => s.close())
-        files.get
+        // Discover all generated files under src_managed/main in test-generated-code.
+        Path.selectSubpaths(file(sourcePath.toString), -DirectoryFilter).map(_._1).toSeq
       },
     )
     .dependsOn(`generate-test-schema`)
