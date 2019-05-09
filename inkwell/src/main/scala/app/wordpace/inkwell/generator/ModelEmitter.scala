@@ -11,7 +11,7 @@ trait ModelEmitter {
 
 class DefaultModelEmitter(config: GeneratorConfiguration) extends ModelEmitter {
   override def apply(model: Model): String = {
-    s"case class ${model.simpleName}(${emitProperties(model).mkString(", ")}) ${extendsClause(model)}"
+    s"case class ${model.simpleName}(${emitProperties(model).mkString(", ")})${extendsClause(model)}"
   }
 
   /**
@@ -20,7 +20,7 @@ class DefaultModelEmitter(config: GeneratorConfiguration) extends ModelEmitter {
   protected def extendsClause(model: Model): String = {
     val supertypes = emitSupertypes(model)
     if (supertypes.nonEmpty) {
-      (s"extends ${supertypes.head}" :: supertypes.tail.toList).mkString(" with ")
+      (s" extends ${supertypes.head}" :: supertypes.tail.toList).mkString(" with ")
     } else {
       ""
     }

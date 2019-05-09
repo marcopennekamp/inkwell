@@ -14,7 +14,7 @@ trait CompilationUnitEmitter {
 class DefaultCompilationUnitEmitter(config: GeneratorConfiguration) extends CompilationUnitEmitter {
   override def apply(unit: CompilationUnit): String = {
     val body = unit.models.map(modelCode).mkString("\n\n")
-    header(unit) + "\n\n" + body
+    header(unit) + "\n\n" + body + "\n"
   }
 
   /**
