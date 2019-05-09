@@ -4,7 +4,7 @@ import java.nio.file.{Path, Paths}
 import java.time.LocalDateTime
 
 import app.wordpace.inkwell.generator._
-import app.wordpace.inkwell.schema.Schema
+import app.wordpace.inkwell.schema.{Column, Schema}
 import app.wordpace.inkwell.{DefaultGeneratorConfiguration, FileGenerator, GeneratorConfiguration}
 
 import scala.reflect.runtime.universe.typeOf
@@ -55,8 +55,10 @@ object GeneratorRunner {
 
       override def scalafmtConfig: Option[Path] = Some(Paths.get("generator", "src", "test", "resources", "scalafmt.conf"))
 
-      override lazy val typeEmitter: TypeEmitter = new ImportSimplifyingTypeEmitter(imports) with KeyAsIdColumnPlugin {
-        override protected def config: GeneratorConfiguration = configSelf
+      override def createProperty(column: Column, model: Model): Property = {
+        new KeyAsIdProperty(column, model, configSelf) {
+          override protected def id(modelType: TypeReference): TypeReference = NamedTypeReference("core.Id", Seq(modelType))
+        }
       }
     }
     new FileGenerator(config).generate()
@@ -80,19 +82,21 @@ object GeneratorRunner {
 
       override def scalafmtConfig: Option[Path] = Some(Paths.get("generator", "src", "test", "resources", "scalafmt.conf"))
 
-      // We need the KeyAsId plugin, because we want to test that references to other partitions are resolved
+      // We need the KeyAsIdProperty, because we want to test that references to other partitions are resolved
       // correctly.
-      override lazy val typeEmitter: TypeEmitter = new ImportSimplifyingTypeEmitter(imports) with KeyAsIdColumnPlugin {
-        override protected def config: GeneratorConfiguration = configSelf
+      override def createProperty(column: Column, model: Model): Property = {
+        new KeyAsIdProperty(column, model, configSelf) {
+          override protected def id(modelType: TypeReference): TypeReference = NamedTypeReference("core.Id", Seq(modelType))
+        }
       }
 
-      override def selectSchemaEmitter(schema: Schema): SchemaEmitter = {
-        // We don't partition 'knife' by design.
+      override lazy val schemaSlicer: SchemaSlicer = {
+        // We don't partition 'knife' by design. What a slice.
         val partitions: Map[String, Set[String]] = Map(
           "fruit" ->  Set("Apple", "Pear", "Orange"),
           "dough" -> Set("Bread", "Pizza"),
         )
-        new PartitioningSchemaEmitter(this, schema, partitions, "Schema")
+        new PartitioningSchemaSlicer(this, partitions, "Schema")
       }
     }
     new FileGenerator(config).generate()
