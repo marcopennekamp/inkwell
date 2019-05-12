@@ -28,7 +28,8 @@ trait Property {
   def dataType: TypeReference = column.dataType
 
   /**
-    * The scala type of the property.
+    * The scala type of the property. Sometimes, this type may be a wrapped version of [[dataType]], such as the data
+    * type wrapped in an Option for nullable columns.
     */
   def tpe: TypeReference
 
