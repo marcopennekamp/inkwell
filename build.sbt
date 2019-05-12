@@ -1,8 +1,4 @@
-import java.io.{File => JFile}
-import java.nio.file.{Files, Path => NioPath, Paths}
-
-import scala.collection.JavaConverters._
-import scala.util.Try
+import java.nio.file.Paths
 
 // sbt-pgp's publishLocalSigned task requires all projects  to define the publishTo setting, despite publishing
 // local, UNLESS the project is skipped. Since a root project is defined implicitly if an explicit definition is
