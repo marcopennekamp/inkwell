@@ -31,8 +31,6 @@ libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 
 ## Getting Started
 
-TODO: Update this for version 0.2.0.
-
 Inkwell must be invoked from Scala code. There is no standalone executable or command line interface. Hence, you will need to set up a [multi-project build](https://www.scala-sbt.org/1.x/docs/Multi-Project.html) in SBT with a main project and a code generation project, which your main project should depend on. Your Inkwell generator will be placed in the code generation project, but *invoked* as a [code generation task](https://www.scala-sbt.org/1.0/docs/Howto-Generating-Files.html) in the settings of the main project. Check out Inkwell's own [build.sbt](https://github.com/marcopennekamp/inkwell/blob/master/build.sbt) as an example.
 
 Once you have set up the code generation framework, you need to configure and invoke the Inkwell code generator. A minimal setup with a `FileGenerator` looks like this:
@@ -93,22 +91,26 @@ override def customTypes: Map[String, TypeReference] = Map(
 Generate an `Id[A]` type (e.g. `id: Id[Account]` for `Account`) for **foreign key and primary key** properties:
 
 ```scala
-override lazy val typeEmitter: TypeEmitter = {
-  new ImportSimplifyingTypeEmitter(imports) with KeyAsIdColumnPlugin {
-    // This is where we need configSelf!
-    override protected def config: GeneratorConfiguration = configSelf
-  }      
+override def createProperty(column: Column, model: Model): Property = {
+  new KeyAsIdProperty(column, model, this) {
+    override protected def id(modelType: TypeReference): TypeReference = {
+      NamedTypeReference("app.wordpace.backend.core.Id", Seq(modelType))
+    }
+  }
 }
 ```
 
 And *of course* you can **just ******* generate some code:**
 
 ```scala
-override def selectCompanionEmitter(table: Table): CompanionEmitter = new DefaultCompanionEmitter(this, table) {
-  override def innerCode: String =
-    s"""implicit val reads = Json.reads[${table.scalaName}]
-       |implicit val writes = Json.writes[${table.scalaName}]
-       |def tupled = (${table.scalaName}.apply _).tupled""".stripMargin
+override lazy val companionEmitter: CompanionEmitter = {
+  new DefaultCompanionEmitter(this) {
+    override protected def innerCode(model: Model): String = {
+      s"""implicit val reads = Json.reads[${model.simpleName}]
+         |implicit val writes = Json.writes[${model.simpleName}]
+         |def tupled = (${model.simpleName}.apply _).tupled""".stripMargin
+    }
+  }
 }
 ```
 
@@ -171,7 +173,8 @@ This version is a very extensive refactoring, as you can read below. This is the
 - Split `Model` and `Property` from their respective emitters, to separate the emitter from the additional data processing that can now be done with `Model` and `Property`. This is a much cleaner design, albeit a little bit more complex.
 - Split `SchemaEmitter` into, on the one hand, `CompilationUnit` and `CompilationUnitEmitter`, which hold info about each code unit and emit it, and `SchemaSlicer`, which distributes each model to a compilation unit. Previously, `SchemaEmitter` had both of these tasks, which became messy.
 - Allow `TypeEmitter` to access the `CompilationUnit` a given type should be emitted to, which can be used, for example, to glean the imports specific to said compilation unit.
-- Move Id-type resolution based on database keys from `TypeEmitter` to `Property`. There was previously a design oversight which meant that the Id type wasn't treated as a `TypeReference`. 
+- Move Id-type resolution based on database keys from `TypeEmitter` to `Property`. There was previously a design oversight which meant that the Id type wasn't treated as a `TypeReference`.
+- `DefaultCompilationUnitEmitter` now sorts imports alphabetically by default.
 
 ##### 0.1.1 (unpublished)
 
