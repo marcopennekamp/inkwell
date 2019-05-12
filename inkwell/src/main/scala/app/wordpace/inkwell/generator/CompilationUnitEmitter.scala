@@ -40,7 +40,5 @@ class DefaultCompilationUnitEmitter(config: GeneratorConfiguration) extends Comp
   protected def importCode(unit: CompilationUnit): String = unit.imports.map {
     case e: Import.Entity => e.fullName
     case p: Import.Wildcard => s"${p.name}._"
-  }.map(s => s"import $s").mkString("\n")
-
-  // TODO: Sort imports alphabetically for cleaner files.
+  }.toSeq.sorted.map(s => s"import $s").mkString("\n")
 }
