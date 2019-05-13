@@ -33,6 +33,13 @@ libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 
 Inkwell must be invoked from Scala code. There is no standalone executable or command line interface. Hence, you will need to set up a [multi-project build](https://www.scala-sbt.org/1.x/docs/Multi-Project.html) in SBT with a main project and a code generation project, which your main project should depend on. Your Inkwell generator will be placed in the code generation project, but *invoked* as a [code generation task](https://www.scala-sbt.org/1.0/docs/Howto-Generating-Files.html) in the settings of the main project. Check out Inkwell's own [build.sbt](https://github.com/marcopennekamp/inkwell/blob/master/build.sbt) as an example.
 
+If you get a `java.sql.SQLException: No suitable driver found` exception, you may have to initialise your database driver manually:
+
+```
+Class.forName(databaseDriver)
+// e.g. Class.forName("org.postgresql.Driver")
+```
+
 Once you have set up the code generation framework, you need to configure and invoke the Inkwell code generator. A minimal setup with a `FileGenerator` looks like this:
 
 ```scala
