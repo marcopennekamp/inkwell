@@ -35,7 +35,7 @@ class DefaultCompilationUnitEmitter(config: GeneratorConfiguration) extends Comp
   }
 
   /**
-    * The emitted import section below the unit's package declaration.
+    * The emitted import section below the unit's package declaration. Imports are sorted by default.
     */
   protected def importCode(unit: CompilationUnit): String = unit.imports.map {
     case e: Import.Entity => e.fullName
