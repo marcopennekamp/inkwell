@@ -4,7 +4,7 @@ Inkwell is a highly customisable code generator, which generates Scala case clas
 
 What makes Inkwell special? Check this out:
 
-- **It's customisable:** Generate exactly the code you need. Inkwell is *highly* customisable. You can adjust every aspect of schema code generation with varying degrees of ease.   
+- **It's highly customisable:** Generate exactly the code you need. Inkwell is *highly* customisable. You can adjust every aspect of schema code generation with varying degrees of ease.   
 - **It's easy to use:** Inkwell provides opinionated default implementations to help you get started quickly. You can pick and choose the components you need or write your own. It's also very easy to extend Inkwell's default implementations.
 - **It's well documented:** I know how frustrating bad documentation (or none at all!) can be, so I took my time to carefully document everything important. Just check out the source code! Is anything unclear? Go raise an issue!
 - **It's open for more:** I'd love to enrich Inkwell with your feedback, so get issue tracking!
@@ -19,7 +19,7 @@ The name Inkwell is a play on Quill. To write with a quill, you first need to di
 Add Inkwell to your project's library dependencies:
 
 ```
-libraryDependencies += "app.wordpace" %% "inkwell" % "0.1.0"
+libraryDependencies += "app.wordpace" %% "inkwell" % "0.2.0"
 ```
 
 Note that Inkwell works with `scala.reflect.runtime.universe.Type` and `typeOf`, because `ClassTag` doesn't contain any information about type arguments. To use `Type` and `typeOf`, you may have to add the following dependency to your build:
@@ -172,7 +172,7 @@ Thanks to [@deusaquilus](https://github.com/deusaquilus) and [@olafurpg](https:/
 
 ## Changelog
 
-##### 0.2.0 (unpublished)
+##### 0.2.0
 
 This version is a very extensive refactoring, as you can read below. This is the first step in my ongoing efforts to improve the design and structure of Inkwell.
 
